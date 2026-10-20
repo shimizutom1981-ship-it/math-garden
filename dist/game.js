@@ -180,6 +180,22 @@ feedingStyle.textContent=`
 @keyframes feedFloat{0%{opacity:0;transform:translateY(30px)}20%,75%{opacity:1}100%{opacity:0;transform:translateY(-15px)}}
 @media(prefers-reduced-motion:reduce){.pet-fed .pet-body,.pet-hop .pet-body,.pet-dance .pet-body,.pet-petted .pet-body,.pet-evolved .pet-body,.feed-hearts{animation:none}.pet-body,.pet-leaf{transition:none}}
 `;
+feedingStyle.textContent+=`
+/* Miniatures use an explicit center; shrinking a grid item does not shrink its layout box. */
+.pet-room-preview .pet-company .pet-companion{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;width:100px;height:105px;padding:0;position:relative;overflow:hidden}
+.pet-room-preview .pet-company .pet-companion .pet-scene{position:relative;inset:auto;display:block;flex:none;width:100%;height:80px;min-height:80px;max-width:none;margin:0;border-radius:0;overflow:hidden}
+.pet-room-preview .pet-company .pet-companion .pet-body{position:absolute;left:50%;top:52%;margin:0;scale:1;transform:translate(-50%,-50%) scale(calc(var(--scale,1)*.43));transform-origin:center}
+.pet-room-preview .pet-company .pet-companion>span{position:static;display:block;flex:none;width:100%;height:22px;line-height:22px;font-size:12px;text-align:center;white-space:nowrap}
+.pet-room-preview .pet-company .pet-companion .pet-badge{right:7px;bottom:4px;font-size:17px}
+.pet-room-preview .pet-company .pet-companion .pet-scene:before{display:none}
+@media(max-width:650px){
+ .pet-room-preview .pet-company .pet-companion{width:32%;max-width:65px;height:65px}
+ .pet-room-preview .pet-company .pet-companion .pet-scene{height:47px;min-height:47px}
+ .pet-room-preview .pet-company .pet-companion .pet-body{transform:translate(-50%,-50%) scale(calc(var(--scale,1)*.26))}
+ .pet-room-preview .pet-company .pet-companion>span{height:18px;line-height:18px;font-size:9px}
+ .pet-room-preview .pet-company .pet-companion .pet-badge{font-size:12px;right:2px;bottom:1px}
+}
+`;
 document.head.appendChild(feedingStyle);
 function shopAction(id){let item=SHOP.find(x=>x.id===id);if(!item)return;let g=game(),pet=friendState();if(g.owned.includes(id)){if(pet.equipped[item.slot]===id)delete pet.equipped[item.slot];else pet.equipped[item.slot]=id;save();petRoom('きせかえ したよ！');return}if(g.coins<item.cost)return;g.coins-=item.cost;g.owned.push(id);pet.equipped[item.slot]=id;save();petRoom(item.name+'を てにいれた！')}
 
