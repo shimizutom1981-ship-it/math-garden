@@ -32,12 +32,12 @@ home=function(){
  let g=game();
  app.innerHTML=`<section class="panel center subject-home">
  <p class="eyebrow">${esc(person().name)} の にわ</p>
- <h1>きょうは どっちに する？</h1>
+ <h1>きょうは なにを する？</h1>
  <p>すきな ほうを おしてね。5もんで おはなが さくよ。</p>
  <div class="subject-home-choices">
  <button class="subject-home-card math" onclick="start(recommendationFor('math'),true)"><span aria-hidden="true">🔢</span><strong>さんすう</strong></button>
  <button class="subject-home-card language" onclick="start(recommendationFor('jp'),true)"><span aria-hidden="true">📖</span><strong>こくご</strong></button>
- </div>
+ <button class="subject-home-card english" onclick="startEnglish()"><span aria-hidden="true">🔤</span><strong>えいご</strong></button></div>
  <div class="subject-home-pet"><span class="coin">🪙 ${g.coins} コイン</span><button class="sub" onclick="petRoom()">🌱 にわっちに あう</button></div>
  <p class="muted">🌷 そだてた おはな：${Number(person().flowers)||0}こ</p>
  </section>`;
@@ -96,7 +96,7 @@ function feedPet(id='apple'){
 }
 const feedingStyle=document.createElement('style');
 feedingStyle.textContent=`
-.subject-home{max-width:850px;margin:20px auto}.subject-home-choices{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:28px 0}.subject-home-card{display:grid;place-items:center;gap:14px;min-height:190px;border:3px solid #bad2ad;border-radius:28px;background:#eaf2df}.subject-home-card.language{background:#fff0df;border-color:#e6c99e}.subject-home-card span{font-size:58px}.subject-home-card strong{font-size:32px}.subject-home-pet{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:18px;margin-top:24px}@media(max-width:500px){.subject-home-choices{gap:12px}.subject-home-card{min-height:145px;padding:14px}.subject-home-card strong{font-size:25px}.subject-home-card span{font-size:44px}}
+.subject-home-card.english{background:#e9efff;border-color:#b9c8e7}.subject-home{max-width:850px;margin:20px auto}.subject-home-choices{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin:28px 0}.subject-home-card{display:grid;place-items:center;gap:14px;min-height:190px;border:3px solid #bad2ad;border-radius:28px;background:#eaf2df}.subject-home-card.language{background:#fff0df;border-color:#e6c99e}.subject-home-card span{font-size:58px}.subject-home-card strong{font-size:32px}.subject-home-pet{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:18px;margin-top:24px}@media(max-width:500px){.subject-home-choices{gap:12px;grid-template-columns:1fr}.subject-home-card{min-height:145px;padding:14px}.subject-home-card strong{font-size:25px}.subject-home-card span{font-size:44px}}
 .pet-wish{background:#edf4e5;border:2px solid #d1dfbd;border-radius:22px;padding:18px 22px;margin:16px 0;color:#36513d}.pet-wish p{margin:8px 0}.pet-wish div{font-size:28px;overflow-wrap:anywhere}
 .pet-foods{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}.pet-foods button{display:grid;gap:6px;min-width:130px;min-height:110px}.pet-foods span{font-size:36px}.pet-foods small{font-size:12px}
 .pet-scene[role=button]{cursor:pointer;touch-action:manipulation}.pet-scene:focus-visible{outline:4px solid #587e51;outline-offset:4px}
@@ -112,6 +112,70 @@ feedingStyle.textContent=`
 `;
 document.head.appendChild(feedingStyle);
 function shopAction(id){let item=SHOP.find(x=>x.id===id);if(!item)return;let g=game();if(g.owned.includes(id)){if(g.equipped[item.slot]===id)delete g.equipped[item.slot];else g.equipped[item.slot]=id;save();petRoom('きせかえ したよ！');return}if(g.coins<item.cost)return;g.coins-=item.cost;g.owned.push(id);g.equipped[item.slot]=id;save();petRoom(item.name+'を てにいれた！')}
+
+const EN_WORDS=[
+ [['cat','🐱','ねこ'],['dog','🐶','いぬ'],['rabbit','🐰','うさぎ'],['bear','🐻','くま'],['elephant','🐘','ぞう'],['fish','🐟','さかな'],['bird','🐦','とり'],['frog','🐸','かえる']],
+ [['apple','🍎','りんご'],['banana','🍌','ばなな'],['grapes','🍇','ぶどう'],['strawberry','🍓','いちご'],['bread','🍞','ぱん'],['rice ball','🍙','おにぎり'],['cake','🍰','けーき'],['egg','🥚','たまご']],
+ [['car','🚗','くるま'],['train','🚃','でんしゃ'],['airplane','✈️','ひこうき'],['bicycle','🚲','じてんしゃ'],['book','📖','ほん'],['umbrella','☂️','かさ'],['hat','👒','ぼうし'],['ball','⚽','ぼーる']]
+];
+let englishSession=null;
+function englishProgress(){
+ const p=person();if(!p.english||typeof p.english!=='object')p.english={};
+ const e=p.english;
+ if(!Number.isInteger(e.level)||e.level<0||e.level>11)e.level=0;
+ for(const k of ['strong','total','correct'])if(!Number.isSafeInteger(e[k])||e[k]<0)e[k]=0;
+ return e;
+}
+function englishSay(text){
+ if(!data.sound||!('speechSynthesis'in window))return;
+ speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=.75;
+ const voices=speechSynthesis.getVoices(),v=voices.find(v=>/^en-US$/i.test(v.lang))||voices.find(v=>/^en[-_]/i.test(v.lang));
+ if(v)u.voice=v;speechSynthesis.speak(u);
+}
+function startEnglish(){
+ subject='jp';session=null;view='quiz';
+ const p=englishProgress(),bank=EN_WORDS[Math.floor(p.level/4)],count=p.level%4<2?2:3;
+ englishSession={n:0,clean:0,help:false,done:false,rewarded:false,level:p.level,count,bank,seen:[]};
+ enterQuizScreen();englishNext();
+}
+function englishNext(){
+ const e=englishSession;if(!e||e.rewarded)return;
+ if(e.n>=5){englishFinish();return}
+ e.help=false;e.done=false;
+ const pool=e.bank.filter(w=>!e.seen.includes(w[0]));
+ e.word=pool[rand(0,pool.length-1)];e.seen.push(e.word[0]);
+ const others=e.bank.filter(w=>w!==e.word).map(w=>({w,r:Math.random()})).sort((a,b)=>a.r-b.r).slice(0,e.count-1).map(x=>x.w);
+ e.choices=[e.word,...others].map(w=>({w,r:Math.random()})).sort((a,b)=>a.r-b.r).map(x=>x.w);
+ app.innerHTML=`<section class="quiz"><div class="quiztop"><button class="sub" onclick="home()">⌂ にわへ</button><strong>🔤 えいご</strong><span>${e.n+1} / 5</span></div><div class="board"><h1 class="question">えいごを きいて、えを えらぼう！</h1><button class="primary" onclick="englishSay(englishSession.word[0])">🔊 もういちど きく</button><div class="choices">${e.choices.map((w,i)=>`<button class="choice" style="font-size:54px;min-height:85px" aria-label="${esc(w[2])}" onclick="englishAnswer(${i},this)">${w[1]}</button>`).join('')}</div><div id="englishFeedback" class="feedback" role="status"></div><div class="actions"><button class="sub" id="englishHint" onclick="englishHint()">💡 ヒント</button><button class="primary hidden" id="englishNext" onclick="englishAdvance()">つぎへ →</button></div></div></section>`;
+ englishSay(e.word[0]);
+}
+function englishHint(){
+ const e=englishSession;if(view!=='quiz'||!e||e.done)return;e.help=true;
+ document.querySelector('#englishFeedback').textContent='「'+e.word[2]+'」を さがしてね。';speak(e.word[2]+'を さがしてね');
+}
+function englishAnswer(i,button){
+ const e=englishSession;if(view!=='quiz'||!e||e.done||!e.choices[i])return;
+ if(e.choices[i][0]!==e.word[0]){button.disabled=true;englishHint();return}
+ e.done=true;if(!e.help)e.clean++;
+ const p=englishProgress();p.total++;if(!e.help)p.correct++;save();
+ document.querySelectorAll('.choice').forEach(b=>b.disabled=true);button.classList.add('correct');
+ document.querySelector('#englishHint').disabled=true;document.querySelector('#englishNext').classList.remove('hidden');
+ document.querySelector('#englishFeedback').textContent='✨ '+e.word[0]+' ＝ '+e.word[2]+'！';
+ englishSay(e.word[0]+'. Great!');
+}
+function englishAdvance(){if(!englishSession?.done)return;englishSession.n++;englishNext()}
+function englishFinish(){
+ const e=englishSession;if(!e||e.rewarded)return;e.rewarded=true;
+ const p=englishProgress();p.strong=e.clean>=4?p.strong+1:0;
+ // Repeat each small step for five confident sets; ease after difficulty.
+ if(p.strong>=5&&p.level<11){p.level++;p.strong=0}
+ else if(e.clean<=2&&p.level>0){p.level--;p.strong=0}
+ const g=game(),d=dailyRecord(),reward=d['auto-en']?3:10;
+ d['auto-en']=(Number.isSafeInteger(d['auto-en'])?d['auto-en']:0)+1;g.coins+=reward;person().flowers++;save();
+ leaveQuizScreen();view='result';
+ app.innerHTML=`<section class="panel center"><div class="big">🌷</div><h1>えいごで あそべたね！</h1><p>おはなが ひとつ さいたよ。</p><div class="reward"><strong>🪙 ${reward} コイン もらった！</strong></div><div class="actions"><button class="primary" onclick="petRoom()">🌱 にわっちに あう</button><button class="sub" onclick="home()">にわに もどる</button></div></section>`;
+ speak('よく がんばったね。おはなが ひとつ さいたよ');
+}
 for(let p of data.profiles)initGame(p);save();
 let toolsBar=document.querySelector('.tools');let musicButton=document.createElement('button');musicButton.setAttribute('data-music','');musicButton.onclick=musicControl;toolsBar.appendChild(musicButton);let switchButton=document.createElement('button');switchButton.textContent='ひとを かえる';switchButton.onclick=showWelcome;toolsBar.appendChild(switchButton);
 document.querySelector('#profile').onchange=e=>chooseChild(Number(e.target.value));
