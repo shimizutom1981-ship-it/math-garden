@@ -8,7 +8,13 @@ function game(){return initGame(person())}
 function todayKey(){let d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function dailyRecord(){let g=game(),k=todayKey();if(!g.days[k]||typeof g.days[k]!=='object')g.days[k]={};return g.days[k]}
 function petLevel(){return Math.min(5,1+Math.floor(game().growth/3))}
-function petArt(){let g=game(),growth=Math.min(12,g.growth),e=slot=>SHOP.find(i=>i.id===g.equipped[slot]);return `<div class="pet-scene" role="img" aria-label="レベル${petLevel()}の にわっち"><div class="pet-body" style="--scale:${.83+growth*.022};background:hsl(${42+growth},78%,${72-growth*.4}%);"><span class="pet-leaf" style="transform:scale(${.75+growth*.035})">${growth>=12?'🌸':growth>=9?'🌷':growth>=6?'🌿':'🌱'}</span><span class="pet-face">• •</span><span class="pet-mouth"></span><span class="cheek left"></span><span class="cheek right"></span>${e('hat')?`<span class="pet-hat">${e('hat').emoji}</span>`:''}${e('bow')?`<span class="pet-bow">${e('bow').emoji}</span>`:''}</div>${e('badge')?`<span class="pet-badge">${e('badge').emoji}</span>`:''}</div>`}
+const PET_FOODS=[
+ {id:'apple',name:'りんご',emoji:'🍎',reaction:'しゃきしゃき！ おいしいね！',motion:'pet-fed'},
+ {id:'rice',name:'おにぎり',emoji:'🍙',reaction:'もぐもぐ！ げんき いっぱい！',motion:'pet-hop'},
+ {id:'cake',name:'ケーキ',emoji:'🍰',reaction:'ふわふわ！ うれしくて おどっちゃう！',motion:'pet-dance'}
+];
+function petWish(){return '<aside class="pet-wish"><strong>🌱 にわっちから おねがい</strong><p>いっしょに おはなを そだてよう！<br>すきな ステージを 5もん やると、おはなが ひとつ さくよ。</p><div aria-label="そだてた おはな">'+ '🌷'.repeat(Math.min(12,Math.max(0,Number(person().flowers)||0)))+'</div><small>そだてた おはな：'+(Number(person().flowers)||0)+'こ · いつ あそびに きても だいじょうぶ</small></aside>'}
+function petArt(){let g=game(),growth=Math.min(12,g.growth),e=slot=>SHOP.find(i=>i.id===g.equipped[slot]);return `<div class="pet-scene" role="button" tabindex="0" onclick="petNiwatchi()" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();petNiwatchi()}" aria-label="レベル${petLevel()}の にわっちを なでる"><div class="pet-body" style="--scale:${.83+growth*.022};background:hsl(${42+growth},78%,${72-growth*.4}%);"><span class="pet-leaf" style="transform:scale(${.75+growth*.035})">${growth>=12?'🌸':growth>=9?'🌷':growth>=6?'🌿':'🌱'}</span><span class="pet-face">• •</span><span class="pet-mouth"></span><span class="cheek left"></span><span class="cheek right"></span>${e('hat')?`<span class="pet-hat">${e('hat').emoji}</span>`:''}${e('bow')?`<span class="pet-bow">${e('bow').emoji}</span>`:''}</div>${e('badge')?`<span class="pet-badge">${e('badge').emoji}</span>`:''}</div>`}
 let musicCtx=null,musicTimer=null,musicNodes=[],musicGeneration=0;
 if(typeof data.music!=='boolean')data.music=true;
 function refreshMusic(){let status=!data.music?'♫ おんがく OFF':musicCtx?.state==='running'?'♫ おんがく ON':'♫ おんがくを はじめる';document.querySelectorAll('[data-music]').forEach(b=>b.textContent=status)}
@@ -22,12 +28,12 @@ function chooseChild(i){if(!data.profiles[i])return;data.current=i;game();save()
 function recommendationFor(which){let old=subject;subject=which;let i=recommended();subject=old;return i}
 function dailyStages(){let old=subject,lo=old==='math'?0:JP_START,hi=old==='math'?JP_START:TOPICS.length,learned=[];for(let i=lo;i<hi;i++)if(stats(i).total>0)learned.push(i);let c=learned.length?learned[(new Date().getDate()-1)%learned.length]:lo;return [{i:recommendationFor('math'),title:'🔢 さんすうの みち'},{i:recommendationFor('jp'),title:'📖 ことばの もり'},{i:c,title:'🌼 もういちどの おか'}]}
 const originalHome=home;
-home=function(){leaveQuizScreen();originalHome();let g=game(),done=dailyRecord(),section=document.createElement('section');section.innerHTML=`<div class="gamebar"><span><strong>${esc(person().name)}</strong> の にわ　<span class="coin">🪙 ${g.coins} コイン</span></span><button class="sub" onclick="petRoom()">🌱 にわっち・きせかえ</button></div><h2>きょうは どこへ いく？</h2><p class="muted">1ステージ 5もん。ヒントを つかっても コインが もらえるよ。</p><div class="daily-grid">${dailyStages().map(t=>`<button class="daily-card" onclick="start(${t.i},true)"><strong>${t.title}</strong><span>きょうの じぶんに ぴったりの 5もん</span><small>${done['auto-'+(t.i<JP_START?'math':'jp')]?'✓ きょう クリア！ もういちど ＋3🪙':'クリアで ＋10🪙'}</small></button>`).join('')}</div>`;app.prepend(section);refreshMusic()};
+home=function(){leaveQuizScreen();originalHome();let g=game(),done=dailyRecord(),section=document.createElement('section');section.innerHTML=`<div class="gamebar"><span><strong>${esc(person().name)}</strong> の にわ　<span class="coin">🪙 ${g.coins} コイン</span></span><button class="sub" onclick="petRoom()">🌱 にわっち・きせかえ</button></div>${petWish()}<h2>きょうは どこへ いく？</h2><p class="muted">1ステージ 5もん。ヒントを つかっても コインが もらえるよ。</p><div class="daily-grid">${dailyStages().map(t=>`<button class="daily-card" onclick="start(${t.i},true)"><strong>${t.title}</strong><span>きょうの じぶんに ぴったりの 5もん</span><small>${done['auto-'+(t.i<JP_START?'math':'jp')]?'✓ きょう クリア！ もういちど ＋3🪙':'クリアで ＋10🪙'}</small></button>`).join('')}</div>`;app.prepend(section);refreshMusic()};
 const originalStart=start;
 start=function(i,auto){subject=i<JP_START?'math':'jp';let level=auto?adaptiveState().level:i;enterQuizScreen();originalStart(level,auto);session.stageStart=auto?'auto-'+subject:i;session.rewarded=false};
 const originalFinish=finish;
 finish=function(){if(!session||session.rewarded)return;session.rewarded=true;leaveQuizScreen();let g=game(),d=dailyRecord(),id=String(session.stageStart??session.i),reward=d[id]?3:10;d[id]=(Number.isSafeInteger(d[id])?d[id]:0)+1;g.coins+=reward;let keys=Object.keys(g.days).sort();for(let k of keys.slice(0,-90))delete g.days[k];save();originalFinish();let box=document.createElement('div');box.className='reward';box.innerHTML=`<strong>🪙 ${reward} コイン もらった！</strong><p>いま ${g.coins} コイン。にわっちに あいに いこう。</p><button class="primary" onclick="petRoom()">🌱 にわっちに あう</button>`;app.querySelector('.panel').appendChild(box)};
-function petRoom(message=''){leaveQuizScreen();view='pet';session=null;let g=game(),lv=petLevel();app.innerHTML=`<section class="panel"><div class="quiztop"><button class="sub" onclick="home()">← ステージへ</button><span class="coin">🪙 ${g.coins} コイン</span></div><div class="center"><h1 style="font-size:30px">${esc(person().name)}の にわっち</h1><strong>レベル ${lv} · ${['','ちいさな め','すくすく','げんきいっぱい','おおきく なった','にわの ともだち'][lv]}</strong>${petArt()}<p class="game-status" role="status">${esc(message)}</p><p>${lv===5?'おおきく そだったね！':`あと ${3-g.growth%3}かいの おやつで レベルアップ！`}</p><button class="primary" onclick="feedPet()" ${g.coins<10||lv===5?'disabled':''}>🍎 おやつ · 10🪙</button><p class="muted">おやすみしても、ちいさく ならないよ。</p></div><h2>きせかえやさん</h2><p class="muted">かった ものは、ずっと つかえるよ。</p><div class="wardrobe">${SHOP.map(item=>{let owned=g.owned.includes(item.id),on=g.equipped[item.slot]===item.id;return `<div class="shop-item"><div style="font-size:42px">${item.emoji}</div><strong>${item.name}</strong><button onclick="shopAction('${item.id}')" ${!owned&&g.coins<item.cost?'disabled':''}>${on?'はずす':owned?'つける':item.cost+'🪙で かう'}</button></div>`}).join('')}</div><p class="muted">自動ステージは教科ごと、自由練習はコースごとに、その日最初の5問クリアで10コイン、2回目から3コイン。正答数にかかわらず、最後まで取り組むともらえます。課金はありません。</p></section>`}
+function petRoom(message=''){leaveQuizScreen();view='pet';session=null;let g=game(),lv=petLevel();app.innerHTML=`<section class="panel"><div class="quiztop"><button class="sub" onclick="home()">← ステージへ</button><span class="coin">🪙 ${g.coins} コイン</span></div><div class="center"><h1 style="font-size:30px">${esc(person().name)}の にわっち</h1><strong>レベル ${lv} · ${['','ちいさな め','すくすく','げんきいっぱい','おおきく なった','にわの ともだち'][lv]}</strong>${petArt()}<p class="muted">にわっちを タッチして なでてね。コインは つかわないよ。</p><p class="game-status" role="status">${esc(message)}</p><p>${lv===5?'おおきく そだったね！':`あと ${3-g.growth%3}かいの おやつで レベルアップ！`}</p><div class="pet-foods">${PET_FOODS.map(f=>`<button class="sub" onclick="feedPet('${f.id}')" ${lv<5&&g.coins<10?'disabled':''}><span>${f.emoji}</span>${f.name}<small>${lv===5?'むりょう': '10🪙 · せいちょう ＋1'}</small></button>`).join('')}</div><p class="muted">おやすみしても、ちいさく ならないよ。</p></div><h2>きせかえやさん</h2><p class="muted">かった ものは、ずっと つかえるよ。</p><div class="wardrobe">${SHOP.map(item=>{let owned=g.owned.includes(item.id),on=g.equipped[item.slot]===item.id;return `<div class="shop-item"><div style="font-size:42px">${item.emoji}</div><strong>${item.name}</strong><button onclick="shopAction('${item.id}')" ${!owned&&g.coins<item.cost?'disabled':''}>${on?'はずす':owned?'つける':item.cost+'🪙で かう'}</button></div>`}).join('')}</div><p class="muted">自動ステージは教科ごと、自由練習はコースごとに、その日最初の5問クリアで10コイン、2回目から3コイン。正答数にかかわらず、最後まで取り組むともらえます。課金はありません。</p></section>`}
 let petSoundContext=null;
 function playFeedSound(levelUp){
  if(!data.sound)return;
@@ -49,28 +55,45 @@ function playFeedSound(levelUp){
   }).catch(()=>{});
  }catch{}
 }
-function feedPet(){
- let g=game();if(g.coins<10||petLevel()===5)return;
- let before=petLevel();g.coins-=10;g.growth++;save();
- let levelUp=petLevel()>before;
- petRoom(levelUp?'✨ レベルアップ！ はっぱも そだったよ！':'🍎 もぐもぐ！ すこし おおきく なったよ！');
- playFeedSound(levelUp);
- const scene=app.querySelector('.pet-scene');
- if(scene){
-  scene.classList.add('pet-fed');
-  const face=scene.querySelector('.pet-face');if(face)face.textContent='⌒ ⌒';
-  const hearts=document.createElement('span');hearts.className='feed-hearts';hearts.textContent=levelUp?'✨ 🌸 ✨':'♥ 🍎 ♥';hearts.setAttribute('aria-hidden','true');scene.appendChild(hearts);
-  setTimeout(()=>{scene.classList.remove('pet-fed');hearts.remove();if(face)face.textContent='• •'},1800);
- }
+let petReactionTimer=null;
+function petReaction(motion,emoji){
+ const scene=app.querySelector('.pet-scene');if(!scene)return;
+ clearTimeout(petReactionTimer);
+ scene.classList.remove('pet-fed','pet-hop','pet-dance','pet-petted');
+ scene.querySelector('.feed-hearts')?.remove();
+ void scene.offsetWidth;scene.classList.add(motion);
+ const face=scene.querySelector('.pet-face');if(face)face.textContent='⌒ ⌒';
+ const hearts=document.createElement('span');hearts.className='feed-hearts';hearts.textContent=emoji;hearts.setAttribute('aria-hidden','true');scene.appendChild(hearts);
+ petReactionTimer=setTimeout(()=>{scene.classList.remove(motion);hearts.remove();if(face)face.textContent='• •'},1800);
+}
+function petNiwatchi(){
+ if(view!=='pet')return;
+ const status=app.querySelector('.game-status');if(status)status.textContent='♥ なでなで、ありがとう！ だいすき！';
+ playFeedSound(false);petReaction('pet-petted','♥ ♥ ♥');
+}
+function feedPet(id='apple'){
+ const food=PET_FOODS.find(f=>f.id===id);if(!food)return;
+ let g=game(),before=petLevel(),grown=before===5;
+ if(!grown&&g.coins<10)return;
+ if(!grown){g.coins-=10;g.growth++}
+ save();let levelUp=petLevel()>before;
+ petRoom(food.emoji+' '+food.reaction+(levelUp?' ✨ レベルアップ！':grown?'':' すこし おおきく なったよ！'));
+ playFeedSound(levelUp);petReaction(food.motion,levelUp?'✨ 🌸 ✨':'♥ '+food.emoji+' ♥');
 }
 const feedingStyle=document.createElement('style');
 feedingStyle.textContent=`
+.pet-wish{background:#edf4e5;border:2px solid #d1dfbd;border-radius:22px;padding:18px 22px;margin:16px 0;color:#36513d}.pet-wish p{margin:8px 0}.pet-wish div{font-size:28px;overflow-wrap:anywhere}
+.pet-foods{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}.pet-foods button{display:grid;gap:6px;min-width:130px;min-height:110px}.pet-foods span{font-size:36px}.pet-foods small{font-size:12px}
+.pet-scene[role=button]{cursor:pointer;touch-action:manipulation}.pet-scene:focus-visible{outline:4px solid #587e51;outline-offset:4px}
+.pet-hop .pet-body{animation:petHop .5s ease-in-out 3}.pet-dance .pet-body{animation:petDance .45s ease-in-out 4}.pet-petted .pet-body{animation:petMunch .6s ease-in-out 3}
+@keyframes petHop{0%,100%{transform:scale(var(--scale))}50%{transform:translateY(-22px) scale(var(--scale))}}
+@keyframes petDance{0%,100%{transform:rotate(-10deg) scale(var(--scale))}50%{transform:rotate(10deg) scale(var(--scale))}}
 .pet-body,.pet-leaf{transition:background .4s,transform .4s}
 .pet-fed .pet-body{animation:petMunch .35s ease-in-out 4}
 .feed-hearts{position:absolute;top:22px;left:0;right:0;font-size:30px;color:#d97887;pointer-events:none;animation:feedFloat 1.8s ease-out forwards}
 @keyframes petMunch{0%,100%{transform:scale(var(--scale))}50%{transform:translateY(-8px) scale(calc(var(--scale)*1.06),calc(var(--scale)*.96))}}
 @keyframes feedFloat{0%{opacity:0;transform:translateY(30px)}20%,75%{opacity:1}100%{opacity:0;transform:translateY(-15px)}}
-@media(prefers-reduced-motion:reduce){.pet-fed .pet-body,.feed-hearts{animation:none}.pet-body,.pet-leaf{transition:none}}
+@media(prefers-reduced-motion:reduce){.pet-fed .pet-body,.pet-hop .pet-body,.pet-dance .pet-body,.pet-petted .pet-body,.feed-hearts{animation:none}.pet-body,.pet-leaf{transition:none}}
 `;
 document.head.appendChild(feedingStyle);
 function shopAction(id){let item=SHOP.find(x=>x.id===id);if(!item)return;let g=game();if(g.owned.includes(id)){if(g.equipped[item.slot]===id)delete g.equipped[item.slot];else g.equipped[item.slot]=id;save();petRoom('きせかえ したよ！');return}if(g.coins<item.cost)return;g.coins-=item.cost;g.owned.push(id);g.equipped[item.slot]=id;save();petRoom(item.name+'を てにいれた！')}
