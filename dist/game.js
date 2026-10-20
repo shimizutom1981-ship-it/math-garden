@@ -388,6 +388,72 @@ const storyStyle=document.createElement('style');
 storyStyle.textContent='.garden-duo{display:flex;align-items:center;justify-content:center;gap:14px;pointer-events:none}.garden-duo>.avatar-art{width:100px;margin:0}.garden-duo>.pet-scene{width:160px;min-height:180px;height:180px;margin:0;background:transparent;overflow:visible}.garden-duo .pet-body{scale:.7}.garden-duo .pet-badge{font-size:22px}.duo-heart{font-size:30px}.garden-story{background:#fff5df;border:2px solid #eddbb0;border-radius:20px;padding:18px;margin:16px 0}.garden-story p{font-size:19px;line-height:1.9}.garden-story h2{font-size:22px}.story-reward details{margin:18px 0}.story-reward summary{cursor:pointer;padding:14px;min-height:48px}.answer-duo{position:fixed;left:50%;top:45%;translate:-50% -50%;width:max-content;max-width:90vw;z-index:60;pointer-events:none;background:#fffaf0ee;border-radius:18px;animation:duo-cheer .7s ease-in-out 2}.answer-duo .garden-duo{gap:0;height:74px;padding:5px}.answer-duo .avatar-art{width:42px}.answer-duo .pet-scene{width:66px;min-height:65px;height:65px;overflow:hidden}.answer-duo .pet-body{scale:.3}.answer-duo .duo-heart{font-size:18px}.answer-duo .pet-badge{display:none}@keyframes duo-cheer{50%{transform:translateY(6px) rotate(3deg)}}@media(prefers-reduced-motion:reduce){.answer-duo{animation:none}}';
 document.head.appendChild(storyStyle);
 
+
+let quietTiming=null,quietTimingTimer=null;
+function timingRows(){const p=person();if(!Array.isArray(p.answerTimes))p.answerTimes=[];return p.answerTimes}
+function timingMedian(xs){const a=xs.slice().sort((a,b)=>a-b);return a.length?a[Math.floor(a.length/2)]:0}
+function timingStop(){clearInterval(quietTimingTimer);quietTimingTimer=null;quietTiming=null}
+function timingBegin(english){
+ timingStop();if(view!=='quiz')return;
+ const active=english?englishSession:session;if(!active||active.done||active.rewarded)return;
+ const key=english?'en:'+active.level:(subject+':'+q.i+':'+(active.auto&&adaptiveState().prepStep<3?'prep'+adaptiveState().prepStep:'regular'));
+ quietTiming={profile:person(),active,english,key,ms:0,last:Date.now(),ready:!data.sound,excluded:false};
+ quietTimingTimer=setInterval(timingTick,100);
+}
+function timingTick(){
+ const t=quietTiming;if(!t)return;const now=Date.now(),delta=now-t.last;t.last=now;
+ if(view!=='quiz'||person()!==t.profile){timingStop();return}
+ if(document.hidden)return;
+ const talking=data.sound&&window.speechSynthesis&&(window.speechSynthesis.speaking||window.speechSynthesis.pending);
+ if(talking)return;
+ if(!t.ready){t.ready=true;return}
+ if(delta>10000){t.excluded=true;return}
+ t.ms+=Math.max(0,delta);if(t.ms>120000)t.excluded=true;
+}
+function timingRecord(clean){
+ const t=quietTiming;if(!t)return;timingTick();if(!quietTiming)return;
+ const talking=data.sound&&window.speechSynthesis&&(window.speechSynthesis.speaking||window.speechSynthesis.pending);
+ const valid=t.ready&&!t.excluded&&!document.hidden&&!talking&&t.ms>=300&&t.ms<=120000;
+ const rows=timingRows(),previous=rows.filter(r=>r.key===t.key&&r.valid&&r.clean&&Number.isFinite(r.ms)).slice(-30);
+ const baseline=previous.length>=15?timingMedian(previous.map(r=>r.ms)):0;
+ const slow=!!(valid&&baseline&&t.ms>Math.max(10000,baseline*2.5));
+ rows.push({at:new Date().toISOString(),key:t.key,ms:Math.round(t.ms),valid,clean,slow});
+ if(rows.length>500)rows.splice(0,rows.length-500);
+ // Timing alone never lowers a level. Repeated slow, assisted answers increase review.
+ const recent=rows.filter(r=>r.key===t.key&&r.valid).slice(-5);
+ if(baseline&&recent.filter(r=>r.slow&&!r.clean).length>=3){
+  if(!t.english&&t.active.auto&&!t.active.timeReview){
+   const a=adaptiveState();a.strongSets=0;a.newCount=Math.max(1,(a.newCount||5)-1);t.active.timeReview=true;
+  }else if(t.english)englishProgress().strong=0;
+ }
+ timingStop();save();
+}
+const timedNext=nextQuestion;
+nextQuestion=function(){timingStop();timedNext();if(view==='quiz')timingBegin(false)};
+const timedEnglishNext=englishNext;
+englishNext=function(){timingStop();timedEnglishNext();if(view==='quiz')timingBegin(true)};
+const timedAnswer=answer;
+answer=function(i,el){
+ if(session&&!session.done&&q.choices[i]===q.answer)timingRecord(!session.help&&!session.wrong);
+ timedAnswer(i,el);
+};
+const timedEnglishAnswer=englishAnswer;
+englishAnswer=function(i,el){
+ const e=englishSession;if(view==='quiz'&&e&&!e.done&&e.choices[i]?.[0]===e.word[0])timingRecord(!e.help);
+ timedEnglishAnswer(i,el);
+};
+const timedLeave=leaveQuizScreen;
+leaveQuizScreen=function(){timingStop();timedLeave()};
+document.addEventListener('visibilitychange',()=>{if(quietTiming)quietTiming.last=Date.now()});
+function timingReport(){
+ const rows=timingRows(),keys=[...new Set(rows.map(r=>r.key))];
+ const label=key=>{const parts=key.split(':');return parts[0]==='en'?'英語 ステップ '+(Number(parts[1])+1):(TOPICS[Number(parts[1])]?.[1]||'学習')+(parts[2]?.startsWith('prep')?'（やさしい準備 '+(Number(parts[2].slice(4))+1)+'）':'')};
+ return '<section class="panel"><h2>解答時間（保護者用）</h2><p>時間は子供の画面に表示しません。読み上げ中・別画面の時間は除きます。2分を超える解答などは判定対象外です。端末の音声状態による誤差や、画面を開いたままの離席は区別できません。</p><p>同じ範囲で有効な自力正解が15問たまるまでは記録のみ。その後も速さだけでは進級・後退させず、普段の2.5倍超（かつ10秒超）の時間と支援が直近5問中3問で重なった場合、復習を増やし進級を慎重にします。直近500問をこのブラウザに保存し、バックアップにも含めます。</p>'+(!rows.length?'<p>まだ記録はありません。</p>':keys.map(key=>{const rs=rows.filter(r=>r.key===key&&r.valid),clean=rs.filter(r=>r.clean);return '<div class="row"><span>'+esc(label(key))+'</span><span>有効 '+rs.length+'問 ／ 中央値 '+(rs.length?(timingMedian(rs.map(r=>r.ms))/1000).toFixed(1)+'秒':'—')+' ／ '+(clean.length>=15?'本人のペースを参照中':'基準収集中 '+clean.length+'/15')+'</span></div>'}).join(''))+'<details><summary>直近20問の記録</summary>'+rows.slice(-20).reverse().map(r=>'<p>'+esc(new Date(r.at).toLocaleString('ja-JP'))+' · '+esc(label(r.key))+' · '+(r.valid?(r.ms/1000).toFixed(1)+'秒':'判定対象外')+' · '+(r.clean?'自力正解':'ヒント・再回答あり')+'</p>').join('')+'</details></section>';
+}
+const timedParents=parents;
+parents=function(){timingStop();cancelAutoNext();leaveQuizScreen();timedParents();app.insertAdjacentHTML('beforeend',timingReport())};
+document.querySelector('#parent').onclick=parents;
+
 for(let p of data.profiles)initGame(p);save();
 let toolsBar=document.querySelector('.tools');let musicButton=document.createElement('button');musicButton.setAttribute('data-music','');musicButton.onclick=musicControl;toolsBar.appendChild(musicButton);let switchButton=document.createElement('button');switchButton.textContent='ひとを かえる';switchButton.onclick=showWelcome;toolsBar.appendChild(switchButton);
 document.querySelector('#profile').onchange=e=>chooseChild(Number(e.target.value));
