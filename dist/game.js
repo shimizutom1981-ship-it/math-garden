@@ -278,10 +278,32 @@ function storyReward(){
  box.innerHTML=duoArt()+'<p class="center"><strong>いっしょに がんばったね！</strong></p>'+(n<GARDEN_STORIES.length?'<p>📖 おはなし '+(n+1)+' / '+GARDEN_STORIES.length+'</p>'+storyCard(n):'<p class="center">📖 おはなしを ぜんぶ よんだね！ おきにいりを また よもう。</p>')+'<details><summary>📚 これまでの おはなし</summary>'+GARDEN_STORIES.slice(0,Math.min(n+1,GARDEN_STORIES.length)).map((_,i)=>storyCard(i)).join('')+'</details>';
  app.querySelector('.panel')?.appendChild(box);
 }
+
+let autoNextTimer=null;
+function cancelAutoNext(){clearTimeout(autoNextTimer);autoNextTimer=null}
+function scheduleAutoNext(english){
+ cancelAutoNext();
+ const active=english?englishSession:session,questionNumber=active.n;
+ const button=document.querySelector(english?'#englishNext':'#next');if(button)button.classList.add('hidden');
+ autoNextTimer=setTimeout(()=>{
+  autoNextTimer=null;
+  if(document.hidden||view!=='quiz'||(english?englishSession:session)!==active||active.n!==questionNumber||!active.done)return;
+  if(english)englishAdvance();else advance();
+ },2200);
+}
+const autoNextLeave=leaveQuizScreen;
+leaveQuizScreen=function(){cancelAutoNext();autoNextLeave()};
+document.addEventListener('visibilitychange',()=>{
+ if(document.hidden){cancelAutoNext();return}
+ if(view!=='quiz')return;
+ if(session?.done)scheduleAutoNext(false);
+ else if(englishSession?.done&&!englishSession.rewarded)scheduleAutoNext(true);
+});
+
 const duoAnswer=answer;
-answer=function(i,el){const was=session?.done;duoAnswer(i,el);if(!was&&session?.done)celebrateAnswer('#feedback')};
+answer=function(i,el){const was=session?.done;duoAnswer(i,el);if(!was&&session?.done){celebrateAnswer('#feedback');scheduleAutoNext(false)}};
 const duoEnglishAnswer=englishAnswer;
-englishAnswer=function(i,el){const was=englishSession?.done;duoEnglishAnswer(i,el);if(!was&&englishSession?.done)celebrateAnswer('#englishFeedback')};
+englishAnswer=function(i,el){const was=englishSession?.done;duoEnglishAnswer(i,el);if(!was&&englishSession?.done){celebrateAnswer('#englishFeedback');scheduleAutoNext(true)}};
 const storyFinish=finish;
 finish=function(){const eligible=session&&!session.rewarded;storyFinish();if(eligible)storyReward()};
 const storyEnglishFinish=englishFinish;
