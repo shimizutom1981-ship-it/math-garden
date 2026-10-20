@@ -92,19 +92,48 @@ function petCompany(){
  return '<div class="pet-company" aria-label="なかまに なった ともだち">'+html+'</div>';
 }
 
+
+const ROOM_ITEMS=[
+ ['garden','おにわ','🌿','wall',0,'#edf5df'],['pinkroom','いちごの おへや','🍓','wall',20,'#fbe1e9'],['skyroom','そらの おへや','☁️','wall',20,'#dcedfa'],['nightroom','ほしの おへや','🌟','wall',30,'#e4ddf5'],
+ ['none','かぐを しまう','📦','furniture',0,''],['sofa','ソファ','🛋️','furniture',20,''],['bed','ベッド','🛏️','furniture',25,''],['plant','おはな','🪴','furniture',10,''],['bear','ぬいぐるみ','🧸','furniture',15,'']
+].map(([id,name,icon,slot,cost,color])=>({id,name,icon,slot,cost,color}));
+function roomState(){
+ const g=game();if(!g.room||typeof g.room!=='object'||Array.isArray(g.room))g.room={};
+ const r=g.room;if(!Array.isArray(r.owned))r.owned=[];
+ r.owned=[...new Set(['garden','none',...r.owned.filter(id=>ROOM_ITEMS.some(i=>i.id===id))])];
+ for(const [slot,fallback] of [['wall','garden'],['furniture','none']])if(!ROOM_ITEMS.some(i=>i.id===r[slot]&&i.slot===slot&&r.owned.includes(i.id)))r[slot]=fallback;
+ return r;
+}
+function roomColor(){return ROOM_ITEMS.find(i=>i.id===roomState().wall).color}
+function roomDecor(){const i=ROOM_ITEMS.find(i=>i.id===roomState().furniture);return '<div class="room-decor" aria-label="'+i.name+'">'+(i.id==='none'?'':i.icon)+'</div>'}
+function roomShop(){const r=roomState();return '<details class="room-shop"><summary>🏡 おへやを かざる</summary><p>かべがみと かぐを ひとつずつ えらぼう。かった ものは ずっと つかえるよ。</p><div class="wardrobe">'+ROOM_ITEMS.map(i=>'<div class="shop-item"><span style="font-size:34px">'+i.icon+'</span><strong>'+i.name+'</strong><button onclick="buyRoomItem(\''+i.id+'\')" '+(!r.owned.includes(i.id)&&game().coins<i.cost?'disabled':'')+'>'+(r[i.slot]===i.id?'えらんでいるよ':r.owned.includes(i.id)?'かざる':i.cost+'🪙で かう')+'</button></div>').join('')+'</div></details>'}
+function buyRoomItem(id){
+ const i=ROOM_ITEMS.find(i=>i.id===id);if(!i)return;const g=game(),r=roomState();
+ if(!r.owned.includes(id)){if(g.coins<i.cost)return;g.coins-=i.cost;r.owned.push(id)}
+ r[i.slot]=id;save();petRoom('おへやを かざったよ！');const shop=app.querySelector('.room-shop');if(shop)shop.open=true;
+}
+let togetherTimer=null;
+function playTogether(){
+ if(view!=='pet')return;const cast=app.querySelector('.pet-room-cast');if(!cast)return;
+ clearTimeout(togetherTimer);cast.classList.remove('friends-playing');void cast.offsetWidth;cast.classList.add('friends-playing');
+ const status=app.querySelector('.game-status');if(status)status.textContent=mainPetLevel()>=10?'みんなで ぴょん！ なかよし、うれしいね ♥':'いっしょに ぴょん！ うれしいね ♥';
+ playFeedSound(true);
+ togetherTimer=setTimeout(()=>cast.classList.remove('friends-playing'),2000);
+}
+
 function petRoom(message=''){
  const controlsScroll=view==='pet'?(app.querySelector('.pet-room-controls')?.scrollTop||0):0;
  leaveQuizScreen();view='pet';session=null;let g=game(),lv=petLevel();
  app.innerHTML=`<section class="panel pet-room"><div class="quiztop pet-room-top"><button class="sub" onclick="home()">← にわへ</button><span class="coin">🪙 ${g.coins} コイン</span></div>
  <div class="pet-room-layout">
- <div class="pet-room-preview center"><h1>${esc(person().name)}の ${selectedFriend().name}</h1>
- <div class="pet-room-cast">${petArt()}${petCompany()}</div><div class="pet-room-level">${petLevelBadge()}</div>
+ <div class="pet-room-preview center" style="background:${roomColor()}"><h1>${esc(person().name)}の ${selectedFriend().name}</h1>
+ <div class="pet-room-cast">${petArt()}${petCompany()}${roomDecor()}</div><div class="pet-room-level">${petLevelBadge()}</div>
  ${lv>=100?'<div class="rainbow-title">🌈 にじいろの '+selectedFriend().name+' 🌈</div>':''}
  <p class="game-status" role="status">${esc(message)||'タッチして なでなでしてね ♥'}</p></div>
  <div class="pet-room-controls" tabindex="0" aria-label="ごはんと きせかえ"><h2>いっしょに あそぶ こ</h2>${friendPicker()}
- <h2>ごはんを あげる</h2><div class="pet-foods">${PET_FOODS.map(f=>`<button class="sub" onclick="feedPet('${f.id}')" ${g.coins<10?'disabled':''}><span>${f.emoji}</span>${f.name}<small>10🪙 · せいちょう ＋1</small></button>`).join('')}</div>
+ <button class="sub" onclick="playTogether()">💕 みんなで あそぶ</button><h2>ごはんを あげる</h2><div class="pet-foods">${PET_FOODS.map(f=>`<button class="sub" onclick="feedPet('${f.id}')" ${g.coins<10?'disabled':''}><span>${f.emoji}</span>${f.name}<small>10🪙 · せいちょう ＋1</small></button>`).join('')}</div>
  <h2>きせかえやさん</h2><p class="muted">かった ものは、ずっと つかえるよ。</p><div class="wardrobe">${SHOP.map(item=>{let owned=g.owned.includes(item.id),on=friendState().equipped[item.slot]===item.id;return `<div class="shop-item"><div style="font-size:36px">${item.emoji}</div><strong>${item.name}</strong><button onclick="shopAction('${item.id}')" ${!owned&&g.coins<item.cost?'disabled':''}>${on?'はずす':owned?'つける':item.cost+'🪙で かう'}</button></div>`}).join('')}</div>
- <p class="muted">おやすみしても、ちいさく ならないよ。<br>5もん クリアして コインを あつめよう！</p></div></div></section>`;
+ ${roomShop()}<p class="muted">おやすみしても、ちいさく ならないよ。<br>5もん クリアして コインを あつめよう！</p></div></div></section>`;
  const controls=app.querySelector('.pet-room-controls');if(controls)controls.scrollTop=controlsScroll;
 }
 
@@ -143,7 +172,7 @@ function petReaction(motion,emoji){
 function petNiwatchi(){
  if(view!=='pet')return;
  const status=app.querySelector('.game-status');if(status)status.textContent='♥ なでなで、ありがとう！ だいすき！';
- playFeedSound(false);petReaction('pet-petted','♥ ♥ ♥');
+ playTogether();petReaction('pet-petted','♥ ♥ ♥');
 }
 function feedPet(id='apple'){
  const food=PET_FOODS.find(f=>f.id===id);if(!food)return;
@@ -195,6 +224,9 @@ feedingStyle.textContent+=`
  .pet-room-preview .pet-company .pet-companion>span{height:18px;line-height:18px;font-size:9px}
  .pet-room-preview .pet-company .pet-companion .pet-badge{font-size:12px;right:2px;bottom:1px}
 }
+`;
+feedingStyle.textContent+=`
+.pet-room-cast{position:relative}.room-decor{position:absolute;bottom:0;left:10px;font-size:45px;pointer-events:none;filter:drop-shadow(0 3px 2px #0002)}.pet-room-preview .pet-room-cast>.pet-scene{background:transparent}.room-shop{margin:20px 0}.room-shop summary{padding:15px;border-radius:16px;background:#e7eddc;cursor:pointer;font-weight:bold;min-height:48px}.room-shop .shop-item strong{display:block}.friends-playing>.pet-scene,.friends-playing .pet-companion{animation:friendsBounce .5s ease-in-out 4}.friends-playing .pet-companion:nth-child(2){animation-delay:.1s}.friends-playing .pet-companion:nth-child(3){animation-delay:.2s}@keyframes friendsBounce{50%{translate:0 -8px;rotate:3deg}}@media(max-width:650px){.room-decor{font-size:26px;bottom:65px;left:0}}@media(prefers-reduced-motion:reduce){.friends-playing>.pet-scene,.friends-playing .pet-companion{animation:none}}
 `;
 document.head.appendChild(feedingStyle);
 function shopAction(id){let item=SHOP.find(x=>x.id===id);if(!item)return;let g=game(),pet=friendState();if(g.owned.includes(id)){if(pet.equipped[item.slot]===id)delete pet.equipped[item.slot];else pet.equipped[item.slot]=id;save();petRoom('きせかえ したよ！');return}if(g.coins<item.cost)return;g.coins-=item.cost;g.owned.push(id);pet.equipped[item.slot]=id;save();petRoom(item.name+'を てにいれた！')}
