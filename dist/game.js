@@ -27,8 +27,22 @@ function showWelcome(){leaveQuizScreen();session=null;view='welcome';if('speechS
 function chooseChild(i){if(!data.profiles[i])return;data.current=i;game();save();document.querySelector('#welcome')?.remove();document.querySelector('.wrap').inert=false;refresh();home();startMusic()}
 function recommendationFor(which){let old=subject;subject=which;let i=recommended();subject=old;return i}
 function dailyStages(){let old=subject,lo=old==='math'?0:JP_START,hi=old==='math'?JP_START:TOPICS.length,learned=[];for(let i=lo;i<hi;i++)if(stats(i).total>0)learned.push(i);let c=learned.length?learned[(new Date().getDate()-1)%learned.length]:lo;return [{i:recommendationFor('math'),title:'🔢 さんすうの みち'},{i:recommendationFor('jp'),title:'📖 ことばの もり'},{i:c,title:'🌼 もういちどの おか'}]}
-const originalHome=home;
-home=function(){leaveQuizScreen();originalHome();let g=game(),done=dailyRecord(),section=document.createElement('section');section.innerHTML=`<div class="gamebar"><span><strong>${esc(person().name)}</strong> の にわ　<span class="coin">🪙 ${g.coins} コイン</span></span><button class="sub" onclick="petRoom()">🌱 にわっち・きせかえ</button></div>${petWish()}<h2>きょうは どこへ いく？</h2><p class="muted">1ステージ 5もん。ヒントを つかっても コインが もらえるよ。</p><div class="daily-grid">${dailyStages().map(t=>`<button class="daily-card" onclick="start(${t.i},true)"><strong>${t.title}</strong><span>きょうの じぶんに ぴったりの 5もん</span><small>${done['auto-'+(t.i<JP_START?'math':'jp')]?'✓ きょう クリア！ もういちど ＋3🪙':'クリアで ＋10🪙'}</small></button>`).join('')}</div>`;app.prepend(section);refreshMusic()};
+home=function(){
+ leaveQuizScreen();view='home';session=null;refresh();
+ let g=game();
+ app.innerHTML=`<section class="panel center subject-home">
+ <p class="eyebrow">${esc(person().name)} の にわ</p>
+ <h1>きょうは どっちに する？</h1>
+ <p>すきな ほうを おしてね。5もんで おはなが さくよ。</p>
+ <div class="subject-home-choices">
+ <button class="subject-home-card math" onclick="start(recommendationFor('math'),true)"><span aria-hidden="true">🔢</span><strong>さんすう</strong></button>
+ <button class="subject-home-card language" onclick="start(recommendationFor('jp'),true)"><span aria-hidden="true">📖</span><strong>こくご</strong></button>
+ </div>
+ <div class="subject-home-pet"><span class="coin">🪙 ${g.coins} コイン</span><button class="sub" onclick="petRoom()">🌱 にわっちに あう</button></div>
+ <p class="muted">🌷 そだてた おはな：${Number(person().flowers)||0}こ</p>
+ </section>`;
+ refreshMusic();
+};
 const originalStart=start;
 start=function(i,auto){subject=i<JP_START?'math':'jp';let level=auto?adaptiveState().level:i;enterQuizScreen();originalStart(level,auto);session.stageStart=auto?'auto-'+subject:i;session.rewarded=false};
 const originalFinish=finish;
@@ -82,6 +96,7 @@ function feedPet(id='apple'){
 }
 const feedingStyle=document.createElement('style');
 feedingStyle.textContent=`
+.subject-home{max-width:850px;margin:20px auto}.subject-home-choices{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:28px 0}.subject-home-card{display:grid;place-items:center;gap:14px;min-height:190px;border:3px solid #bad2ad;border-radius:28px;background:#eaf2df}.subject-home-card.language{background:#fff0df;border-color:#e6c99e}.subject-home-card span{font-size:58px}.subject-home-card strong{font-size:32px}.subject-home-pet{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:18px;margin-top:24px}@media(max-width:500px){.subject-home-choices{gap:12px}.subject-home-card{min-height:145px;padding:14px}.subject-home-card strong{font-size:25px}.subject-home-card span{font-size:44px}}
 .pet-wish{background:#edf4e5;border:2px solid #d1dfbd;border-radius:22px;padding:18px 22px;margin:16px 0;color:#36513d}.pet-wish p{margin:8px 0}.pet-wish div{font-size:28px;overflow-wrap:anywhere}
 .pet-foods{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}.pet-foods button{display:grid;gap:6px;min-width:130px;min-height:110px}.pet-foods span{font-size:36px}.pet-foods small{font-size:12px}
 .pet-scene[role=button]{cursor:pointer;touch-action:manipulation}.pet-scene:focus-visible{outline:4px solid #587e51;outline-offset:4px}
