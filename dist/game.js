@@ -79,13 +79,26 @@ start=function(i,auto){subject=i<JP_START?'math':'jp';let level=auto?adaptiveSta
 const originalFinish=finish;
 finish=function(){if(!session||session.rewarded)return;session.rewarded=true;leaveQuizScreen();let g=game(),d=dailyRecord(),id=String(session.stageStart??session.i),reward=d[id]?3:10;d[id]=(Number.isSafeInteger(d[id])?d[id]:0)+1;g.coins+=reward;let keys=Object.keys(g.days).sort();for(let k of keys.slice(0,-90))delete g.days[k];save();originalFinish();let box=document.createElement('div');box.className='reward';box.innerHTML=`<strong>🪙 ${reward} コイン もらった！</strong><p>いま ${g.coins} コイン。にわっちに あいに いこう。</p><button class="primary" onclick="petRoom()">🌱 にわっちに あう</button>`;app.querySelector('.panel').appendChild(box)};
 
+
+function petCompany(){
+ const g=game();friendState();const active=g.activeFriend;
+ const others=FRIENDS.filter(f=>f.id!==active&&mainPetLevel()>=f.at);
+ let html='';
+ try{html=others.map(f=>{
+  g.activeFriend=f.id;
+  const art=petArt().replace(/ role="button"| tabindex="0"| onclick="[^"]*"| onkeydown="[^"]*"/g,'');
+  return '<button class="pet-companion" onclick="selectFriend(\''+f.id+'\')" aria-label="'+f.name+'を えらぶ">'+art+'<span>'+f.name+'</span></button>';
+ }).join('')}finally{g.activeFriend=active}
+ return '<div class="pet-company" aria-label="なかまに なった ともだち">'+html+'</div>';
+}
+
 function petRoom(message=''){
  const controlsScroll=view==='pet'?(app.querySelector('.pet-room-controls')?.scrollTop||0):0;
  leaveQuizScreen();view='pet';session=null;let g=game(),lv=petLevel();
  app.innerHTML=`<section class="panel pet-room"><div class="quiztop pet-room-top"><button class="sub" onclick="home()">← にわへ</button><span class="coin">🪙 ${g.coins} コイン</span></div>
  <div class="pet-room-layout">
  <div class="pet-room-preview center"><h1>${esc(person().name)}の ${selectedFriend().name}</h1>
- ${petArt()}<div class="pet-room-level">${petLevelBadge()}</div>
+ <div class="pet-room-cast">${petArt()}${petCompany()}</div><div class="pet-room-level">${petLevelBadge()}</div>
  ${lv>=100?'<div class="rainbow-title">🌈 にじいろの '+selectedFriend().name+' 🌈</div>':''}
  <p class="game-status" role="status">${esc(message)||'タッチして なでなでしてね ♥'}</p></div>
  <div class="pet-room-controls" tabindex="0" aria-label="ごはんと きせかえ"><h2>いっしょに あそぶ こ</h2>${friendPicker()}
@@ -118,7 +131,7 @@ function playFeedSound(levelUp){
 }
 let petReactionTimer=null;
 function petReaction(motion,emoji){
- const scene=app.querySelector('.pet-scene');if(!scene)return;
+ const scene=app.querySelector('.pet-room-cast > .pet-scene');if(!scene)return;
  clearTimeout(petReactionTimer);
  scene.classList.remove('pet-fed','pet-hop','pet-dance','pet-petted','pet-evolved');
  scene.querySelector('.feed-hearts')?.remove();
@@ -145,6 +158,8 @@ function feedPet(id='apple'){
 }
 const feedingStyle=document.createElement('style');
 feedingStyle.textContent=`
+.pet-room-cast{display:flex;align-items:center;justify-content:center;width:100%;min-height:240px;gap:4px}.pet-room-cast>.pet-scene{flex:1;min-width:0}.pet-company{display:flex;flex-direction:column;gap:3px;flex-shrink:0}.pet-companion{position:relative;background:#ffffffa8;border:1px solid #d6e2c6;border-radius:14px;width:84px;height:77px;padding:0;overflow:hidden}.pet-room-preview .pet-companion .pet-scene{position:absolute;left:0;top:0;width:84px;height:59px;min-height:0;margin:0;background:transparent;overflow:visible;pointer-events:none}.pet-companion .pet-body{scale:.3}.pet-companion .pet-badge{font-size:15px;bottom:0;right:5px}.pet-companion>span{position:absolute;bottom:3px;left:0;right:0;font-size:11px}.pet-companion:focus-visible{outline:3px solid #739654}.pet-room-preview .pet-company:empty{display:none}@media(max-width:650px){.pet-room-preview .pet-room-cast{position:absolute;left:0;top:0;width:45%;height:205px;min-height:0;display:flex;flex-direction:column;gap:0}.pet-room-preview .pet-room-cast>.pet-scene{position:relative;left:auto;top:auto;width:100%;height:135px;min-height:135px;flex:none;margin:0}.pet-room-cast>.pet-scene>.pet-body{scale:.7}.pet-company{flex-direction:row;justify-content:center;width:100%;gap:1px}.pet-companion{width:32%;max-width:65px;height:65px}.pet-room-preview .pet-companion .pet-scene{width:100%;height:48px;min-height:0;top:0}.pet-companion .pet-body{scale:.23}.pet-companion>span{font-size:9px}}
+
 .friend-silhouette{position:absolute;inset:-20px;width:180px;height:180px;overflow:visible;z-index:-1;filter:drop-shadow(0 7px 0 #9cac7d33)}.pet-body.friend-momo,.pet-body.friend-sora,.pet-body.friend-hoshi{isolation:isolate;border-color:transparent;background:transparent!important;box-shadow:none}.friend-momo .pet-leaf,.friend-sora .pet-leaf,.friend-hoshi .pet-leaf{display:none}.friend-sora .friend-silhouette{inset:-10px -28px;width:196px;height:170px}.friend-hoshi .friend-silhouette{inset:-25px;width:190px;height:190px}.friend-hoshi .pet-hat{top:-42px}.pet-rainbow .friend-silhouette{filter:drop-shadow(0 0 12px #e9c3ee)}
 
 .pet-room{position:fixed;inset:10px;z-index:50;max-width:none;height:auto;min-height:0;display:flex;flex-direction:column;overflow:hidden;margin:0;padding:16px}.pet-room-top{flex-shrink:0;margin-bottom:10px}.pet-room-layout{display:grid;grid-template-columns:minmax(230px,42%) minmax(0,1fr);gap:20px;flex:1;min-height:0}.pet-room-preview{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;background:#f1f5e9;border-radius:24px;padding:12px;overflow:hidden}.pet-room-preview h1{font-size:22px;margin:0 0 4px}.pet-room-preview .pet-scene{flex-shrink:1;min-height:220px;height:240px;width:100%;max-width:300px;margin:4px auto}.pet-room-preview .pet-level-badge{font-size:18px;padding:4px 16px}.pet-room-preview .pet-level-badge b{font-size:27px}.pet-room-preview .pet-growth-track{margin-top:6px;height:9px}.pet-room-level>p{font-size:13px;margin:6px 0}.pet-room-preview .game-status{min-height:2.6em;font-size:15px;margin:6px 0;line-height:1.3}.pet-room-preview .rainbow-title{font-size:16px;margin:0}.pet-room-controls{overflow-y:auto;overscroll-behavior:contain;min-height:0;padding:2px 10px 20px 4px;scrollbar-gutter:stable}.pet-room-controls h2{font-size:20px;margin:12px 0}.pet-room-controls .friend-picker{grid-template-columns:repeat(2,1fr);margin:8px 0}.pet-room-controls .wardrobe{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.pet-room-controls .pet-foods{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.pet-room-controls .pet-foods button{min-width:0;padding:10px 4px;min-height:100px}.pet-room-controls .shop-item{min-width:0}.pet-room-controls .shop-item button{min-height:48px}@media(max-width:650px){.pet-room{padding:10px;inset:5px}.pet-room-layout{grid-template-columns:1fr;grid-template-rows:205px minmax(0,1fr);gap:10px}.pet-room-preview{position:relative;padding:8px 8px 8px 46%;justify-content:center}.pet-room-preview .pet-scene{position:absolute;left:0;top:4px;width:45%;height:195px;min-height:195px;margin:0;overflow:visible}.pet-room-preview h1{font-size:17px}.pet-room-preview .game-status{font-size:13px}.pet-room-level>p{font-size:12px}.pet-room-controls .friend-picker{grid-template-columns:repeat(2,1fr)}}
