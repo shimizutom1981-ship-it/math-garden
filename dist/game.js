@@ -253,6 +253,43 @@ const avatarStyle=document.createElement('style');
 avatarStyle.textContent='.home-avatar-heading{display:flex;align-items:center;justify-content:center;gap:20px}.home-avatar-heading h1{margin:4px 0;font-size:clamp(22px,3vw,32px)}.home-avatar-heading .avatar-home{margin:0;padding:6px 12px;flex-direction:column;gap:0;flex-shrink:0}.home-avatar-heading .avatar-art{width:72px}.home-avatar-heading .avatar-home span{font-size:13px}.subject-home{margin:8px auto;padding:18px}.subject-home-choices{margin:16px 0;gap:14px}.subject-home-card{min-height:140px;gap:8px;padding:14px}.subject-home-card span{font-size:44px}.subject-home-card strong{font-size:26px}.subject-home-pet{margin-top:12px;gap:12px}@media(max-width:500px){.home-avatar-heading{gap:10px}.home-avatar-heading .avatar-art{width:58px}.subject-home-choices{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.subject-home-card{min-height:110px;padding:8px 2px}.subject-home-card span{font-size:32px}.subject-home-card strong{font-size:19px}.subject-home{padding:12px}.home-avatar-heading h1{font-size:21px}}.avatar-art{width:180px;max-width:100%;height:auto;display:block;margin:auto}.avatar-home{display:flex;align-items:center;justify-content:center;gap:8px;margin:18px auto 0}.avatar-home .avatar-art{width:58px;margin:0}.avatar-editor{display:grid;grid-template-columns:220px 1fr;gap:24px;align-items:start}.avatar-preview{text-align:center;position:sticky;top:12px;background:#f1f5e9;border-radius:24px;padding:20px}.avatar-group{border:0;padding:0;margin:0 0 22px;min-width:0}.avatar-group legend{font-weight:bold;margin-bottom:10px}.avatar-group>div{display:flex;flex-wrap:wrap;gap:10px}.avatar-group button{min-height:58px;min-width:100px}.avatar-group small{display:block;font-size:12px;margin-top:5px}.avatar-group [aria-pressed=true]{outline:3px solid #749759;background:#e1edce}.avatar-group button:disabled{opacity:.6}@media(max-width:600px){.avatar-editor{grid-template-columns:1fr}.avatar-preview{position:static;padding:12px}.avatar-preview .avatar-art{width:130px}}';
 document.head.appendChild(avatarStyle);
 
+
+const GARDEN_STORIES=[
+ ['⭐ まいごの おほしさま','にわの すみで、ちいさな ほしが ないていたよ。「おうちが わからないの」 にわっちと いっしょに、たすけて あげよう。'],
+ ['🍃 はっぱの ふね','おほしさまを はっぱの ふねに のせたよ。ふたりで そっと おすと、ふねは きらきらの かわを すすんだよ。'],
+ ['🌈 にじの はし','かわの むこうに にじの はし！ にわっちと てを つないで、おほしさまを そらまで おくったよ。'],
+ ['🌟 ありがとうの ひかり','「ありがとう！」 おほしさまが ぴかり。にわに ほしの はなが さいたよ。ふたりは にっこり ハイタッチ！'],
+ ['🌱 ふしぎな たね','あさの にわに、しましまの たねが おちていたよ。にわっちと やわらかい つちに うえてみたよ。'],
+ ['💧 ひとしずくの みず','たねに おみずを あげたよ。「あわてなくて いいよ」 にわっちが いうと、ちいさな めが ぴょこん！'],
+ ['🎵 おはなの うた','めが のびて、つぼみが できたよ。ふたりで うたうと、つぼみも ゆらゆら。なんの はなが さくのかな？'],
+ ['🌻 えがおの おはな','おおきな ひまわりが さいたよ！ はなの まんなかは にこにこ。まいにちの ちいさな おせわが、はなに なったんだね。'],
+ ['☁️ くもの おきゃくさま','ふわふわの くもが にわに おりてきたよ。「おさんぽに いこう」 ふたりは くもの せなかに のったよ。'],
+ ['🐦 ことりの おとしもの','そらで ことりの あかい リボンを みつけたよ。にわっちが やさしく つかまえて、ことりに かえしたよ。'],
+ ['🏰 そらの おしろ','ことりが そらの おしろへ あんないしてくれたよ。くもの テーブルで、おほしさまたちと おちゃかい！'],
+ ['🏡 だいすきな にわ','「また あそぼうね」 くもに のって にわへ かえったよ。ぼうけんの おもいでを はなそう。つぎは どんな ゆめを みようかな？']
+];
+function storyProgress(){const p=person();if(!Number.isSafeInteger(p.storyClears)||p.storyClears<0)p.storyClears=0;return p.storyClears}
+function duoArt(){const old=game().activeFriend;game().activeFriend='main';const pet=petArt().replace(/ role="button"| tabindex="0"| onclick="[^"]*"| onkeydown="[^"]*"/g,'');game().activeFriend=old;return '<div class="garden-duo" aria-label="アバターと にわっちが いっしょに おいわい">'+avatarArt()+'<span class="duo-heart">🙌</span>'+pet+'</div>'}
+function celebrateAnswer(target){const box=document.querySelector(target);if(!box)return;const duo=document.createElement('div');duo.className='answer-duo';duo.innerHTML=duoArt();box.appendChild(duo)}
+function storyCard(i){const row=GARDEN_STORIES[i];return '<article class="garden-story"><h2>'+row[0]+'</h2><p>'+row[1]+'</p><button class="sub" onclick="speak(GARDEN_STORIES['+i+'][1])">🔊 おはなしを きく</button></article>'}
+function storyReward(){
+ const n=storyProgress();person().storyClears=n+1;save();
+ const box=document.createElement('div');box.className='story-reward';
+ box.innerHTML=duoArt()+'<p class="center"><strong>いっしょに がんばったね！</strong></p>'+(n<GARDEN_STORIES.length?'<p>📖 おはなし '+(n+1)+' / '+GARDEN_STORIES.length+'</p>'+storyCard(n):'<p class="center">📖 おはなしを ぜんぶ よんだね！ おきにいりを また よもう。</p>')+'<details><summary>📚 これまでの おはなし</summary>'+GARDEN_STORIES.slice(0,Math.min(n+1,GARDEN_STORIES.length)).map((_,i)=>storyCard(i)).join('')+'</details>';
+ app.querySelector('.panel')?.appendChild(box);
+}
+const duoAnswer=answer;
+answer=function(i,el){const was=session?.done;duoAnswer(i,el);if(!was&&session?.done)celebrateAnswer('#feedback')};
+const duoEnglishAnswer=englishAnswer;
+englishAnswer=function(i,el){const was=englishSession?.done;duoEnglishAnswer(i,el);if(!was&&englishSession?.done)celebrateAnswer('#englishFeedback')};
+const storyFinish=finish;
+finish=function(){const eligible=session&&!session.rewarded;storyFinish();if(eligible)storyReward()};
+const storyEnglishFinish=englishFinish;
+englishFinish=function(){const eligible=englishSession&&!englishSession.rewarded;storyEnglishFinish();if(eligible)storyReward()};
+const storyStyle=document.createElement('style');
+storyStyle.textContent='.garden-duo{display:flex;align-items:center;justify-content:center;gap:14px;pointer-events:none}.garden-duo>.avatar-art{width:100px;margin:0}.garden-duo>.pet-scene{width:160px;min-height:180px;height:180px;margin:0;background:transparent;overflow:visible}.garden-duo .pet-body{scale:.7}.garden-duo .pet-badge{font-size:22px}.duo-heart{font-size:30px}.garden-story{background:#fff5df;border:2px solid #eddbb0;border-radius:20px;padding:18px;margin:16px 0}.garden-story p{font-size:19px;line-height:1.9}.garden-story h2{font-size:22px}.story-reward details{margin:18px 0}.story-reward summary{cursor:pointer;padding:14px;min-height:48px}.answer-duo{position:fixed;right:12px;top:10px;z-index:60;pointer-events:none;background:#fffaf0ee;border-radius:18px;animation:duo-cheer .7s ease-in-out 2}.answer-duo .garden-duo{gap:0;height:74px;padding:5px}.answer-duo .avatar-art{width:42px}.answer-duo .pet-scene{width:66px;min-height:65px;height:65px;overflow:hidden}.answer-duo .pet-body{scale:.3}.answer-duo .duo-heart{font-size:18px}.answer-duo .pet-badge{display:none}@keyframes duo-cheer{50%{transform:translateY(6px) rotate(3deg)}}@media(prefers-reduced-motion:reduce){.answer-duo{animation:none}}';
+document.head.appendChild(storyStyle);
+
 for(let p of data.profiles)initGame(p);save();
 let toolsBar=document.querySelector('.tools');let musicButton=document.createElement('button');musicButton.setAttribute('data-music','');musicButton.onclick=musicControl;toolsBar.appendChild(musicButton);let switchButton=document.createElement('button');switchButton.textContent='ひとを かえる';switchButton.onclick=showWelcome;toolsBar.appendChild(switchButton);
 document.querySelector('#profile').onchange=e=>chooseChild(Number(e.target.value));
