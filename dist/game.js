@@ -59,6 +59,7 @@ home=function(){
  <button class="subject-home-card language" onclick="start(recommendationFor('jp'),true)"><span aria-hidden="true">📖</span><strong>こくご</strong></button>
  <button class="subject-home-card english" onclick="startEnglish()"><span aria-hidden="true">🔤</span><strong>えいご</strong></button></div>
  <div class="subject-home-pet"><span class="coin">🪙 ${g.coins} コイン</span><button class="sub" onclick="petRoom()">🌱 にわっちと ともだち · Lv.${mainPetLevel()}</button></div>
+ <button class="sub avatar-home" onclick="avatarRoom()">${avatarArt()}<span>じぶんの きせかえ</span></button>
  <p class="muted">🌷 そだてた おはな：${Number(person().flowers)||0}こ</p>
  </section>`;
  refreshMusic();
@@ -200,6 +201,40 @@ function englishFinish(){
  app.innerHTML=`<section class="panel center"><div class="big">🌷</div><h1>えいごで あそべたね！</h1><p>おはなが ひとつ さいたよ。</p><div class="reward"><strong>🪙 ${reward} コイン もらった！</strong></div><div class="actions"><button class="primary" onclick="petRoom()">🌱 にわっちに あう</button><button class="sub" onclick="home()">にわに もどる</button></div></section>`;
  speak('よく がんばったね。おはなが ひとつ さいたよ');
 }
+
+const AVATAR_OPTIONS={
+ hair:[['bob','ボブ'],['short','ショート'],['long','ロング'],['twin','ツインテール']],
+ face:[['smile','にっこり'],['happy','にこにこ'],['wink','ウインク']],
+ color:[['brown','ちゃいろ'],['black','くろ'],['gold','きんいろ'],['pink','ピンク']],
+ skin:[['light','はだいろ 1'],['warm','はだいろ 2'],['deep','はだいろ 3']],
+ outfit:[['everyday','おさんぽ',1],['flower','おはな',5],['star','ほしぞら',10],['royal','プリンセス',25],['rainbow','にじいろ',50]],
+ accessory:[['none','なし',1],['ribbon','リボン',5],['flower','おはなかざり',10],['crown','おうかん',25],['sparkle','きらきら',100]]
+};
+function avatarState(p=person()){
+ if(!p.avatar||typeof p.avatar!=='object'||Array.isArray(p.avatar))p.avatar={};
+ for(const [k,opts] of Object.entries(AVATAR_OPTIONS))if(!opts.some(o=>o[0]===p.avatar[k]))p.avatar[k]=opts[0][0];
+ return p.avatar;
+}
+function avatarArt(p=person()){
+ const a=avatarState(p),hair={brown:'#634235',black:'#30303c',gold:'#dba947',pink:'#ca7496'}[a.color],skin={light:'#ffdabd',warm:'#dfaa7e',deep:'#a66f50'}[a.skin],cloth={everyday:'#8ac7bd',flower:'#f4a7bd',star:'#819cdd',royal:'#b396de',rainbow:'#efb1d4'}[a.outfit];
+ const back=a.hair==='long'?'<path d="M49 67 Q47 22 90 22 Q133 22 131 67 L140 145 Q90 168 40 145Z"/>':a.hair==='twin'?'<ellipse cx="38" cy="93" rx="20" ry="44"/><ellipse cx="142" cy="93" rx="20" ry="44"/>':'';
+ const eyes=a.face==='happy'?'<path d="M65 81q7-10 14 0 M101 81q7-10 14 0" fill="none" stroke="#443b43" stroke-width="4" stroke-linecap="round"/>':a.face==='wink'?'<circle cx="72" cy="79" r="4"/><path d="M102 77l10 4-10 4" fill="none" stroke="#443b43" stroke-width="3"/>':'<circle cx="72" cy="79" r="4"/><circle cx="108" cy="79" r="4"/>';
+ const accessory={none:'',ribbon:'🎀',flower:'🌸',crown:'👑',sparkle:'✨'}[a.accessory];
+ return '<svg class="avatar-art" viewBox="0 0 180 210" role="img" aria-label="じぶんの アバター"><ellipse cx="90" cy="196" rx="62" ry="8" fill="#d7dfce"/><g fill="'+hair+'">'+back+'</g><path d="M69 125h42q21 12 25 57H44q4-45 25-57" fill="'+cloth+'" stroke="#ffffff" stroke-width="3"/><path d="M82 119v13q8 9 16 0v-13" fill="'+skin+'"/><ellipse cx="90" cy="78" rx="39" ry="45" fill="'+skin+'"/><path d="'+(a.hair==='short'?'M50 78Q39 20 90 25Q140 20 130 74L107 51 94 62 74 50Z':a.hair==='bob'?'M49 97V66Q46 23 90 23Q134 23 131 66V97L120 91V59Q94 68 63 54V95Z':'M50 74Q42 23 90 23Q138 23 130 74L114 53Q91 66 63 50Z')+'" fill="'+hair+'"/><g fill="#443b43">'+eyes+'</g><ellipse cx="62" cy="92" rx="7" ry="4" fill="#e99497"/><ellipse cx="118" cy="92" rx="7" ry="4" fill="#e99497"/><path d="M80 96q10 12 20 0" fill="none" stroke="#a75060" stroke-width="3" stroke-linecap="round"/><text x="90" y="166" text-anchor="middle" font-size="26">'+({everyday:'♡',flower:'🌼',star:'⭐',royal:'💎',rainbow:'🌈'}[a.outfit])+'</text><text x="90" y="36" text-anchor="middle" font-size="34">'+accessory+'</text></svg>';
+}
+function setAvatar(key,id){
+ const option=AVATAR_OPTIONS[key]?.find(o=>o[0]===id);if(!option||mainPetLevel()<(option[2]||1))return;
+ avatarState()[key]=id;save();avatarRoom('きがえたよ！ じどうで ほぞんしたよ。');
+}
+function avatarRoom(message=''){
+ leaveQuizScreen();view='avatar';session=null;
+ const a=avatarState(),labels={hair:'かみがた',face:'おかお',color:'かみの いろ',skin:'はだの いろ',outfit:'おようふく',accessory:'かざり'};
+ app.innerHTML='<section class="panel"><button class="sub" onclick="home()">← にわへ</button><h1 class="center">じぶんの アバター</h1><div class="avatar-editor"><div class="avatar-preview">'+avatarArt()+'<strong>'+esc(person().name)+'</strong><p>にわっち レベル '+mainPetLevel()+'</p><p class="muted">にわっちが そだつと<br>きせかえが ふえるよ！<br>コインは つかわないよ。</p><p role="status">'+esc(message)+'</p></div><div>'+Object.entries(AVATAR_OPTIONS).map(([k,opts])=>'<fieldset class="avatar-group"><legend>'+labels[k]+'</legend><div>'+opts.map(([id,name,level=1])=>'<button class="sub" aria-pressed="'+(a[k]===id)+'" onclick="setAvatar(\''+k+'\',\''+id+'\')" '+(mainPetLevel()<level?'disabled':'')+'>'+name+(level>1?'<small>'+(mainPetLevel()<level?'🔒 にわっち Lv.'+level:'✨ つかえるよ')+'</small>':'')+'</button>').join('')+'</div></fieldset>').join('')+'</div></div></section>';
+}
+const avatarStyle=document.createElement('style');
+avatarStyle.textContent='.avatar-art{width:180px;max-width:100%;height:auto;display:block;margin:auto}.avatar-home{display:flex;align-items:center;justify-content:center;gap:8px;margin:18px auto 0}.avatar-home .avatar-art{width:58px;margin:0}.avatar-editor{display:grid;grid-template-columns:220px 1fr;gap:24px;align-items:start}.avatar-preview{text-align:center;position:sticky;top:12px;background:#f1f5e9;border-radius:24px;padding:20px}.avatar-group{border:0;padding:0;margin:0 0 22px;min-width:0}.avatar-group legend{font-weight:bold;margin-bottom:10px}.avatar-group>div{display:flex;flex-wrap:wrap;gap:10px}.avatar-group button{min-height:58px;min-width:100px}.avatar-group small{display:block;font-size:12px;margin-top:5px}.avatar-group [aria-pressed=true]{outline:3px solid #749759;background:#e1edce}.avatar-group button:disabled{opacity:.6}@media(max-width:600px){.avatar-editor{grid-template-columns:1fr}.avatar-preview{position:static;padding:12px}.avatar-preview .avatar-art{width:130px}}';
+document.head.appendChild(avatarStyle);
+
 for(let p of data.profiles)initGame(p);save();
 let toolsBar=document.querySelector('.tools');let musicButton=document.createElement('button');musicButton.setAttribute('data-music','');musicButton.onclick=musicControl;toolsBar.appendChild(musicButton);let switchButton=document.createElement('button');switchButton.textContent='ひとを かえる';switchButton.onclick=showWelcome;toolsBar.appendChild(switchButton);
 document.querySelector('#profile').onchange=e=>chooseChild(Number(e.target.value));
