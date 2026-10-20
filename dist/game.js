@@ -8,7 +8,7 @@ function game(){return initGame(person())}
 function todayKey(){let d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function dailyRecord(){let g=game(),k=todayKey();if(!g.days[k]||typeof g.days[k]!=='object')g.days[k]={};return g.days[k]}
 function petLevel(){return Math.min(5,1+Math.floor(game().growth/3))}
-function petArt(){let g=game(),e=slot=>SHOP.find(i=>i.id===g.equipped[slot]);return `<div class="pet-scene" role="img" aria-label="レベル${petLevel()}の にわっち"><div class="pet-body" style="--scale:${.8+petLevel()*.055}"><span class="pet-leaf">🌱</span><span class="pet-face">• •</span><span class="pet-mouth"></span><span class="cheek left"></span><span class="cheek right"></span>${e('hat')?`<span class="pet-hat">${e('hat').emoji}</span>`:''}${e('bow')?`<span class="pet-bow">${e('bow').emoji}</span>`:''}</div>${e('badge')?`<span class="pet-badge">${e('badge').emoji}</span>`:''}</div>`}
+function petArt(){let g=game(),growth=Math.min(12,g.growth),e=slot=>SHOP.find(i=>i.id===g.equipped[slot]);return `<div class="pet-scene" role="img" aria-label="レベル${petLevel()}の にわっち"><div class="pet-body" style="--scale:${.83+growth*.022};background:hsl(${42+growth},78%,${72-growth*.4}%);"><span class="pet-leaf" style="transform:scale(${.75+growth*.035})">${growth>=12?'🌸':growth>=9?'🌷':growth>=6?'🌿':'🌱'}</span><span class="pet-face">• •</span><span class="pet-mouth"></span><span class="cheek left"></span><span class="cheek right"></span>${e('hat')?`<span class="pet-hat">${e('hat').emoji}</span>`:''}${e('bow')?`<span class="pet-bow">${e('bow').emoji}</span>`:''}</div>${e('badge')?`<span class="pet-badge">${e('badge').emoji}</span>`:''}</div>`}
 let musicCtx=null,musicTimer=null,musicNodes=[],musicGeneration=0;
 if(typeof data.music!=='boolean')data.music=true;
 function refreshMusic(){let status=!data.music?'♫ おんがく OFF':musicCtx?.state==='running'?'♫ おんがく ON':'♫ おんがくを はじめる';document.querySelectorAll('[data-music]').forEach(b=>b.textContent=status)}
@@ -28,7 +28,51 @@ start=function(i,auto){subject=i<JP_START?'math':'jp';let level=auto?adaptiveSta
 const originalFinish=finish;
 finish=function(){if(!session||session.rewarded)return;session.rewarded=true;leaveQuizScreen();let g=game(),d=dailyRecord(),id=String(session.stageStart??session.i),reward=d[id]?3:10;d[id]=(Number.isSafeInteger(d[id])?d[id]:0)+1;g.coins+=reward;let keys=Object.keys(g.days).sort();for(let k of keys.slice(0,-90))delete g.days[k];save();originalFinish();let box=document.createElement('div');box.className='reward';box.innerHTML=`<strong>🪙 ${reward} コイン もらった！</strong><p>いま ${g.coins} コイン。にわっちに あいに いこう。</p><button class="primary" onclick="petRoom()">🌱 にわっちに あう</button>`;app.querySelector('.panel').appendChild(box)};
 function petRoom(message=''){leaveQuizScreen();view='pet';session=null;let g=game(),lv=petLevel();app.innerHTML=`<section class="panel"><div class="quiztop"><button class="sub" onclick="home()">← ステージへ</button><span class="coin">🪙 ${g.coins} コイン</span></div><div class="center"><h1 style="font-size:30px">${esc(person().name)}の にわっち</h1><strong>レベル ${lv} · ${['','ちいさな め','すくすく','げんきいっぱい','おおきく なった','にわの ともだち'][lv]}</strong>${petArt()}<p class="game-status" role="status">${esc(message)}</p><p>${lv===5?'おおきく そだったね！':`あと ${3-g.growth%3}かいの おやつで レベルアップ！`}</p><button class="primary" onclick="feedPet()" ${g.coins<10||lv===5?'disabled':''}>🍎 おやつ · 10🪙</button><p class="muted">おやすみしても、ちいさく ならないよ。</p></div><h2>きせかえやさん</h2><p class="muted">かった ものは、ずっと つかえるよ。</p><div class="wardrobe">${SHOP.map(item=>{let owned=g.owned.includes(item.id),on=g.equipped[item.slot]===item.id;return `<div class="shop-item"><div style="font-size:42px">${item.emoji}</div><strong>${item.name}</strong><button onclick="shopAction('${item.id}')" ${!owned&&g.coins<item.cost?'disabled':''}>${on?'はずす':owned?'つける':item.cost+'🪙で かう'}</button></div>`}).join('')}</div><p class="muted">自動ステージは教科ごと、自由練習はコースごとに、その日最初の5問クリアで10コイン、2回目から3コイン。正答数にかかわらず、最後まで取り組むともらえます。課金はありません。</p></section>`}
-function feedPet(){let g=game();if(g.coins<10||petLevel()===5)return;let before=petLevel();g.coins-=10;g.growth++;save();petRoom(petLevel()>before?'✨ レベルアップ！ おおきく なったね！':'🍎 おいしい！ ありがとう！')}
+let petSoundContext=null;
+function playFeedSound(levelUp){
+ if(!data.sound)return;
+ try{
+  const C=window.AudioContext||window.webkitAudioContext;if(!C)return;
+  if(!petSoundContext||petSoundContext.state==='closed')petSoundContext=new C();
+  const ctx=petSoundContext;
+  ctx.resume().then(()=>{
+   if(!data.sound||document.hidden)return;
+   const notes=levelUp?[523,659,784,1047]:[659,784,988];
+   notes.forEach((hz,i)=>{
+    const o=ctx.createOscillator(),v=ctx.createGain(),t=ctx.currentTime+i*.13;
+    o.type='sine';o.frequency.setValueAtTime(hz,t);
+    v.gain.setValueAtTime(0,t);v.gain.linearRampToValueAtTime(.07,t+.015);
+    v.gain.exponentialRampToValueAtTime(.0001,t+.22);
+    o.connect(v);v.connect(ctx.destination);o.onended=()=>{o.disconnect();v.disconnect()};
+    o.start(t);o.stop(t+.24);
+   });
+  }).catch(()=>{});
+ }catch{}
+}
+function feedPet(){
+ let g=game();if(g.coins<10||petLevel()===5)return;
+ let before=petLevel();g.coins-=10;g.growth++;save();
+ let levelUp=petLevel()>before;
+ petRoom(levelUp?'✨ レベルアップ！ はっぱも そだったよ！':'🍎 もぐもぐ！ すこし おおきく なったよ！');
+ playFeedSound(levelUp);
+ const scene=app.querySelector('.pet-scene');
+ if(scene){
+  scene.classList.add('pet-fed');
+  const face=scene.querySelector('.pet-face');if(face)face.textContent='⌒ ⌒';
+  const hearts=document.createElement('span');hearts.className='feed-hearts';hearts.textContent=levelUp?'✨ 🌸 ✨':'♥ 🍎 ♥';hearts.setAttribute('aria-hidden','true');scene.appendChild(hearts);
+  setTimeout(()=>{scene.classList.remove('pet-fed');hearts.remove();if(face)face.textContent='• •'},1800);
+ }
+}
+const feedingStyle=document.createElement('style');
+feedingStyle.textContent=`
+.pet-body,.pet-leaf{transition:background .4s,transform .4s}
+.pet-fed .pet-body{animation:petMunch .35s ease-in-out 4}
+.feed-hearts{position:absolute;top:22px;left:0;right:0;font-size:30px;color:#d97887;pointer-events:none;animation:feedFloat 1.8s ease-out forwards}
+@keyframes petMunch{0%,100%{transform:scale(var(--scale))}50%{transform:translateY(-8px) scale(calc(var(--scale)*1.06),calc(var(--scale)*.96))}}
+@keyframes feedFloat{0%{opacity:0;transform:translateY(30px)}20%,75%{opacity:1}100%{opacity:0;transform:translateY(-15px)}}
+@media(prefers-reduced-motion:reduce){.pet-fed .pet-body,.feed-hearts{animation:none}.pet-body,.pet-leaf{transition:none}}
+`;
+document.head.appendChild(feedingStyle);
 function shopAction(id){let item=SHOP.find(x=>x.id===id);if(!item)return;let g=game();if(g.owned.includes(id)){if(g.equipped[item.slot]===id)delete g.equipped[item.slot];else g.equipped[item.slot]=id;save();petRoom('きせかえ したよ！');return}if(g.coins<item.cost)return;g.coins-=item.cost;g.owned.push(id);g.equipped[item.slot]=id;save();petRoom(item.name+'を てにいれた！')}
 for(let p of data.profiles)initGame(p);save();
 let toolsBar=document.querySelector('.tools');let musicButton=document.createElement('button');musicButton.setAttribute('data-music','');musicButton.onclick=musicControl;toolsBar.appendChild(musicButton);let switchButton=document.createElement('button');switchButton.textContent='ひとを かえる';switchButton.onclick=showWelcome;toolsBar.appendChild(switchButton);
