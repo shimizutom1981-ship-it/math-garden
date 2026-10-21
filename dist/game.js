@@ -240,7 +240,7 @@ let englishSession=null;
 function englishProgress(){
  const p=person();if(!p.english||typeof p.english!=='object')p.english={};
  const e=p.english;
- if(!Number.isInteger(e.level)||e.level<0||e.level>11)e.level=0;
+ if(!Number.isInteger(e.level)||e.level<0||e.level>31)e.level=0;
  for(const k of ['strong','total','correct'])if(!Number.isSafeInteger(e[k])||e[k]<0)e[k]=0;
  return e;
 }
@@ -259,17 +259,19 @@ function startEnglish(){
 function englishNext(){
  const e=englishSession;if(!e||e.rewarded)return;
  if(e.n>=5){englishFinish();return}
- e.help=false;e.done=false;
- const pool=e.bank.filter(w=>!e.seen.includes(w[0]));
+ e.help=false;e.done=false;e.selected=null;
+ const group=Math.floor(e.level/4),newQuota=[1,2,3,5][e.level%4];
+ const bank=group>0&&e.n>=newQuota?EN_WORDS[group-1]:EN_WORDS[group];
+ const pool=bank.filter(w=>!e.seen.includes(w[0]));
  e.word=pool[rand(0,pool.length-1)];e.seen.push(e.word[0]);
- const others=e.bank.filter(w=>w!==e.word).map(w=>({w,r:Math.random()})).sort((a,b)=>a.r-b.r).slice(0,e.count-1).map(x=>x.w);
+ const others=bank.filter(w=>w!==e.word).map(w=>({w,r:Math.random()})).sort((a,b)=>a.r-b.r).slice(0,e.count-1).map(x=>x.w);
  e.choices=[e.word,...others].map(w=>({w,r:Math.random()})).sort((a,b)=>a.r-b.r).map(x=>x.w);
- app.innerHTML=`<section class="quiz"><div class="quiztop"><button class="sub" onclick="home()">⌂ にわへ</button><strong>🔤 えいご</strong><span>${e.n+1} / 5</span></div><div class="board"><h1 class="question">えいごを きいて、えを えらぼう！</h1><button class="primary" onclick="englishSay(englishSession.word[0])">🔊 もういちど きく</button><div class="choices">${e.choices.map((w,i)=>`<button class="choice" style="font-size:54px;min-height:85px" aria-label="${esc(w[2])}" onclick="englishAnswer(${i},this)">${w[1]}</button>`).join('')}</div><div id="englishFeedback" class="feedback" role="status"></div><div class="actions"><button class="sub" id="englishHint" onclick="englishHint()">💡 ヒント</button><button class="primary hidden" id="englishNext" onclick="englishAdvance()">つぎへ →</button></div></div></section>`;
- englishSay(e.word[0]);
+ app.innerHTML=`<section class="quiz"><div class="quiztop"><button class="sub" onclick="home()">⌂ にわへ</button><strong>🔤 えいご</strong><span>${e.n+1} / 5</span></div><div class="board"><h1 class="question">${e.word[3]?'あう へんじを えらぼう！':'えいごを きいて、えを えらぼう！'}</h1><button class="primary" onclick="englishSay(englishSession.word[3]||englishSession.word[0])">🔊 もういちど きく</button><div class="choices">${e.choices.map((w,i)=>`<button class="choice" style="font-size:54px;min-height:85px" aria-label="${esc(w[2])}" onclick="${e.word[3]?`englishOptionPreview(${i})`:`englishAnswer(${i},this)`}">${w[1]}${e.word[3]?`<small style="display:block;font-size:14px">🔊 きく</small>`:''}</button>`).join('')}</div>${e.word[3]?'<button class="primary" id="confirmEnglish" disabled onclick="englishConfirm()">へんじを きいて えらぼう</button>':''}<div id="englishFeedback" class="feedback" role="status"></div><div class="actions"><button class="sub" id="englishHint" onclick="englishHint()">💡 ヒント</button><button class="primary hidden" id="englishNext" onclick="englishAdvance()">つぎへ →</button></div></div></section>`;
+ englishSay(e.word[3]||e.word[0]);
 }
 function englishHint(){
  const e=englishSession;if(view!=='quiz'||!e||e.done)return;e.help=true;
- document.querySelector('#englishFeedback').textContent='「'+e.word[2]+'」を さがしてね。';speak(e.word[2]+'を さがしてね');
+ document.querySelector('#englishFeedback').textContent='「'+e.word[2]+'」を さがしてね。';speak(e.word[2]+'という いみだよ');
 }
 function englishAnswer(i,button){
  const e=englishSession;if(view!=='quiz'||!e||e.done||!e.choices[i])return;
@@ -286,7 +288,7 @@ function englishFinish(){
  const e=englishSession;if(!e||e.rewarded)return;e.rewarded=true;
  const p=englishProgress();p.strong=e.clean>=4?p.strong+1:0;
  // Repeat each small step for five confident sets; ease after difficulty.
- if(p.strong>=5&&p.level<11){p.level++;p.strong=0}
+ if(p.strong>=5&&p.level<31){p.level++;p.strong=0}
  else if(e.clean<=2&&p.level>0){p.level--;p.strong=0}
  const g=game(),d=dailyRecord(),reward=d['auto-en']?3:10;
  d['auto-en']=(Number.isSafeInteger(d['auto-en'])?d['auto-en']:0)+1;g.coins+=reward;person().flowers++;save();
@@ -456,8 +458,8 @@ function learningStageRows(){
  const p=person();
  return ['math','jp','en'].map(kind=>{
   if(kind==='en'){
-   const e=p.english||{},level=Number.isInteger(e.level)&&e.level>=0&&e.level<=11?e.level:0;
-   return {name:'英語',grade:'小3〜4の外国語活動の導入に関連',stage:'ステップ '+(level+1)+' / 12',topic:['動物の単語','食べ物の単語','身の回りの単語'][Math.floor(level/4)]+'を聞いて絵を選ぶ',note:e.total?'単語の聞き取りのみ。会話・読み書きの学年判定ではありません。':'まだ未学習です。表示は開始位置です。'};
+   const e=p.english||{},level=Number.isInteger(e.level)&&e.level>=0&&e.level<=31?e.level:0;
+   return {name:'英語',grade:'小3〜4の外国語活動の導入に関連',stage:'ステップ '+(level+1)+' / 32',topic:['動物の単語','食べ物の単語','身の回りの単語','色と物','数と動物','動物の動作','位置を表す文','短い会話の返事'][Math.floor(level/4)]+'を聞いて絵を選ぶ',note:e.total?'音声の意味や返事を選ぶ練習です。発話・読み書きの習得判定ではありません。':'まだ未学習です。表示は開始位置です。'};
   }
   const lo=kind==='math'?0:JP_START,hi=kind==='math'?JP_START:TOPICS.length,a=p.adaptive?.[kind]||{};
   let level=Number.isInteger(a.level)&&a.level>=lo&&a.level<hi?a.level:lo;
@@ -471,7 +473,7 @@ function learningStageRows(){
  });
 }
 function learningStageReport(){
- return '<section class="panel"><h2>教科ごとの段階・学年の目安</h2><p>出題内容に基づく参考表示です。学年全体の習得度や学力を判定するものではありません。教科によって扱う範囲が異なります。</p>'+learningStageRows().map(r=>'<article style="border:1px solid #dce2d1;border-radius:16px;padding:16px;margin:12px 0"><h3>'+r.name+' · '+r.grade+'</h3><strong>'+r.stage+'</strong><p>'+esc(r.topic)+'</p><p class="muted">'+r.note+'</p></article>').join('')+'<p class="muted">算数は数・計算・分数の一部、国語は文字・語句・短文、英語は単語の聞き取りを扱います。学年の目安が同じでも、内容の段階は進みます。</p></section>';
+ return '<section class="panel"><h2>教科ごとの段階・学年の目安</h2><p>出題内容に基づく参考表示です。学年全体の習得度や学力を判定するものではありません。教科によって扱う範囲が異なります。</p>'+learningStageRows().map(r=>'<article style="border:1px solid #dce2d1;border-radius:16px;padding:16px;margin:12px 0"><h3>'+r.name+' · '+r.grade+'</h3><strong>'+r.stage+'</strong><p>'+esc(r.topic)+'</p><p class="muted">'+r.note+'</p></article>').join('')+'<p class="muted">算数は数・計算・分数の一部、国語は文字・語句・短文、英語は単語・短文の聞き取りと返事選びを扱います。学年の目安が同じでも、内容の段階は進みます。</p></section>';
 }
 
 const timedParents=parents;
@@ -578,6 +580,81 @@ const unlockRailRoom=railRoom;
 railRoom=function(message=''){unlockRailRoom(message);decorateUnlocks();const note=document.createElement('p');note.className='muted';note.textContent='にわっち レベル '+mainPetLevel()+' · レベル100で ぜんぶの しゅるいが えらべるよ。かうものには コインも いるよ。';app.querySelector('.rail-room')?.appendChild(note)};
 const unlockPetRoom=petRoom;
 petRoom=function(message=''){unlockPetRoom(message);decorateUnlocks()};
+
+
+function positionPicture(place,animal='🐱'){
+ const y={above:35,under:110,beside:92}[place],x=place==='beside'?135:75;
+ return '<svg viewBox="0 0 180 150" width="130" height="108" role="img" aria-label="'+animal+' つくえの '+({above:'うえ',under:'した',beside:'よこ'}[place])+'"><path d="M40 70H110V80H40ZM45 80V135M105 80V135" fill="none" stroke="#85664d" stroke-width="7"/><text x="'+x+'" y="'+y+'" text-anchor="middle" font-size="30">'+animal+'</text></svg>';
+}
+const jpNewBanks=[[],[],[],[],[]];
+for(const animal of ['🐱','🐶','🐰'])for(const [position,word] of [['above','うえ'],['under','した'],['beside','よこ']]){
+ const others=['above','under','beside'].filter(x=>x!==position);
+ jpNewBanks[0].push(['「'+({'🐱':'ねこ','🐶':'いぬ','🐰':'うさぎ'}[animal])+'が つくえの '+word+'に います」に あう えは？',positionPicture(position,animal),others.map(p=>positionPicture(p,animal)).join('|'),'つくえと どうぶつの ばしょを くらべよう。']);
+}
+jpNewBanks[1]=[
+ ['ぼうしを □。','かぶる','はく|はめる'],['くつを □。','はく','かぶる|さす'],['かさを □。','さす','はく|のむ'],['みずを □。','のむ','きる|かぶる'],['ふくを □。','きる','はく|さす'],['てぶくろを □。','はめる','かぶる|のむ']
+].map(r=>[...r,'なにを どうするのか、つなげて よんでみよう。']);
+for(const [a,b] of [['ねこ','いぬ'],['うさぎ','くま'],['りす','きつね']]){
+ jpNewBanks[2].push([a+'が '+b+'を おいかけました。おいかけたのは？',a,b+'|とり','「が」の まえに いるのは だれかな。']);
+ jpNewBanks[2].push([b+'が '+a+'を よびました。よばれたのは？',a,b+'|とり','よんだ ひとと、よばれた ひとを わけよう。']);
+}
+jpNewBanks[3]=[
+ ['なくした くまの ぬいぐるみが みつかり、にっこり わらいました。どんな きもち？','うれしい','くやしい|かなしい'],
+ ['つくった とうが くずれて、「もうすこし だったのに」と いいました。どんな きもち？','くやしい','うれしい|ほっとした'],
+ ['くらい へやで おおきな おとが して、こわくて ふるえました。どんな きもち？','こわい','たのしい|うれしい'],
+ ['ともだちが ひっこして、「あえなくて さびしいな」と いいました。どんな きもち？','さびしい','たのしい|ほこらしい'],
+ ['まいごに なったけれど、おかあさんに あえて「よかった」と あんしんしました。どんな きもち？','ほっとした','くやしい|おこっている'],
+ ['あしたの えんそくが まちどおしくて、わくわくしています。どんな きもち？','たのしみ','かなしい|くやしい']
+].map(r=>[...r,'ことばや ようすを てがかりに しよう。']);
+jpNewBanks[4]=[
+ ['たねを まきました。まいにち みずを あげました。はなが さきました。あう だいめいは？','はなを そだてたよ','でんしゃに のったよ|おやつを つくったよ'],
+ ['こむぎこを まぜました。まるくして やきました。クッキーが できました。あう だいめいは？','クッキーづくり','はなを そだてたよ|うみで あそんだよ'],
+ ['えきで でんしゃを まちました。まどから やまが みえました。おばあちゃんの まちに つきました。あう だいめいは？','でんしゃの たび','おへやの そうじ|おはなの おせわ'],
+ ['すなを あつめました。たかい やまに しました。トンネルも ほりました。あう だいめいは？','すなあそび','クッキーづくり|ゆきの あさ'],
+ ['ほんが ゆかに ありました。ほんだなに もどしました。へやが きれいに なりました。あう だいめいは？','おかたづけ','でんしゃの たび|はなを そだてたよ'],
+ ['あさ、ゆきが つもりました。そとで ゆきを まるめました。ゆきだるまが できました。あう だいめいは？','ゆきだるまづくり','うみで あそんだよ|おへやの そうじ']
+].map(r=>[...r,'おはなし ぜんたいで なにを したか、かんがえよう。']);
+const LANG_JP_START=TOPICS.length;
+['ぶんと え','ことばの つかいかた','だれが なにを','きもちを よもう','だいめいを えらぼう'].forEach((name,k)=>{TOPICS.push(['📖',name,'意味を考えて選ぶ','jp',JP_BANK.length]);JP_BANK.push(jpNewBanks[k])});
+const richerMakeQuestion=makeQuestion;
+makeQuestion=function(i){
+ const result=richerMakeQuestion(i);
+ if(i>=LANG_JP_START&&result.type==='jp'){
+  const count=session?.auto&&(adaptiveState().newCount||5)<3?2:3;
+  result.choices=[result.answer,...result.choices.filter(v=>v!==result.answer).slice(0,count-1)].sort(()=>Math.random()-.5);
+ }
+ return result;
+};
+const englishExtension=[[],[],[],[],[]];
+const colorBall=(color)=>'<svg viewBox="0 0 100 85" width="95" height="80"><circle cx="50" cy="42" r="30" fill="'+color+'" stroke="#52616a" stroke-width="3"/></svg>';
+for(const [name,color,jp] of [['red','#df5757','あか'],['blue','#589ad6','あお'],['green','#72af76','みどり'],['yellow','#e9c849','きいろ'],['pink','#e59bc2','ピンク'],['purple','#9e80c2','むらさき']]){
+ englishExtension[0].push(['a '+name+' ball',colorBall(color),jp+'いろの ボール']);
+}
+for(const [name,emoji,jp] of [['cats','🐱','ねこ'],['dogs','🐶','いぬ'],['rabbits','🐰','うさぎ']])for(const n of [2,3]){
+ englishExtension[1].push([['zero','one','two','three'][n]+' '+name,emoji.repeat(n),jp+n+'ひき']);
+}
+for(const [animal,emoji,jp] of [['cat','🐱','ねこ'],['dog','🐶','いぬ']])for(const [act,icon,ja] of [['running','💨','はしっている'],['sleeping','💤','ねている'],['eating','🍽️','たべている']]){
+ englishExtension[2].push(['The '+animal+' is '+act+'.',emoji+icon,jp+'が '+ja]);
+}
+for(const [animal,emoji,jp] of [['cat','🐱','ねこ'],['dog','🐶','いぬ']])for(const [pos,en,ja] of [['above','on','うえ'],['under','under','した'],['beside','next to','よこ']]){
+ englishExtension[3].push(['The '+animal+' is '+en+' the table.',positionPicture(pos,emoji),jp+'が つくえの '+ja+'に いる']);
+}
+englishExtension[4]=[
+ ["I'm happy.",'😊','げんきだよ',"How are you?"],
+ ["I'm five.",'🖐️','5さいだよ',"How old are you?"],
+ ["It's red.",'🔴','あかだよ',"What color is it?"],
+ ["I like cats.",'🐱','ねこが すきだよ',"What animal do you like?"],
+ ["Thank you.",'🎁','ありがとう',"Here is a present for you."],
+ ["Good morning.",'🌅','おはよう',"Good morning."]
+];
+EN_WORDS.push(...englishExtension);
+function englishOptionPreview(i){
+ const e=englishSession;if(!e||e.done||!e.choices[i])return;
+ e.selected=i;englishSay(e.choices[i][0]);
+ const button=document.querySelector('#confirmEnglish');if(button){button.disabled=false;button.textContent='これにする';}
+ document.querySelectorAll('.choice').forEach((b,j)=>b.setAttribute('aria-pressed',String(i===j)));
+}
+function englishConfirm(){const e=englishSession;if(e?.selected==null||e.done)return;englishAnswer(e.selected,document.querySelectorAll('.choice')[e.selected])}
 
 for(let p of data.profiles)initGame(p);save();
 let toolsBar=document.querySelector('.tools');let musicButton=document.createElement('button');musicButton.setAttribute('data-music','');musicButton.onclick=musicControl;toolsBar.appendChild(musicButton);let switchButton=document.createElement('button');switchButton.textContent='ひとを かえる';switchButton.onclick=showWelcome;toolsBar.appendChild(switchButton);
