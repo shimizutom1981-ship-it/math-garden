@@ -468,12 +468,12 @@ function learningStageRows(){
   const learned=Object.entries(p.stats).some(([i,v])=>Number(i)>=lo&&Number(i)<hi&&v.total>0);
   if(prep!==null)return {name:kind==='math'?'算数':'国語',grade:'就学前の準備段階',stage:'準備 '+(prep+1)+' / 3',topic:kind==='math'?['1〜3を数える','1〜5を数える','少ない数を比べる'][prep]:['同じ絵を選ぶ（2択）','同じ絵を選ぶ（3択）','同じ絵を選ぶ（4択）'][prep],note:learned?'読み・計算に入る前の準備です。':'まだ未学習です。表示は開始位置です。'};
   const index=level-lo;
-  const grade=kind==='math'?(index<3?'就学前〜小1の導入':index<9?'小1相当の内容':index<11?'小2相当の内容':index===11?'小3相当の内容':'小2〜3の分数の導入'):(index<2?'就学前〜小1の導入':index<6?'小1相当の基礎内容':'小1〜2相当の短文読解');
+  const grade=kind==='math'?(index<3?'就学前〜小1の導入':index<9?'小1相当の内容':index<11?'小2相当の内容':index===11?'小3相当の内容':index===12?'小2〜3の分数の導入':'小1〜3の数・計算を使う暗算練習'):(index<2?'就学前〜小1の導入':index<6?'小1相当の基礎内容':'小1〜2相当の短文読解');
   return {name:kind==='math'?'算数':'国語',grade,stage:'段階 '+(index+1)+' / '+(hi-lo),topic:TOPICS[level][1]+'：'+TOPICS[level][2],note:learned?(a.newCount<5?'新しい範囲を少しずつ混ぜて練習中です。':'現在の自動出題の位置です。'):'まだ未学習です。表示は開始位置です。'};
  });
 }
 function learningStageReport(){
- return '<section class="panel"><h2>教科ごとの段階・学年の目安</h2><p>出題内容に基づく参考表示です。学年全体の習得度や学力を判定するものではありません。教科によって扱う範囲が異なります。</p>'+learningStageRows().map(r=>'<article style="border:1px solid #dce2d1;border-radius:16px;padding:16px;margin:12px 0"><h3>'+r.name+' · '+r.grade+'</h3><strong>'+r.stage+'</strong><p>'+esc(r.topic)+'</p><p class="muted">'+r.note+'</p></article>').join('')+'<p class="muted">算数は数・計算・分数の一部、国語は文字・語句・短文、英語は単語・短文の聞き取りと返事選びを扱います。学年の目安が同じでも、内容の段階は進みます。</p></section>';
+ return '<section class="panel"><h2>教科ごとの段階・学年の目安</h2><p>出題内容に基づく参考表示です。学年全体の習得度や学力を判定するものではありません。教科によって扱う範囲が異なります。</p>'+learningStageRows().map(r=>'<article style="border:1px solid #dce2d1;border-radius:16px;padding:16px;margin:12px 0"><h3>'+r.name+' · '+r.grade+'</h3><strong>'+r.stage+'</strong><p>'+esc(r.topic)+'</p><p class="muted">'+r.note+'</p></article>').join('')+'<p class="muted">算数は数・計算・分数と、まとまりを使う暗算、国語は文字・語句・短文、英語は単語・短文の聞き取りと返事選びを扱います。学年の目安が同じでも、内容の段階は進みます。</p></section>';
 }
 
 const timedParents=parents;
@@ -483,8 +483,8 @@ document.querySelector('#parent').onclick=parents;
 
 function homeStageLabel(i){
  const r=learningStageRows()[i];
- const grade=r.grade.replace('就学前の準備段階','にゅうがく まえ').replace('就学前〜小1の導入','にゅうがく まえ〜小1').replace('相当の基礎内容','くらい').replace('相当の内容','くらい').replace('相当の短文読解','の おはなし').replace('の分数の導入','の ぶんすう').replace('小3〜4の外国語活動の導入に関連','小3〜4の えいごの はじめ');
- return '<small class="home-stage"><b>'+esc(r.stage.replace('段階','ステップ').replace('準備','じゅんび'))+'</b><small>めやす：'+esc(grade)+'</small></small>';
+ const name=i===0?r.topic.split('：')[0]:i===1?r.topic.split('：')[0]:r.topic.replace('を聞いて絵を選ぶ','');
+ return '<small class="home-stage"><b>'+esc(r.stage.replace('段階','ステップ').replace('準備','じゅんび'))+'</b><small>'+esc(name)+'</small></small>';
 }
 const homeStageStyle=document.createElement('style');
 homeStageStyle.textContent='.home-stage{display:block;font-size:15px;line-height:1.4;font-weight:normal}.home-stage b{font-size:16px}.home-stage>small{display:block;font-size:12px;margin-top:3px}.subject-home-card{gap:6px}@media(max-width:500px){.home-stage b{font-size:12px}.home-stage>small{font-size:10px}.home-stage{overflow-wrap:anywhere}}';
