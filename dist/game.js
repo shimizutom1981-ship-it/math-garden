@@ -65,9 +65,9 @@ home=function(){
  <div class="home-avatar-heading"><button class="sub avatar-home" onclick="avatarRoom()" aria-label="じぶんの アバターを きせかえる">${avatarArt()}<span>きせかえ</span></button><div><p class="eyebrow">${esc(person().name)} の にわ</p><h1>きょうは なにを する？</h1></div></div>
  <p>すきな ほうを おしてね。5もんで おはなが さくよ。</p>
  <div class="subject-home-choices">
- <button class="subject-home-card math" onclick="start(recommendationFor('math'),true)"><span aria-hidden="true">🔢</span><strong>さんすう</strong></button>
- <button class="subject-home-card language" onclick="start(recommendationFor('jp'),true)"><span aria-hidden="true">📖</span><strong>こくご</strong></button>
- <button class="subject-home-card english" onclick="startEnglish()"><span aria-hidden="true">🔤</span><strong>えいご</strong></button></div>
+ <button class="subject-home-card math" onclick="start(recommendationFor('math'),true)"><span aria-hidden="true">🔢</span><strong>さんすう</strong>${homeStageLabel(0)}</button>
+ <button class="subject-home-card language" onclick="start(recommendationFor('jp'),true)"><span aria-hidden="true">📖</span><strong>こくご</strong>${homeStageLabel(1)}</button>
+ <button class="subject-home-card english" onclick="startEnglish()"><span aria-hidden="true">🔤</span><strong>えいご</strong>${homeStageLabel(2)}</button></div>
  <div class="subject-home-pet"><span class="coin">🪙 ${g.coins} コイン</span><button class="sub" onclick="petRoom()">🌱 にわっちと ともだち · Lv.${mainPetLevel()}</button></div>
  
  <p class="muted">🌷 そだてた おはな：${Number(person().flowers)||0}こ</p>
@@ -476,6 +476,16 @@ function learningStageReport(){
 const timedParents=parents;
 parents=function(){timingStop();cancelAutoNext();leaveQuizScreen();timedParents();app.insertAdjacentHTML('beforeend',learningStageReport()+timingReport())};
 document.querySelector('#parent').onclick=parents;
+
+
+function homeStageLabel(i){
+ const r=learningStageRows()[i];
+ const grade=r.grade.replace('就学前の準備段階','にゅうがく まえ').replace('就学前〜小1の導入','にゅうがく まえ〜小1').replace('相当の基礎内容','くらい').replace('相当の内容','くらい').replace('相当の短文読解','の おはなし').replace('の分数の導入','の ぶんすう').replace('小3〜4の外国語活動の導入に関連','小3〜4の えいごの はじめ');
+ return '<small class="home-stage"><b>'+esc(r.stage.replace('段階','ステップ').replace('準備','じゅんび'))+'</b><small>めやす：'+esc(grade)+'</small></small>';
+}
+const homeStageStyle=document.createElement('style');
+homeStageStyle.textContent='.home-stage{display:block;font-size:15px;line-height:1.4;font-weight:normal}.home-stage b{font-size:16px}.home-stage>small{display:block;font-size:12px;margin-top:3px}.subject-home-card{gap:6px}@media(max-width:500px){.home-stage b{font-size:12px}.home-stage>small{font-size:10px}.home-stage{overflow-wrap:anywhere}}';
+document.head.appendChild(homeStageStyle);
 
 for(let p of data.profiles)initGame(p);save();
 let toolsBar=document.querySelector('.tools');let musicButton=document.createElement('button');musicButton.setAttribute('data-music','');musicButton.onclick=musicControl;toolsBar.appendChild(musicButton);let switchButton=document.createElement('button');switchButton.textContent='ひとを かえる';switchButton.onclick=showWelcome;toolsBar.appendChild(switchButton);
