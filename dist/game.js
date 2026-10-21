@@ -131,7 +131,7 @@ function petRoom(message=''){
  ${lv>=100?'<div class="rainbow-title">🌈 にじいろの '+selectedFriend().name+' 🌈</div>':''}
  <p class="game-status" role="status">${esc(message)||'タッチして なでなでしてね ♥'}</p></div>
  <div class="pet-room-controls" tabindex="0" aria-label="ごはんと きせかえ"><h2>いっしょに あそぶ こ</h2>${friendPicker()}
- <button class="sub" onclick="playTogether()">💕 みんなで あそぶ</button><h2>ごはんを あげる</h2><div class="pet-foods">${PET_FOODS.map(f=>`<button class="sub" onclick="feedPet('${f.id}')" ${g.coins<10?'disabled':''}><span>${f.emoji}</span>${f.name}<small>10🪙 · せいちょう ＋1</small></button>`).join('')}</div>
+ <button class="sub" onclick="playTogether()">💕 みんなで あそぶ</button><button class="sub" onclick="railRoom()">🚂 でんしゃで あそぶ</button><h2>ごはんを あげる</h2><div class="pet-foods">${PET_FOODS.map(f=>`<button class="sub" onclick="feedPet('${f.id}')" ${g.coins<10?'disabled':''}><span>${f.emoji}</span>${f.name}<small>10🪙 · せいちょう ＋1</small></button>`).join('')}</div>
  <h2>きせかえやさん</h2><p class="muted">かった ものは、ずっと つかえるよ。</p><div class="wardrobe">${SHOP.map(item=>{let owned=g.owned.includes(item.id),on=friendState().equipped[item.slot]===item.id;return `<div class="shop-item"><div style="font-size:36px">${item.emoji}</div><strong>${item.name}</strong><button onclick="shopAction('${item.id}')" ${!owned&&g.coins<item.cost?'disabled':''}>${on?'はずす':owned?'つける':item.cost+'🪙で かう'}</button></div>`}).join('')}</div>
  ${roomShop()}<p class="muted">おやすみしても、ちいさく ならないよ。<br>5もん クリアして コインを あつめよう！</p></div></div></section>`;
  const controls=app.querySelector('.pet-room-controls');if(controls)controls.scrollTop=controlsScroll;
@@ -300,8 +300,8 @@ const AVATAR_OPTIONS={
  face:[['smile','にっこり'],['happy','にこにこ'],['wink','ウインク'],['surprise','びっくり'],['sleepy','のんびり'],['spark','きらきら']],
  color:[['brown','ちゃいろ'],['black','くろ'],['gold','きんいろ'],['pink','ピンク'],['blue','あお'],['purple','むらさき'],['silver','ぎんいろ'],['red','あかちゃ']],
  skin:[['light','はだいろ 1'],['warm','はだいろ 2'],['deep','はだいろ 3']],
- outfit:[['everyday','おさんぽ',1],['flower','おはな',5],['star','ほしぞら',10],['royal','プリンセス',25],['rainbow','にじいろ',50],['sport','スポーツ',1],['marine','マリン',5],['berry','いちご',10],['forest','もりの たんけん',15],['magic','まほうつかい',30],['space','うちゅう',75],['angel','てんし',100]],
- accessory:[['none','なし',1],['ribbon','リボン',5],['flower','おはなかざり',10],['crown','おうかん',25],['sparkle','きらきら',100],['bowblue','あおい リボン',1],['cat','ねこみみ',5],['bunny','うさみみ',10],['hat','むぎわら',15],['magic','まほうの ぼうし',30],['moon','おつきさま',50],['gem','ほうせき',75]]
+ outfit:[['driver','うんてんし',1],['conductor','しゃしょう',1],['everyday','おさんぽ',1],['flower','おはな',5],['star','ほしぞら',10],['royal','プリンセス',25],['rainbow','にじいろ',50],['sport','スポーツ',1],['marine','マリン',5],['berry','いちご',10],['forest','もりの たんけん',15],['magic','まほうつかい',30],['space','うちゅう',75],['angel','てんし',100]],
+ accessory:[['railcap','せいぼう',1],['railbag','えきいんバッグ',1],['none','なし',1],['ribbon','リボン',5],['flower','おはなかざり',10],['crown','おうかん',25],['sparkle','きらきら',100],['bowblue','あおい リボン',1],['cat','ねこみみ',5],['bunny','うさみみ',10],['hat','むぎわら',15],['magic','まほうの ぼうし',30],['moon','おつきさま',50],['gem','ほうせき',75]]
 };
 function avatarState(p=person()){
  if(!p.avatar||typeof p.avatar!=='object'||Array.isArray(p.avatar))p.avatar={};
@@ -309,12 +309,12 @@ function avatarState(p=person()){
  return p.avatar;
 }
 function avatarArt(p=person()){
- const a=avatarState(p),hair={brown:'#634235',black:'#30303c',gold:'#dba947',pink:'#ca7496',blue:'#527ba7',purple:'#9573b2',silver:'#b4b9c8',red:'#aa5744'}[a.color],skin={light:'#ffdabd',warm:'#dfaa7e',deep:'#a66f50'}[a.skin],cloth={everyday:'#8ac7bd',flower:'#f4a7bd',star:'#819cdd',royal:'#b396de',rainbow:'#efb1d4',sport:'#ec9960',marine:'#6bafd0',berry:'#dd718f',forest:'#78a777',magic:'#7c65b4',space:'#54668e',angel:'#e0d7f0'}[a.outfit];
+ const a=avatarState(p),hair={brown:'#634235',black:'#30303c',gold:'#dba947',pink:'#ca7496',blue:'#527ba7',purple:'#9573b2',silver:'#b4b9c8',red:'#aa5744'}[a.color],skin={light:'#ffdabd',warm:'#dfaa7e',deep:'#a66f50'}[a.skin],cloth={driver:'#284b77',conductor:'#457f80',everyday:'#8ac7bd',flower:'#f4a7bd',star:'#819cdd',royal:'#b396de',rainbow:'#efb1d4',sport:'#ec9960',marine:'#6bafd0',berry:'#dd718f',forest:'#78a777',magic:'#7c65b4',space:'#54668e',angel:'#e0d7f0'}[a.outfit];
  const back=a.hair==='pony'?'<ellipse cx="137" cy="95" rx="22" ry="48"/>':a.hair==='bun'?'<circle cx="59" cy="27" r="19"/><circle cx="121" cy="27" r="19"/>':a.hair==='wave'?'<path d="M48 59Q39 22 90 22Q141 22 132 59Q151 80 137 99Q155 124 132 147Q110 157 90 146Q65 159 43 143Q28 124 43 103Q26 82 48 59Z"/>':a.hair==='long'?'<path d="M49 67 Q47 22 90 22 Q133 22 131 67 L140 145 Q90 168 40 145Z"/>':a.hair==='twin'?'<ellipse cx="38" cy="93" rx="20" ry="44"/><ellipse cx="142" cy="93" rx="20" ry="44"/>':'';
  const eyes=a.face==='sleepy'?'<path d="M65 80q7 7 14 0 M101 80q7 7 14 0" fill="none" stroke="#443b43" stroke-width="4" stroke-linecap="round"/>':a.face==='surprise'?'<ellipse cx="72" cy="79" rx="5" ry="7"/><ellipse cx="108" cy="79" rx="5" ry="7"/>':a.face==='spark'?'<path d="M72 70l3 6 7 3-7 3-3 6-3-6-7-3 7-3Z M108 70l3 6 7 3-7 3-3 6-3-6-7-3 7-3Z"/>':a.face==='happy'?'<path d="M65 81q7-10 14 0 M101 81q7-10 14 0" fill="none" stroke="#443b43" stroke-width="4" stroke-linecap="round"/>':a.face==='wink'?'<circle cx="72" cy="79" r="4"/><path d="M102 77l10 4-10 4" fill="none" stroke="#443b43" stroke-width="3"/>':'<circle cx="72" cy="79" r="4"/><circle cx="108" cy="79" r="4"/>';
- const headwear={cat:'<path d="M53 44L49 13L77 31M103 31L131 13L127 44" fill="'+hair+'" stroke="#554653" stroke-width="3"/>',bunny:'<ellipse cx="69" cy="22" rx="9" ry="22" fill="#fff0ed"/><ellipse cx="111" cy="22" rx="9" ry="22" fill="#fff0ed"/><path d="M69 9v22M111 9v22" stroke="#e8a0b0" stroke-width="6"/>',magic:'<path d="M58 36L85 1L119 36Z" fill="#7955ad"/><ellipse cx="89" cy="37" rx="43" ry="7" fill="#7955ad"/><text x="83" y="28" font-size="17">★</text>'}[a.accessory]||'';
- const accessory={none:'',ribbon:'🎀',flower:'🌸',crown:'👑',sparkle:'✨',bowblue:'🦋',cat:'',bunny:'',hat:'👒',magic:'',moon:'🌙',gem:'💎'}[a.accessory];
- return '<svg class="avatar-art" viewBox="0 0 180 210" role="img" aria-label="じぶんの アバター"><ellipse cx="90" cy="196" rx="62" ry="8" fill="#d7dfce"/><g fill="'+hair+'">'+back+'</g><path d="M69 125h42q21 12 25 57H44q4-45 25-57" fill="'+cloth+'" stroke="#ffffff" stroke-width="3"/><path d="M82 119v13q8 9 16 0v-13" fill="'+skin+'"/><ellipse cx="90" cy="78" rx="39" ry="45" fill="'+skin+'"/><path d="'+(a.hair==='crop'?'M50 63Q46 24 90 25Q134 24 130 63L117 46 105 50 91 43 75 49 63 45Z':a.hair==='short'?'M50 78Q39 20 90 25Q140 20 130 74L107 51 94 62 74 50Z':a.hair==='bob'?'M49 97V66Q46 23 90 23Q134 23 131 66V97L120 91V59Q94 68 63 54V95Z':'M50 74Q42 23 90 23Q138 23 130 74L114 53Q91 66 63 50Z')+'" fill="'+hair+'"/><g fill="#443b43">'+eyes+'</g><ellipse cx="62" cy="92" rx="7" ry="4" fill="#e99497"/><ellipse cx="118" cy="92" rx="7" ry="4" fill="#e99497"/><path d="M80 96q10 12 20 0" fill="none" stroke="#a75060" stroke-width="3" stroke-linecap="round"/><text x="90" y="166" text-anchor="middle" font-size="26">'+({everyday:'♡',flower:'🌼',star:'⭐',royal:'💎',rainbow:'🌈',sport:'⚽',marine:'⚓',berry:'🍓',forest:'🍀',magic:'⭐',space:'🚀',angel:'🪽'}[a.outfit])+'</text><text x="90" y="36" text-anchor="middle" font-size="34">'+accessory+'</text>'+headwear+'</svg>';
+ const headwear={railcap:'<path d="M48 31Q90 2 132 31L127 46H53Z" fill="#284b77"/><path d="M53 40H127Q90 64 53 40" fill="#182f50"/><circle cx="90" cy="29" r="6" fill="#f5cf69"/>',railbag:'<path d="M62 128L113 177" stroke="#69503d" stroke-width="6"/><rect x="98" y="155" width="30" height="26" rx="5" fill="#aa7750"/>',cat:'<path d="M53 44L49 13L77 31M103 31L131 13L127 44" fill="'+hair+'" stroke="#554653" stroke-width="3"/>',bunny:'<ellipse cx="69" cy="22" rx="9" ry="22" fill="#fff0ed"/><ellipse cx="111" cy="22" rx="9" ry="22" fill="#fff0ed"/><path d="M69 9v22M111 9v22" stroke="#e8a0b0" stroke-width="6"/>',magic:'<path d="M58 36L85 1L119 36Z" fill="#7955ad"/><ellipse cx="89" cy="37" rx="43" ry="7" fill="#7955ad"/><text x="83" y="28" font-size="17">★</text>'}[a.accessory]||'';
+ const accessory={railcap:'',railbag:'',none:'',ribbon:'🎀',flower:'🌸',crown:'👑',sparkle:'✨',bowblue:'🦋',cat:'',bunny:'',hat:'👒',magic:'',moon:'🌙',gem:'💎'}[a.accessory];
+ return '<svg class="avatar-art" viewBox="0 0 180 210" role="img" aria-label="じぶんの アバター"><ellipse cx="90" cy="196" rx="62" ry="8" fill="#d7dfce"/><g fill="'+hair+'">'+back+'</g><path d="M69 125h42q21 12 25 57H44q4-45 25-57" fill="'+cloth+'" stroke="#ffffff" stroke-width="3"/><path d="M82 119v13q8 9 16 0v-13" fill="'+skin+'"/><ellipse cx="90" cy="78" rx="39" ry="45" fill="'+skin+'"/><path d="'+(a.hair==='crop'?'M50 63Q46 24 90 25Q134 24 130 63L117 46 105 50 91 43 75 49 63 45Z':a.hair==='short'?'M50 78Q39 20 90 25Q140 20 130 74L107 51 94 62 74 50Z':a.hair==='bob'?'M49 97V66Q46 23 90 23Q134 23 131 66V97L120 91V59Q94 68 63 54V95Z':'M50 74Q42 23 90 23Q138 23 130 74L114 53Q91 66 63 50Z')+'" fill="'+hair+'"/><g fill="#443b43">'+eyes+'</g><ellipse cx="62" cy="92" rx="7" ry="4" fill="#e99497"/><ellipse cx="118" cy="92" rx="7" ry="4" fill="#e99497"/><path d="M80 96q10 12 20 0" fill="none" stroke="#a75060" stroke-width="3" stroke-linecap="round"/><text x="90" y="166" text-anchor="middle" font-size="26">'+({driver:'🚆',conductor:'🎫',everyday:'♡',flower:'🌼',star:'⭐',royal:'💎',rainbow:'🌈',sport:'⚽',marine:'⚓',berry:'🍓',forest:'🍀',magic:'⭐',space:'🚀',angel:'🪽'}[a.outfit])+'</text><text x="90" y="36" text-anchor="middle" font-size="34">'+accessory+'</text>'+headwear+'</svg>';
 }
 function setAvatar(key,id){
  const option=AVATAR_OPTIONS[key]?.find(o=>o[0]===id);if(!option||mainPetLevel()<(option[2]||1))return;
@@ -486,6 +486,57 @@ function homeStageLabel(i){
 const homeStageStyle=document.createElement('style');
 homeStageStyle.textContent='.home-stage{display:block;font-size:15px;line-height:1.4;font-weight:normal}.home-stage b{font-size:16px}.home-stage>small{display:block;font-size:12px;margin-top:3px}.subject-home-card{gap:6px}@media(max-width:500px){.home-stage b{font-size:12px}.home-stage>small{font-size:10px}.home-stage{overflow-wrap:anywhere}}';
 document.head.appendChild(homeStageStyle);
+
+
+const RAIL_COLORS={blue:['あお','#559bd2'],red:['あか','#df7273'],green:['みどり','#78b58b'],yellow:['きいろ','#edc658'],pink:['ピンク','#df91bb']};
+const RAIL_STATIONS={platform:['えき','🚉',0],crossing:['ふみきり','🚦',15],depot:['しゃこ','🏠',20]};
+function railState(){
+ const g=game();if(!g.rail||typeof g.rail!=='object'||Array.isArray(g.rail))g.rail={};
+ const r=g.rail;
+ if(!RAIL_COLORS[r.color])r.color='blue';
+ if(!['local','express','steam'].includes(r.head))r.head='local';
+ if(!['stripe','stars','dots'].includes(r.pattern))r.pattern='stripe';
+ if(!Number.isInteger(r.cars)||r.cars<1||r.cars>8)r.cars=1;
+ if(!Array.isArray(r.owned))r.owned=['platform'];
+ r.owned=[...new Set(['platform',...r.owned.filter(id=>RAIL_STATIONS[id])])];
+ if(!r.owned.includes(r.station))r.station='platform';
+ if(!Array.isArray(r.passengers))r.passengers=[];
+ r.passengers=r.passengers.filter(id=>FRIENDS.some(f=>f.id===id&&mainPetLevel()>=f.at));
+ return r;
+}
+function railPick(key,id){
+ const r=railState();
+ if(key==='color'&&RAIL_COLORS[id]||key==='head'&&['local','express','steam'].includes(id)||key==='pattern'&&['stripe','stars','dots'].includes(id))r[key]=id;else return;
+ save();railRoom();
+}
+function railBuy(id){
+ const g=game(),r=railState();
+ if(id==='car'){if(r.cars>=8||g.coins<10)return;g.coins-=10;r.cars++}
+ else{if(!RAIL_STATIONS[id])return;if(!r.owned.includes(id)){const cost=RAIL_STATIONS[id][2];if(g.coins<cost)return;g.coins-=cost;r.owned.push(id)}r.station=id}
+ save();railRoom('かざったよ！');
+}
+function railPassenger(id){
+ const r=railState();if(!FRIENDS.some(f=>f.id===id&&mainPetLevel()>=f.at))return;
+ if(r.passengers.includes(id))r.passengers=r.passengers.filter(x=>x!==id);else r.passengers.push(id);
+ save();railRoom();
+}
+let railTripTimer=null;
+function railDepart(){
+ if(view!=='rail')return;
+ const train=app.querySelector('.rail-train');if(!train)return;clearTimeout(railTripTimer);
+ train.classList.remove('rail-moving');void train.offsetWidth;train.classList.add('rail-moving');
+ app.querySelector('.rail-status').textContent='しゅっぱつ！ みんなで おでかけ！';
+ playFeedSound(false);
+ railTripTimer=setTimeout(()=>{if(view!=='rail')return;train.classList.remove('rail-moving');app.querySelector('.rail-status').textContent='とうちゃく！ おかえりなさい！'},2400);
+}
+function railRoom(message=''){
+ leaveQuizScreen();session=null;view='rail';const r=railState(),g=game();
+ const passengerHTML=r.passengers.map(id=>{const f=FRIENDS.find(f=>f.id===id);return '<span title="'+f.name+'">'+f.icon+'</span>'}).join('');
+ app.innerHTML='<section class="panel rail-room"><div class="quiztop"><button class="sub" onclick="petRoom()">← にわっちへ</button><span>🪙 '+g.coins+'</span></div><h1>じぶんの でんしゃ</h1><div class="rail-station station-'+r.station+'"><div class="rail-sign">'+RAIL_STATIONS[r.station][1]+' '+RAIL_STATIONS[r.station][0]+'</div><div class="rail-driver">'+avatarArt()+'</div><div class="rail-scroll" tabindex="0" aria-label="でんしゃ。よこに うごかして みられるよ"><div class="rail-train">'+Array.from({length:r.cars},(_,i)=>'<div class="rail-car '+(i===0?r.head:'')+'" style="--train-color:'+RAIL_COLORS[r.color][1]+'"><div class="rail-windows">'+(i===0?passengerHTML:'🪟 🪟')+'</div><div class="rail-pattern">'+({stripe:'━━━━',stars:'★ ★ ★',dots:'● ● ●'}[r.pattern])+'</div></div>').join('')+'</div></div></div><button class="primary" onclick="railDepart()">🚂 しゅっぱつ！</button><p class="rail-status" role="status">'+esc(message||'ともだちを おすと のれるよ。')+'</p><div class="rail-options">'+FRIENDS.filter(f=>mainPetLevel()>=f.at).map(f=>'<button class="sub" aria-pressed="'+r.passengers.includes(f.id)+'" onclick="railPassenger(\''+f.id+'\')">'+f.icon+' '+f.name+(r.passengers.includes(f.id)?' ✓':'')+'</button>').join('')+'</div><h2>いろ・もよう・かたち（むりょう）</h2>'+[['color',Object.entries(RAIL_COLORS).map(([id,v])=>[id,v[0]])],['pattern',[['stripe','しましま'],['stars','ほし'],['dots','みずたま']]],['head',[['local','でんしゃ'],['express','とっきゅう'],['steam','きかんしゃ']]]].map(([key,opts])=>'<div class="rail-options">'+opts.map(([id,name])=>'<button class="sub" aria-pressed="'+(r[key]===id)+'" onclick="railPick(\''+key+'\',\''+id+'\')">'+name+'</button>').join('')+'</div>').join('')+'<h2>しゃりょう・えき</h2><button class="sub" onclick="railBuy(\'car\')" '+(g.coins<10||r.cars>=8?'disabled':'')+'>'+r.cars+'りょう / 8りょう · '+(r.cars>=8?'いっぱい！':'10🪙で 1りょう ふやす')+'</button><div class="rail-options">'+Object.entries(RAIL_STATIONS).map(([id,v])=>'<button class="sub" aria-pressed="'+(r.station===id)+'" onclick="railBuy(\''+id+'\')" '+(!r.owned.includes(id)&&g.coins<v[2]?'disabled':'')+'>'+v[1]+' '+v[0]+' · '+(r.owned.includes(id)?'えらぶ':v[2]+'🪙')+'</button>').join('')+'</div><button class="sub" onclick="avatarRoom()">🧑‍✈️ せいふくに きがえる</button><p class="muted">おとは「おと ON / OFF」で きりかえられるよ。</p></section>';
+}
+const railStyle=document.createElement('style');
+railStyle.textContent='.rail-room{text-align:center}.rail-room h1{font-size:28px}.rail-station{position:relative;background:linear-gradient(#d9efff 65%,#e5dcc6 65%);border-radius:22px;padding:18px 12px 26px;overflow:hidden}.station-crossing:before{content:"●";position:absolute;right:22px;top:40px;border-left:8px solid #dfbb37;border-bottom:8px solid #dfbb37;height:75px;width:70px;color:#d65b55;font-size:28px}.station-depot{background:linear-gradient(90deg,#b7c8d0 8%,transparent 8%,transparent 92%,#b7c8d0 92%),linear-gradient(#d5e3ea 16%,#f3f0e7 16%,#f3f0e7 80%,#d6c8ad 80%);border-top:14px solid #7a929e}.station-platform .rail-sign{border-bottom:7px solid #e7c65d}.rail-sign{font-size:25px;font-weight:bold}.rail-driver .avatar-art{width:65px}.rail-scroll{overflow-x:auto;padding:8px 0 24px}.rail-train{display:flex;width:max-content;gap:10px;padding:8px 15px}.rail-car{position:relative;width:155px;height:90px;background:var(--train-color);border-radius:15px 15px 8px 8px;border:3px solid #3b5365;flex-shrink:0}.rail-car:after{content:"●　　●";position:absolute;bottom:-22px;left:16px;color:#354450;font-size:25px}.rail-car.express{border-radius:60px 16px 8px 8px}.rail-car.steam:before{content:"";position:absolute;left:12px;top:-20px;width:18px;height:20px;background:#455465}.rail-windows{margin:12px 8px 4px;background:#e6f7ff;border-radius:7px;height:38px;display:flex;justify-content:space-evenly;align-items:center;font-size:23px}.rail-pattern{color:#fff;font-size:18px}.rail-options{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:16px 0}.rail-options button{min-height:48px}.rail-options [aria-pressed=true]{outline:3px solid #679261;background:#e1edce}.rail-moving{animation:railTravel 2.4s ease-in-out}.rail-status{min-height:26px}@keyframes railTravel{0%,100%{translate:0}50%{translate:55px 0}}@media(prefers-reduced-motion:reduce){.rail-moving{animation:none}}';
+document.head.appendChild(railStyle);
 
 for(let p of data.profiles)initGame(p);save();
 let toolsBar=document.querySelector('.tools');let musicButton=document.createElement('button');musicButton.setAttribute('data-music','');musicButton.onclick=musicControl;toolsBar.appendChild(musicButton);let switchButton=document.createElement('button');switchButton.textContent='ひとを かえる';switchButton.onclick=showWelcome;toolsBar.appendChild(switchButton);
