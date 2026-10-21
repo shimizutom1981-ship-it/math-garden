@@ -324,12 +324,32 @@ function setAvatar(key,id){
  avatarState()[key]=id;save();avatarRoom('きがえたよ！ じどうで ほぞんしたよ。');
 }
 function avatarRoom(message=''){
+ const scroll=view==='avatar'?(app.querySelector('.avatar-options')?.scrollTop||0):0;
  leaveQuizScreen();view='avatar';session=null;
  const a=avatarState(),labels={hair:'かみがた',face:'おかお',color:'かみの いろ',skin:'はだの いろ',outfit:'おようふく',accessory:'かざり'};
- app.innerHTML='<section class="panel"><button class="sub" onclick="home()">← にわへ</button><h1 class="center">じぶんの アバター</h1><div class="avatar-editor"><div class="avatar-preview">'+avatarArt()+'<strong>'+esc(person().name)+'</strong><p>にわっち レベル '+mainPetLevel()+'</p><p class="muted">にわっちが そだつと<br>きせかえが ふえるよ！<br>コインは つかわないよ。</p><p role="status">'+esc(message)+'</p></div><div>'+Object.entries(AVATAR_OPTIONS).map(([k,opts])=>'<fieldset class="avatar-group"><legend>'+labels[k]+'</legend><div>'+opts.map(([id,name,level=1])=>'<button class="sub" aria-pressed="'+(a[k]===id)+'" onclick="setAvatar(\''+k+'\',\''+id+'\')" '+(mainPetLevel()<level?'disabled':'')+'>'+name+(level>1?'<small>'+(mainPetLevel()<level?'🔒 にわっち Lv.'+level:'✨ つかえるよ')+'</small>':'')+'</button>').join('')+'</div></fieldset>').join('')+'</div></div></section>';
+ app.innerHTML='<section class="panel avatar-room"><button class="sub" onclick="home()">← にわへ</button><h1 class="center">じぶんの アバター</h1><div class="avatar-editor"><div class="avatar-preview">'+avatarArt()+'<strong>'+esc(person().name)+'</strong><p>にわっち レベル '+mainPetLevel()+'</p><p class="muted">にわっちが そだつと<br>きせかえが ふえるよ！<br>コインは つかわないよ。</p><p role="status">'+esc(message)+'</p></div><div class="avatar-options" tabindex="0" aria-label="きせかえを えらぶ">'+Object.entries(AVATAR_OPTIONS).map(([k,opts])=>'<fieldset class="avatar-group"><legend>'+labels[k]+'</legend><div>'+opts.map(([id,name,level=1])=>'<button class="sub" aria-pressed="'+(a[k]===id)+'" onclick="setAvatar(\''+k+'\',\''+id+'\')" '+(mainPetLevel()<level?'disabled':'')+'>'+name+(level>1?'<small>'+(mainPetLevel()<level?'🔒 にわっち Lv.'+level:'✨ つかえるよ')+'</small>':'')+'</button>').join('')+'</div></fieldset>').join('')+'</div></div></section>';
+ const options=app.querySelector('.avatar-options');if(options)options.scrollTop=scroll;
 }
 const avatarStyle=document.createElement('style');
 avatarStyle.textContent='.home-avatar-heading{display:flex;align-items:center;justify-content:center;gap:20px}.home-avatar-heading h1{margin:4px 0;font-size:clamp(22px,3vw,32px)}.home-avatar-heading .avatar-home{margin:0;padding:6px 12px;flex-direction:column;gap:0;flex-shrink:0}.home-avatar-heading .avatar-art{width:72px}.home-avatar-heading .avatar-home span{font-size:13px}.subject-home{margin:8px auto;padding:18px}.subject-home-choices{margin:16px 0;gap:14px}.subject-home-card{min-height:140px;gap:8px;padding:14px}.subject-home-card span{font-size:44px}.subject-home-card strong{font-size:26px}.subject-home-pet{margin-top:12px;gap:12px}@media(max-width:500px){.home-avatar-heading{gap:10px}.home-avatar-heading .avatar-art{width:58px}.subject-home-choices{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.subject-home-card{min-height:110px;padding:8px 2px}.subject-home-card span{font-size:32px}.subject-home-card strong{font-size:19px}.subject-home{padding:12px}.home-avatar-heading h1{font-size:21px}}.avatar-art{width:180px;max-width:100%;height:auto;display:block;margin:auto}.avatar-home{display:flex;align-items:center;justify-content:center;gap:8px;margin:18px auto 0}.avatar-home .avatar-art{width:58px;margin:0}.avatar-editor{display:grid;grid-template-columns:220px 1fr;gap:24px;align-items:start}.avatar-preview{text-align:center;position:sticky;top:12px;background:#f1f5e9;border-radius:24px;padding:20px}.avatar-group{border:0;padding:0;margin:0 0 22px;min-width:0}.avatar-group legend{font-weight:bold;margin-bottom:10px}.avatar-group>div{display:flex;flex-wrap:wrap;gap:10px}.avatar-group button{min-height:58px;min-width:100px}.avatar-group small{display:block;font-size:12px;margin-top:5px}.avatar-group [aria-pressed=true]{outline:3px solid #749759;background:#e1edce}.avatar-group button:disabled{opacity:.6}@media(max-width:600px){.avatar-editor{grid-template-columns:1fr}.avatar-preview{position:static;padding:12px}.avatar-preview .avatar-art{width:130px}}';
+avatarStyle.textContent+=`
+.avatar-room{position:fixed;inset:10px;z-index:50;max-width:none;margin:0;display:flex;flex-direction:column;overflow:hidden;padding:16px}
+.avatar-room>button{align-self:flex-start;flex:none;min-height:44px}
+.avatar-room>h1{font-size:24px;flex:none;margin:8px 0}
+.avatar-room .avatar-editor{flex:1;min-height:0;grid-template-columns:minmax(160px,30%) minmax(0,1fr);overflow:hidden}
+.avatar-room .avatar-preview{position:static;min-height:0;overflow:hidden;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:12px}
+.avatar-room .avatar-preview .avatar-art{width:180px;max-height:42vh;flex-shrink:1;min-height:0;margin:0}
+.avatar-room .avatar-preview p{margin:6px 0;font-size:13px}
+.avatar-room .avatar-options{overflow-y:auto;min-height:0;padding:6px 12px 24px 6px;overscroll-behavior:contain;scrollbar-gutter:stable}
+@media(max-width:600px){
+ .avatar-room{inset:5px;padding:10px}
+ .avatar-room>h1{font-size:20px;margin:4px 0}
+ .avatar-room .avatar-editor{grid-template-columns:1fr;grid-template-rows:160px minmax(0,1fr);gap:10px}
+ .avatar-room .avatar-preview{position:relative;padding:8px 8px 8px 45%;justify-content:center}
+ .avatar-room .avatar-preview .avatar-art{position:absolute;left:2%;top:5px;width:40%;height:150px;max-height:150px}
+ .avatar-room .avatar-preview p{font-size:11px;margin:3px 0}
+}
+`;
 document.head.appendChild(avatarStyle);
 
 
