@@ -450,8 +450,31 @@ function timingReport(){
  const label=key=>{const parts=key.split(':');return parts[0]==='en'?'英語 ステップ '+(Number(parts[1])+1):(TOPICS[Number(parts[1])]?.[1]||'学習')+(parts[2]?.startsWith('prep')?'（やさしい準備 '+(Number(parts[2].slice(4))+1)+'）':'')};
  return '<section class="panel"><h2>解答時間（保護者用）</h2><p>時間は子供の画面に表示しません。読み上げ中・別画面の時間は除きます。2分を超える解答などは判定対象外です。端末の音声状態による誤差や、画面を開いたままの離席は区別できません。</p><p>同じ範囲で有効な自力正解が15問たまるまでは記録のみ。その後も速さだけでは進級・後退させず、普段の2.5倍超（かつ10秒超）の時間と支援が直近5問中3問で重なった場合、復習を増やし進級を慎重にします。直近500問をこのブラウザに保存し、バックアップにも含めます。</p>'+(!rows.length?'<p>まだ記録はありません。</p>':keys.map(key=>{const rs=rows.filter(r=>r.key===key&&r.valid),clean=rs.filter(r=>r.clean);return '<div class="row"><span>'+esc(label(key))+'</span><span>有効 '+rs.length+'問 ／ 中央値 '+(rs.length?(timingMedian(rs.map(r=>r.ms))/1000).toFixed(1)+'秒':'—')+' ／ '+(clean.length>=15?'本人のペースを参照中':'基準収集中 '+clean.length+'/15')+'</span></div>'}).join(''))+'<details><summary>直近20問の記録</summary>'+rows.slice(-20).reverse().map(r=>'<p>'+esc(new Date(r.at).toLocaleString('ja-JP'))+' · '+esc(label(r.key))+' · '+(r.valid?(r.ms/1000).toFixed(1)+'秒':'判定対象外')+' · '+(r.clean?'自力正解':'ヒント・再回答あり')+'</p>').join('')+'</details></section>';
 }
+
+function learningStageRows(){
+ const p=person();
+ return ['math','jp','en'].map(kind=>{
+  if(kind==='en'){
+   const e=p.english||{},level=Number.isInteger(e.level)&&e.level>=0&&e.level<=11?e.level:0;
+   return {name:'英語',grade:'小3〜4の外国語活動の導入に関連',stage:'ステップ '+(level+1)+' / 12',topic:['動物の単語','食べ物の単語','身の回りの単語'][Math.floor(level/4)]+'を聞いて絵を選ぶ',note:e.total?'単語の聞き取りのみ。会話・読み書きの学年判定ではありません。':'まだ未学習です。表示は開始位置です。'};
+  }
+  const lo=kind==='math'?0:JP_START,hi=kind==='math'?JP_START:TOPICS.length,a=p.adaptive?.[kind]||{};
+  let level=Number.isInteger(a.level)&&a.level>=lo&&a.level<hi?a.level:lo;
+  if(a.level===undefined)while(level<hi-1&&p.stats[level]?.mastered)level++;
+  const prep=Number.isInteger(a.prepStep)&&a.prepStep<3?a.prepStep:((p.name.includes('芽依')||data.current===1)&&a.easyVersion!==1?0:null);
+  const learned=Object.entries(p.stats).some(([i,v])=>Number(i)>=lo&&Number(i)<hi&&v.total>0);
+  if(prep!==null)return {name:kind==='math'?'算数':'国語',grade:'就学前の準備段階',stage:'準備 '+(prep+1)+' / 3',topic:kind==='math'?['1〜3を数える','1〜5を数える','少ない数を比べる'][prep]:['同じ絵を選ぶ（2択）','同じ絵を選ぶ（3択）','同じ絵を選ぶ（4択）'][prep],note:learned?'読み・計算に入る前の準備です。':'まだ未学習です。表示は開始位置です。'};
+  const index=level-lo;
+  const grade=kind==='math'?(index<3?'就学前〜小1の導入':index<9?'小1相当の内容':index<11?'小2相当の内容':index===11?'小3相当の内容':'小2〜3の分数の導入'):(index<2?'就学前〜小1の導入':index<6?'小1相当の基礎内容':'小1〜2相当の短文読解');
+  return {name:kind==='math'?'算数':'国語',grade,stage:'段階 '+(index+1)+' / '+(hi-lo),topic:TOPICS[level][1]+'：'+TOPICS[level][2],note:learned?(a.newCount<5?'新しい範囲を少しずつ混ぜて練習中です。':'現在の自動出題の位置です。'):'まだ未学習です。表示は開始位置です。'};
+ });
+}
+function learningStageReport(){
+ return '<section class="panel"><h2>教科ごとの段階・学年の目安</h2><p>出題内容に基づく参考表示です。学年全体の習得度や学力を判定するものではありません。教科によって扱う範囲が異なります。</p>'+learningStageRows().map(r=>'<article style="border:1px solid #dce2d1;border-radius:16px;padding:16px;margin:12px 0"><h3>'+r.name+' · '+r.grade+'</h3><strong>'+r.stage+'</strong><p>'+esc(r.topic)+'</p><p class="muted">'+r.note+'</p></article>').join('')+'<p class="muted">算数は数・計算・分数の一部、国語は文字・語句・短文、英語は単語の聞き取りを扱います。学年の目安が同じでも、内容の段階は進みます。</p></section>';
+}
+
 const timedParents=parents;
-parents=function(){timingStop();cancelAutoNext();leaveQuizScreen();timedParents();app.insertAdjacentHTML('beforeend',timingReport())};
+parents=function(){timingStop();cancelAutoNext();leaveQuizScreen();timedParents();app.insertAdjacentHTML('beforeend',learningStageReport()+timingReport())};
 document.querySelector('#parent').onclick=parents;
 
 for(let p of data.profiles)initGame(p);save();
