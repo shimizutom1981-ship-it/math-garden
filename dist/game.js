@@ -533,11 +533,51 @@ function railDepart(){
 function railRoom(message=''){
  leaveQuizScreen();session=null;view='rail';const r=railState(),g=game();
  const passengerHTML=r.passengers.map(id=>{const f=FRIENDS.find(f=>f.id===id);return '<span title="'+f.name+'">'+f.icon+'</span>'}).join('');
- app.innerHTML='<section class="panel rail-room"><div class="quiztop"><button class="sub" onclick="petRoom()">← にわっちへ</button><span>🪙 '+g.coins+'</span></div><h1>じぶんの でんしゃ</h1><div class="rail-station station-'+r.station+'"><div class="rail-sign">'+RAIL_STATIONS[r.station][1]+' '+RAIL_STATIONS[r.station][0]+'</div><div class="rail-driver">'+avatarArt()+'</div><div class="rail-scroll" tabindex="0" aria-label="でんしゃ。よこに うごかして みられるよ"><div class="rail-train">'+Array.from({length:r.cars},(_,i)=>'<div class="rail-car '+(i===0?r.head:'')+'" style="--train-color:'+RAIL_COLORS[r.color][1]+'"><div class="rail-windows">'+(i===0?passengerHTML:'🪟 🪟')+'</div><div class="rail-pattern">'+({stripe:'━━━━',stars:'★ ★ ★',dots:'● ● ●'}[r.pattern])+'</div></div>').join('')+'</div></div></div><button class="primary" onclick="railDepart()">🚂 しゅっぱつ！</button><p class="rail-status" role="status">'+esc(message||'ともだちを おすと のれるよ。')+'</p><div class="rail-options">'+FRIENDS.filter(f=>mainPetLevel()>=f.at).map(f=>'<button class="sub" aria-pressed="'+r.passengers.includes(f.id)+'" onclick="railPassenger(\''+f.id+'\')">'+f.icon+' '+f.name+(r.passengers.includes(f.id)?' ✓':'')+'</button>').join('')+'</div><h2>いろ・もよう・かたち（むりょう）</h2>'+[['color',Object.entries(RAIL_COLORS).map(([id,v])=>[id,v[0]])],['pattern',[['stripe','しましま'],['stars','ほし'],['dots','みずたま']]],['head',[['local','でんしゃ'],['express','とっきゅう'],['steam','きかんしゃ']]]].map(([key,opts])=>'<div class="rail-options">'+opts.map(([id,name])=>'<button class="sub" aria-pressed="'+(r[key]===id)+'" onclick="railPick(\''+key+'\',\''+id+'\')">'+name+'</button>').join('')+'</div>').join('')+'<h2>しゃりょう・えき</h2><button class="sub" onclick="railBuy(\'car\')" '+(g.coins<10||r.cars>=8?'disabled':'')+'>'+r.cars+'りょう / 8りょう · '+(r.cars>=8?'いっぱい！':'10🪙で 1りょう ふやす')+'</button><div class="rail-options">'+Object.entries(RAIL_STATIONS).map(([id,v])=>'<button class="sub" aria-pressed="'+(r.station===id)+'" onclick="railBuy(\''+id+'\')" '+(!r.owned.includes(id)&&g.coins<v[2]?'disabled':'')+'>'+v[1]+' '+v[0]+' · '+(r.owned.includes(id)?'えらぶ':v[2]+'🪙')+'</button>').join('')+'</div><button class="sub" onclick="avatarRoom()">🧑‍✈️ せいふくに きがえる</button><p class="muted">おとは「おと ON / OFF」で きりかえられるよ。</p></section>';
+ app.innerHTML='<section class="panel rail-room"><div class="quiztop"><button class="sub" onclick="petRoom()">← にわっちへ</button><span>🪙 '+g.coins+'</span></div><h1>じぶんの でんしゃ</h1><div class="rail-station station-'+r.station+'"><div class="rail-sign">'+RAIL_STATIONS[r.station][1]+' '+RAIL_STATIONS[r.station][0]+'</div><div class="rail-driver">'+avatarArt()+'</div><div class="rail-scroll" tabindex="0" aria-label="でんしゃ。よこに うごかして みられるよ"><div class="rail-train">'+Array.from({length:r.cars},(_,i)=>'<div class="rail-car '+(i===0?r.head:'')+'" style="--train-color:'+RAIL_COLORS[r.color][1]+'"><div class="rail-windows">'+(i===0?passengerHTML:'🪟 🪟')+'</div><div class="rail-pattern">'+({stripe:'━━━━',stars:'★ ★ ★',dots:'● ● ●'}[r.pattern])+'</div></div>').join('')+'</div></div></div><button class="primary" onclick="railDepart()">🚂 しゅっぱつ！</button><p class="rail-status" role="status">'+esc(message||'ともだちを おすと のれるよ。')+'</p><div class="rail-options">'+FRIENDS.filter(f=>mainPetLevel()>=f.at).map(f=>'<button class="sub" aria-pressed="'+r.passengers.includes(f.id)+'" onclick="railPassenger(\''+f.id+'\')">'+f.icon+' '+f.name+(r.passengers.includes(f.id)?' ✓':'')+'</button>').join('')+'</div><h2>いろ・もよう・かたち（レベルで かいほう）</h2>'+[['color',Object.entries(RAIL_COLORS).map(([id,v])=>[id,v[0]])],['pattern',[['stripe','しましま'],['stars','ほし'],['dots','みずたま']]],['head',[['local','でんしゃ'],['express','とっきゅう'],['steam','きかんしゃ']]]].map(([key,opts])=>'<div class="rail-options">'+opts.map(([id,name])=>'<button class="sub" aria-pressed="'+(r[key]===id)+'" onclick="railPick(\''+key+'\',\''+id+'\')">'+name+'</button>').join('')+'</div>').join('')+'<h2>しゃりょう・えき</h2><button class="sub" onclick="railBuy(\'car\')" '+(g.coins<10||r.cars>=8?'disabled':'')+'>'+r.cars+'りょう / 8りょう · '+(r.cars>=8?'いっぱい！':'10🪙で 1りょう ふやす')+'</button><div class="rail-options">'+Object.entries(RAIL_STATIONS).map(([id,v])=>'<button class="sub" aria-pressed="'+(r.station===id)+'" onclick="railBuy(\''+id+'\')" '+(!r.owned.includes(id)&&g.coins<v[2]?'disabled':'')+'>'+v[1]+' '+v[0]+' · '+(r.owned.includes(id)?'えらぶ':v[2]+'🪙')+'</button>').join('')+'</div><button class="sub" onclick="avatarRoom()">🧑‍✈️ せいふくに きがえる</button><p class="muted">おとは「おと ON / OFF」で きりかえられるよ。</p></section>';
 }
 const railStyle=document.createElement('style');
 railStyle.textContent='.rail-room{text-align:center}.rail-room h1{font-size:28px}.rail-station{position:relative;background:linear-gradient(#d9efff 65%,#e5dcc6 65%);border-radius:22px;padding:18px 12px 26px;overflow:hidden}.station-crossing:before{content:"●";position:absolute;right:22px;top:40px;border-left:8px solid #dfbb37;border-bottom:8px solid #dfbb37;height:75px;width:70px;color:#d65b55;font-size:28px}.station-depot{background:linear-gradient(90deg,#b7c8d0 8%,transparent 8%,transparent 92%,#b7c8d0 92%),linear-gradient(#d5e3ea 16%,#f3f0e7 16%,#f3f0e7 80%,#d6c8ad 80%);border-top:14px solid #7a929e}.station-platform .rail-sign{border-bottom:7px solid #e7c65d}.rail-sign{font-size:25px;font-weight:bold}.rail-driver .avatar-art{width:65px}.rail-scroll{overflow-x:auto;padding:8px 0 24px}.rail-train{display:flex;width:max-content;gap:10px;padding:8px 15px}.rail-car{position:relative;width:155px;height:90px;background:var(--train-color);border-radius:15px 15px 8px 8px;border:3px solid #3b5365;flex-shrink:0}.rail-car:after{content:"●　　●";position:absolute;bottom:-22px;left:16px;color:#354450;font-size:25px}.rail-car.express{border-radius:60px 16px 8px 8px}.rail-car.steam:before{content:"";position:absolute;left:12px;top:-20px;width:18px;height:20px;background:#455465}.rail-windows{margin:12px 8px 4px;background:#e6f7ff;border-radius:7px;height:38px;display:flex;justify-content:space-evenly;align-items:center;font-size:23px}.rail-pattern{color:#fff;font-size:18px}.rail-options{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:16px 0}.rail-options button{min-height:48px}.rail-options [aria-pressed=true]{outline:3px solid #679261;background:#e1edce}.rail-moving{animation:railTravel 2.4s ease-in-out}.rail-status{min-height:26px}@keyframes railTravel{0%,100%{translate:0}50%{translate:55px 0}}@media(prefers-reduced-motion:reduce){.rail-moving{animation:none}}';
 document.head.appendChild(railStyle);
+
+
+const UNLOCK_LEVELS={
+ rail:{color:{blue:1,red:10,green:25,yellow:50,pink:75},head:{local:1,express:40,steam:100},pattern:{stripe:1,dots:20,stars:60}},
+ station:{platform:1,crossing:30,depot:70},
+ cars:[1,10,20,35,50,65,80,100],
+ pet:{flower:5,cap:15,ribbon:25,star:45,butterfly:70,crown:100},
+ room:{garden:1,none:1,plant:10,pinkroom:20,sofa:35,skyroom:45,bear:55,bed:75,nightroom:100}
+};
+const AVATAR_UNLOCKS={outfit:{everyday:1,driver:5,conductor:15,sport:10,flower:20,marine:30,berry:40,forest:50,royal:60,magic:70,space:80,rainbow:90,angel:100},accessory:{none:1,railcap:5,railbag:15,bowblue:10,ribbon:20,cat:25,flower:30,bunny:40,hat:50,crown:60,magic:70,moon:80,gem:90,sparkle:100}};
+for(const [key,levels] of Object.entries(AVATAR_UNLOCKS))for(const option of AVATAR_OPTIONS[key])option[2]=levels[option[0]]||1;
+function requiredUnlock(action,a,b){
+ const g=game();
+ if(action==='railPick')return UNLOCK_LEVELS.rail[a]?.[b]??Infinity;
+ if(action==='railBuy')return a==='car'?(UNLOCK_LEVELS.cars[railState().cars]??Infinity):(railState().owned.includes(a)?1:UNLOCK_LEVELS.station[a]??Infinity);
+ if(action==='shopAction')return g.owned.includes(a)?1:UNLOCK_LEVELS.pet[a]??Infinity;
+ if(action==='buyRoomItem')return roomState().owned.includes(a)?1:UNLOCK_LEVELS.room[a]??Infinity;
+ return 1;
+}
+function decorateUnlocks(){
+ app.querySelectorAll('button[onclick]').forEach(button=>{
+  const match=button.getAttribute('onclick').match(/^(railPick|railBuy|shopAction|buyRoomItem)\('([^']+)'(?:,'([^']+)')?\)/);
+  if(!match)return;const required=requiredUnlock(match[1],match[2],match[3]);
+  if(Number.isFinite(required)&&mainPetLevel()<required){
+   button.disabled=true;button.textContent+=' 🔒 にわっち Lv.'+required;
+  }
+ });
+}
+const unlockedRailPick=railPick;
+railPick=function(key,id){if(mainPetLevel()<requiredUnlock('railPick',key,id))return;unlockedRailPick(key,id)};
+const unlockedRailBuy=railBuy;
+railBuy=function(id){if(mainPetLevel()<requiredUnlock('railBuy',id))return;unlockedRailBuy(id)};
+const unlockedPetBuy=shopAction;
+shopAction=function(id){if(mainPetLevel()<requiredUnlock('shopAction',id))return;unlockedPetBuy(id)};
+const unlockedRoomBuy=buyRoomItem;
+buyRoomItem=function(id){if(mainPetLevel()<requiredUnlock('buyRoomItem',id))return;unlockedRoomBuy(id)};
+const unlockRailRoom=railRoom;
+railRoom=function(message=''){unlockRailRoom(message);decorateUnlocks();const note=document.createElement('p');note.className='muted';note.textContent='にわっち レベル '+mainPetLevel()+' · レベル100で ぜんぶの しゅるいが えらべるよ。かうものには コインも いるよ。';app.querySelector('.rail-room')?.appendChild(note)};
+const unlockPetRoom=petRoom;
+petRoom=function(message=''){unlockPetRoom(message);decorateUnlocks()};
 
 for(let p of data.profiles)initGame(p);save();
 let toolsBar=document.querySelector('.tools');let musicButton=document.createElement('button');musicButton.setAttribute('data-music','');musicButton.onclick=musicControl;toolsBar.appendChild(musicButton);let switchButton=document.createElement('button');switchButton.textContent='ひとを かえる';switchButton.onclick=showWelcome;toolsBar.appendChild(switchButton);
