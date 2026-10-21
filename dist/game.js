@@ -300,12 +300,13 @@ const AVATAR_OPTIONS={
  face:[['smile','にっこり'],['happy','にこにこ'],['wink','ウインク'],['surprise','びっくり'],['sleepy','のんびり'],['spark','きらきら']],
  color:[['brown','ちゃいろ'],['black','くろ'],['gold','きんいろ'],['pink','ピンク'],['blue','あお'],['purple','むらさき'],['silver','ぎんいろ'],['red','あかちゃ']],
  skin:[['light','はだいろ 1'],['warm','はだいろ 2'],['deep','はだいろ 3']],
- outfit:[['driver','うんてんし',1],['conductor','しゃしょう',1],['everyday','おさんぽ',1],['flower','おはな',5],['star','ほしぞら',10],['royal','プリンセス',25],['rainbow','にじいろ',50],['sport','スポーツ',1],['marine','マリン',5],['berry','いちご',10],['forest','もりの たんけん',15],['magic','まほうつかい',30],['space','うちゅう',75],['angel','てんし',100]],
- accessory:[['railcap','せいぼう',1],['railbag','えきいんバッグ',1],['none','なし',1],['ribbon','リボン',5],['flower','おはなかざり',10],['crown','おうかん',25],['sparkle','きらきら',100],['bowblue','あおい リボン',1],['cat','ねこみみ',5],['bunny','うさみみ',10],['hat','むぎわら',15],['magic','まほうの ぼうし',30],['moon','おつきさま',50],['gem','ほうせき',75]]
+ outfit:[['driver','うんてんし',5],['conductor','しゃしょう',1],['everyday','おさんぽ',1],['flower','おはな',5],['star','ほしぞら',10],['royal','プリンセス',25],['rainbow','にじいろ',50],['sport','スポーツ',1],['marine','マリン',5],['berry','いちご',10],['forest','もりの たんけん',15],['magic','まほうつかい',30],['space','うちゅう',75],['angel','てんし',100]],
+ accessory:[['railcap','せいぼう',5],['railbag','えきいんバッグ',1],['none','なし',1],['ribbon','リボン',5],['flower','おはなかざり',10],['crown','おうかん',25],['sparkle','きらきら',100],['bowblue','あおい リボン',1],['cat','ねこみみ',5],['bunny','うさみみ',10],['hat','むぎわら',15],['magic','まほうの ぼうし',30],['moon','おつきさま',50],['gem','ほうせき',75]]
 };
 function avatarState(p=person()){
  if(!p.avatar||typeof p.avatar!=='object'||Array.isArray(p.avatar))p.avatar={};
- for(const [k,opts] of Object.entries(AVATAR_OPTIONS))if(!opts.some(o=>o[0]===p.avatar[k]))p.avatar[k]=opts[0][0];
+ const avatarLevel=1+Math.floor((Number.isSafeInteger(p.game?.growth)&&p.game.growth>=0?p.game.growth:0)/3);
+ for(const [k,opts] of Object.entries(AVATAR_OPTIONS))if(!opts.some(o=>o[0]===p.avatar[k]&&(o[2]||1)<=avatarLevel))p.avatar[k]=k==='outfit'?'everyday':k==='accessory'?'none':opts[0][0];
  return p.avatar;
 }
 function avatarArt(p=person()){
