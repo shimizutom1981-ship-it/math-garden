@@ -44,3 +44,25 @@ for(const auto of [false,true])for(let b=2;b<=6;b++)for(let a=1;a<b;a++){
  run("if(practiceClock)practiceClock.start-=2000;answer(q.choices.indexOf(q.answer),document.createElement('button'))");assert.equal(run('session.done'),true);
 }
 console.log('PASS all 15 fraction diagrams and answers in manual + adaptive modes');
+assert.equal(run('practiceTestVisible'),false);assert.equal(run('practiceTestMarkup()'),'');
+const beforeToggle=run('JSON.stringify(data)'),storedBefore=storage.get('kazunoniwa-v1');
+run('practiceTestToggle(true)');assert.ok(run('practiceTestMarkup().includes("practiceTestPanel")'));
+run('practiceTestToggle(false)');assert.equal(run('practiceTestMarkup()'),'');
+assert.equal(run('JSON.stringify(data)'),beforeToggle);assert.equal(storage.get('kazunoniwa-v1'),storedBefore);
+console.log('PASS test toggle defaults OFF and changes no learner/save data');
+run('practiceTestToggle(true)');
+for(const def of run('Practice.defs'))for(const course of def.courses){
+ run(`Object.assign(Practice.skill(person(),Practice.defs.find(d=>d.id==='${def.id}')),{level:${def.courses.indexOf(course)},support:0,retry:null});Practice.state(person()).turns['${def.subject}']=0`);
+ if(def.subject==='en')run(`session=null;englishSession={n:0,seen:[],practiceFocus:'${def.id}'};view='quiz';englishNext()`);
+ else run(`session={i:${course},auto:true,practiceFocus:'${def.id}',seen:{},n:0,correct:0,misses:0};subject='${def.subject}';view='quiz';nextQuestion()`);
+ assert.equal(run('practiceTestQuestion.course'),course);assert.equal(run('practiceTestQuestion.stage'),def.courses.indexOf(course)+1);
+ assert.equal(run('practiceTestQuestion.skill'),def.id);assert.equal(run('practiceTestQuestion.mode'),'fluent');
+}
+console.log('PASS actual skill, generated stage and mode across every course in all subjects');
+run("Object.assign(Practice.skill(person(),Practice.defs[1]),{level:0,support:0,retry:null});Practice.state(person()).turns.math=2;session={i:3,auto:true,practiceFocus:'addition',seen:{},n:0};subject='math';view='quiz';nextQuestion()");
+assert.equal(run('practiceTestQuestion.mode'),'challenge');assert.equal(run('practiceTestQuestion.stage'),2);assert.equal(run('practiceTestQuestion.estimate'),1);
+const snapshot=run('JSON.stringify(practiceTestQuestion)');run('Practice.skill(person(),Practice.defs[1]).level=2');assert.equal(run('JSON.stringify(practiceTestQuestion)'),snapshot);
+run("Practice.state(person()).turns.math=5;nextQuestion()");assert.equal(run('practiceTestQuestion.mode'),'review');assert.equal(run('practiceTestQuestion.stage'),2);assert.equal(run('practiceTestQuestion.estimate'),3);
+run("Object.assign(Practice.skill(person(),Practice.defs[1]),{support:2,retry:2});nextQuestion()");assert.equal(run('practiceTestQuestion.mode'),'prerequisite');
+run("session.auto=false;session.i=12;nextQuestion()");assert.equal(run('practiceTestQuestion.mode'),'manual');assert.equal(run('practiceTestQuestion.course'),12);
+console.log('PASS generated stage differs from frozen learner estimate; challenge/review/prerequisite/manual labels');
