@@ -66,3 +66,28 @@ run("Practice.state(person()).turns.math=5;nextQuestion()");assert.equal(run('pr
 run("Object.assign(Practice.skill(person(),Practice.defs[1]),{support:2,retry:2});nextQuestion()");assert.equal(run('practiceTestQuestion.mode'),'prerequisite');
 run("session.auto=false;session.i=12;nextQuestion()");assert.equal(run('practiceTestQuestion.mode'),'manual');assert.equal(run('practiceTestQuestion.course'),12);
 console.log('PASS generated stage differs from frozen learner estimate; challenge/review/prerequisite/manual labels');
+for(const [kind,auto,course] of [['math',true,3],['jp',true,18],['en',true,0],['math',false,7],['jp',false,24]]){
+ run("data.current=0;person().game.coins=100;person().game.days={};person().flowers=10;practiceTestVisible=true");
+ run(kind==='en'?'startEnglish()':`start(${course},${auto})`);
+ for(let set=0;set<3;set++){
+  for(let n=0;n<5;n++){
+   run('if(practiceClock)practiceClock.start-=2000');
+   run(kind==='en'?"englishAnswer(englishSession.choices.findIndex(x=>x[0]===englishSession.word[0]),document.createElement('button'));englishAdvance()":"answer(q.choices.indexOf(q.answer),document.createElement('button'));advance()");
+  }
+  assert.equal(run('view'),'result');assert.equal(run('person().game.coins'),110+set*3);assert.equal(run('person().flowers'),11+set);
+  run(kind==='en'?'englishFinish()':'finish()');assert.equal(run('person().game.coins'),110+set*3);
+  run('continuePractice()');const active=run(kind==='en'?'englishSession':'session');
+  assert.equal(run('view'),'quiz');assert.equal(active.n,0);assert.equal(run('practiceTestVisible'),true);
+  if(kind!=='en'){assert.equal(run('subject'),kind);assert.equal(active.auto,auto);if(!auto)assert.equal(active.i,course)}
+  run('continuePractice()');assert.equal(run(kind==='en'?'englishSession':'session'),active);
+  assert.equal(run('person().game.coins'),110+set*3);
+ }
+ console.log('PASS repeated continuation + double-click/reward guard: '+kind+' '+(auto?'adaptive':'manual'));
+}
+run("home();continuePractice()");assert.equal(run('view'),'home');console.log('PASS home route retained; stale continuation ignored');
+for(const [animal,emoji] of [['cat','🐱'],['dog','🐶']]){
+ const rows=run('EN_WORDS[5]'),running=rows.find(w=>w[0]===`The ${animal} is running.`);
+ assert.ok(running[1].includes('<svg data-action="running"'));assert.ok(running[1].includes(emoji));assert.ok(!running[1].includes('>running<'));
+ assert.equal(rows.find(w=>w[0]===`The ${animal} is sleeping.`)[1],emoji+'💤');
+ assert.equal(rows.find(w=>w[0]===`The ${animal} is eating.`)[1],emoji+'🍽️');
+}console.log('PASS running SVG maps to correct animal/action; other English action icons unchanged');

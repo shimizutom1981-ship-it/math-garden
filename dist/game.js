@@ -644,8 +644,9 @@ for(const [name,color,jp] of [['red','#df5757','あか'],['blue','#589ad6','あ�
 for(const [name,emoji,jp] of [['cats','🐱','ねこ'],['dogs','🐶','いぬ'],['rabbits','🐰','うさぎ']])for(const n of [2,3]){
  englishExtension[1].push([['zero','one','two','three'][n]+' '+name,emoji.repeat(n),jp+n+'ひき']);
 }
+function runningPicture(emoji){return '<svg data-action="running" viewBox="0 0 120 104" width="120" height="104" style="max-width:100%;height:auto;vertical-align:middle" aria-hidden="true"><path d="M12 44h19M8 55h17" stroke="#7b949d" stroke-width="3" stroke-linecap="round"/><path d="M17 96h88" stroke="#b7c4bb" stroke-width="2"/><g fill="none" stroke="#355665" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M59 45L43 46L34 57M62 45L78 54L88 40"/><path d="M49 66L68 77L60 91L70 91M49 66L33 78L19 67L14 71"/></g><path d="M63 40L48 65" stroke="#438ca4" stroke-width="13" stroke-linecap="round"/><text x="70" y="35" text-anchor="middle" font-size="33">'+emoji+'</text></svg>'}
 for(const [animal,emoji,jp] of [['cat','🐱','ねこ'],['dog','🐶','いぬ']])for(const [act,icon,ja] of [['running','💨','はしっている'],['sleeping','💤','ねている'],['eating','🍽️','たべている']]){
- englishExtension[2].push(['The '+animal+' is '+act+'.',emoji+icon,jp+'が '+ja]);
+ englishExtension[2].push(['The '+animal+' is '+act+'.',act==='running'?runningPicture(emoji):emoji+icon,jp+'が '+ja]);
 }
 for(const [animal,emoji,jp] of [['cat','🐱','ねこ'],['dog','🐶','いぬ']])for(const [pos,en,ja] of [['above','on','うえ'],['under','under','した'],['beside','next to','よこ']]){
  englishExtension[3].push(['The '+animal+' is '+en+' the table.',positionPicture(pos,emoji),jp+'が つくえの '+ja+'に いる']);
