@@ -27,3 +27,20 @@ for(const d of run('Practice.defs')){for(const course of d.courses){for(let n=0;
  else {run(`session={auto:false,seen:{}};q=makeQuestion(${course})`);assert.equal(run('new Set(q.choices).size===q.choices.length&&q.choices.includes(q.answer)'),true)}
 }}}console.log('PASS all existing generator courses, unique choices and correct answer');
 assert.ok(JSON.parse(storage.get('kazunoniwa-v1')).profiles[0].practice);console.log('PASS existing save key persisted');
+// Exhaust every fraction numerator/denominator, through manual and adaptive rendering.
+for(const auto of [false,true])for(let b=2;b<=6;b++)for(let a=1;a<b;a++){
+ run("Object.assign(Practice.skill(person(),Practice.defs.find(d=>d.id==='fraction')),{support:0,retry:null,misses:0});");
+ const originalRandom=Math.random;let draws=[(b-2+.1)/5,(a-1+.1)/(b-1)];
+ try{
+  Math.random=()=>draws.length?draws.shift():originalRandom();
+  run(`session={i:12,auto:${auto},practiceFocus:'fraction',seen:{},n:0,correct:0,misses:0};subject='math';view='quiz';nextQuestion()`);
+ }finally{Math.random=originalRandom}
+ assert.equal(run('q.a'),a);assert.equal(run('q.b'),b);assert.equal(run('q.answer'),`${a}/${b}`);
+ assert.match(app.innerHTML,/class="fraction-diagram"[^>]*width:100%/);
+ assert.ok(app.innerHTML.includes(`aria-label="${b}等分したうち${a}つが色付き"`));
+ assert.equal((app.innerHTML.match(/background:#eab95f/g)||[]).length,a);
+ assert.equal((app.innerHTML.match(/background:#fff;/g)||[]).length,b-a);
+ assert.equal(run('new Set(q.choices).size'),4);
+ run("if(practiceClock)practiceClock.start-=2000;answer(q.choices.indexOf(q.answer),document.createElement('button'))");assert.equal(run('session.done'),true);
+}
+console.log('PASS all 15 fraction diagrams and answers in manual + adaptive modes');
