@@ -260,9 +260,9 @@ function englishNext(){
  const e=englishSession;if(!e||e.rewarded)return;
  if(e.n>=5){englishFinish();return}
  e.help=false;e.done=false;e.selected=null;
- const group=Math.floor(e.level/4),newQuota=[1,2,3,5][e.level%4];
- const bank=group>0&&e.n>=newQuota?EN_WORDS[group-1]:EN_WORDS[group];
- const pool=bank.filter(w=>!e.seen.includes(w[0]));
+ const item=practiceSelection('en');e.level=item.course;e.count=e.level%4<2?2:3;practiceBegin(item);
+ const bank=EN_WORDS[Math.floor(e.level/4)];
+ let pool=bank.filter(w=>!e.seen.includes(w[0]));if(!pool.length)pool=bank;
  e.word=pool[rand(0,pool.length-1)];e.seen.push(e.word[0]);
  const others=bank.filter(w=>w!==e.word).map(w=>({w,r:Math.random()})).sort((a,b)=>a.r-b.r).slice(0,e.count-1).map(x=>x.w);
  e.choices=[e.word,...others].map(w=>({w,r:Math.random()})).sort((a,b)=>a.r-b.r).map(x=>x.w);
@@ -286,10 +286,7 @@ function englishAnswer(i,button){
 function englishAdvance(){if(!englishSession?.done)return;englishSession.n++;englishNext()}
 function englishFinish(){
  const e=englishSession;if(!e||e.rewarded)return;e.rewarded=true;
- const p=englishProgress();p.strong=e.clean>=4?p.strong+1:0;
- // Repeat each small step for five confident sets; ease after difficulty.
- if(p.strong>=5&&p.level<31){p.level++;p.strong=0}
- else if(e.clean<=2&&p.level>0){p.level--;p.strong=0}
+ // Hidden per-skill practice state is updated on first attempts.
  const g=game(),d=dailyRecord(),reward=d['auto-en']?3:10;
  d['auto-en']=(Number.isSafeInteger(d['auto-en'])?d['auto-en']:0)+1;g.coins+=reward;person().flowers++;save();
  leaveQuizScreen();view='result';
@@ -442,13 +439,7 @@ function timingRecord(clean){
  const slow=!!(valid&&baseline&&t.ms>Math.max(10000,baseline*2.5));
  rows.push({at:new Date().toISOString(),key:t.key,ms:Math.round(t.ms),valid,clean,slow});
  if(rows.length>500)rows.splice(0,rows.length-500);
- // Timing alone never lowers a level. Repeated slow, assisted answers increase review.
- const recent=rows.filter(r=>r.key===t.key&&r.valid).slice(-5);
- if(baseline&&recent.filter(r=>r.slow&&!r.clean).length>=3){
-  if(!t.english&&t.active.auto&&!t.active.timeReview){
-   const a=adaptiveState();a.strongSets=0;a.newCount=Math.max(1,(a.newCount||5)-1);t.active.timeReview=true;
-  }else if(t.english)englishProgress().strong=0;
- }
+ // Timing is descriptive only; mastery never depends on slow correct answers.
  timingStop();save();
 }
 const timedNext=nextQuestion;
@@ -471,7 +462,7 @@ document.addEventListener('visibilitychange',()=>{if(quietTiming)quietTiming.las
 function timingReport(){
  const rows=timingRows(),keys=[...new Set(rows.map(r=>r.key))];
  const label=key=>{const parts=key.split(':');return parts[0]==='en'?'英語 ステップ '+(Number(parts[1])+1):(TOPICS[Number(parts[1])]?.[1]||'学習')+(parts[2]?.startsWith('prep')?'（やさしい準備 '+(Number(parts[2].slice(4))+1)+'）':'')};
- return '<section class="panel"><h2>解答時間（保護者用）</h2><p>時間は子供の画面に表示しません。読み上げ中・別画面の時間は除きます。2分を超える解答などは判定対象外です。端末の音声状態による誤差や、画面を開いたままの離席は区別できません。</p><p>同じ範囲で有効な自力正解が15問たまるまでは記録のみ。その後も速さだけでは進級・後退させず、普段の2.5倍超（かつ10秒超）の時間と支援が直近5問中3問で重なった場合、復習を増やし進級を慎重にします。直近500問をこのブラウザに保存し、バックアップにも含めます。</p>'+(!rows.length?'<p>まだ記録はありません。</p>':keys.map(key=>{const rs=rows.filter(r=>r.key===key&&r.valid),clean=rs.filter(r=>r.clean);return '<div class="row"><span>'+esc(label(key))+'</span><span>有効 '+rs.length+'問 ／ 中央値 '+(rs.length?(timingMedian(rs.map(r=>r.ms))/1000).toFixed(1)+'秒':'—')+' ／ '+(clean.length>=15?'本人のペースを参照中':'基準収集中 '+clean.length+'/15')+'</span></div>'}).join(''))+'<details><summary>直近20問の記録</summary>'+rows.slice(-20).reverse().map(r=>'<p>'+esc(new Date(r.at).toLocaleString('ja-JP'))+' · '+esc(label(r.key))+' · '+(r.valid?(r.ms/1000).toFixed(1)+'秒':'判定対象外')+' · '+(r.clean?'自力正解':'ヒント・再回答あり')+'</p>').join('')+'</details></section>';
+ return '<section class="panel"><h2>解答時間（保護者用）</h2><p>時間は子供の画面に表示しません。読み上げ中・別画面の時間は除きます。2分を超える解答などは判定対象外です。端末の音声状態による誤差や、画面を開いたままの離席は区別できません。</p><p>時間は同じ技能の本人の記録としてのみ参照し、難易度や報酬を変えません。直近500問をこのブラウザに保存し、バックアップにも含めます。</p>'+(!rows.length?'<p>まだ記録はありません。</p>':keys.map(key=>{const rs=rows.filter(r=>r.key===key&&r.valid),clean=rs.filter(r=>r.clean);return '<div class="row"><span>'+esc(label(key))+'</span><span>有効 '+rs.length+'問 ／ 中央値 '+(rs.length?(timingMedian(rs.map(r=>r.ms))/1000).toFixed(1)+'秒':'—')+' ／ '+(clean.length>=15?'本人のペースを参照中':'基準収集中 '+clean.length+'/15')+'</span></div>'}).join(''))+'<details><summary>直近20問の記録</summary>'+rows.slice(-20).reverse().map(r=>'<p>'+esc(new Date(r.at).toLocaleString('ja-JP'))+' · '+esc(label(r.key))+' · '+(r.valid?(r.ms/1000).toFixed(1)+'秒':'判定対象外')+' · '+(r.clean?'自力正解':'ヒント・再回答あり')+'</p>').join('')+'</details></section>';
 }
 
 function learningStageRows(){
