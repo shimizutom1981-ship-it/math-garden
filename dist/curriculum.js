@@ -5,7 +5,7 @@ function registerJapanese(id,title,banks,prerequisite){
  const courses=banks.map((bank,stage)=>{const i=TOPICS.length;TOPICS.push(['📖',title+' '+(stage+1),'ことば・文脈から考える','jp',i-JP_START]);JP_BANK[i-JP_START]=bank;curriculumCourseMeta[i]={title,stage,subject:'jp'};return i});
  Practice.defs.push({id,subject:'jp',courses,prerequisite});curriculumTitles[id]=title;practiceTestNames[id]=title;
 }
-for(const x of JP_ADVANCED)registerJapanese('jp_'+x.id,x.title,x.banks,'reading');
+for(const x of JP_ADVANCED){if(x.id==='kanjiContext')for(const bank of x.banks)bank.readingTask='kanji';registerJapanese('jp_'+x.id,x.title,x.banks,'reading')}
 for(const x of JP_EXPRESSIONS){
  const completion=x.rows.map(r=>{const at=r[0].lastIndexOf(r[1]);return [r[0].slice(0,at)+'□'+r[0].slice(at+r[1].length)+'。□に入る言葉は？',r[1],r[2],r[0]+'：'+r[3]]});
  const meaning=x.rows.map(r=>['「'+r[0]+'」の意味は？',r[3],r[4],r[6]]);

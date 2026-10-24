@@ -153,3 +153,28 @@ assert.equal(vm.runInContext('freeSubjectChoice()',resumed),true);assert.equal(v
 vm.runInContext('home();startGuidedPractice()',resumed);assert.equal(vm.runInContext('!!englishSession&&session===null',resumed),true);
 run('parents();practiceTestToggle(true)');assert.equal(run('practiceTestVisible'),true);
 console.log('PASS default/migrated profiles sequential; parent toggle both ways, per-profile persisted resume, stop/restart, full cycle, no shortcut and unchanged mastery/inventory');
+const spoken=[];c.speechSynthesis.speak=u=>spoken.push(u.text);run('data.sound=true;practiceTestVisible=false');
+const readingCourses=[22,20,...run("Practice.defs.find(d=>d.id==='jp_kanjiContext').courses")];
+let readingChecks=0,previousLeakCases=0;
+for(const course of readingCourses){
+ const count=run(`JP_BANK[${course}-JP_START].length`);
+ run(`subject='jp';view='quiz';session={i:${course},auto:false,seen:{},n:0,correct:0,misses:0}`);
+ for(let j=0;j<count;j++){
+  spoken.length=0;run('nextQuestion()');
+  assert.ok(run('q.readingTask'));assert.equal(spoken.at(-1),run('speechText(q.instructionSpeech)'));
+  if(course!==22){assert.notEqual(run('q.text'),spoken.at(-1));previousLeakCases++}
+  assert.doesNotMatch(app.innerHTML,/<ruby|<rt\b|aria-label="[^"]*正解/);
+  run('speakQuestion()');assert.equal(spoken.at(-1),run('speechText(q.instructionSpeech)'));
+  const pronounced=run('q.answer');run("answer(q.choices.indexOf(q.answer),document.createElement('button'))");
+  assert.ok(spoken.at(-1).startsWith(pronounced));assert.equal(run('session.done'),true);
+  run('speakQuestion()');assert.equal(spoken.at(-1),`正解は、${pronounced}です。`);readingChecks++;
+ }
+}
+assert.equal(readingChecks,34);assert.equal(previousLeakCases,26);
+for(const id of ['words','jp_kanjiContext']){
+ run(`Object.assign(Practice.skill(person(),Practice.defs.find(d=>d.id==='${id}')),{level:${id==='words'?1:2},support:0,retry:null});Practice.state(person()).turns.jp=0;session={i:22,auto:true,practiceFocus:'${id}',seen:{},n:0};subject='jp';view='quiz';nextQuestion()`);
+ assert.equal(spoken.at(-1),run('speechText(q.instructionSpeech)'));
+}
+run("subject='jp';session={i:24,auto:false,seen:{},n:0};view='quiz';nextQuestion()");assert.equal(spoken.at(-1),run('speechText(q.text)'));
+run("subject='math';session={i:12,auto:false,seen:{},n:0};view='quiz';nextQuestion()");assert.equal(spoken.at(-1),run('speechText(q.text)'));
+console.log('PASS all 26 kanji +8 kana reading items: neutral automatic/replay audio, pronunciation only after correct answer, adaptive routes and other speech unchanged');
