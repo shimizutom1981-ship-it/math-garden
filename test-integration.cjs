@@ -238,3 +238,36 @@ for(let i=0;i<13;i++)for(let j=0;j<20;j++){
 }
 for(const i of [14,16])for(let j=0;j<20;j++)assert.ok(c.WrittenHints.model(run(`makeMentalQuestion(${i})`)));
 console.log('PASS structured generators, staged hints/reset, rapid repeated hints, no speech answer leak, unchanged saves and concept fallback');
+
+run("data.sound=false;data.current=0;game().growth=297;avatarState();railState();railState().passengers=['main','momo','sora','hoshi'];railRoom()");
+const trainSave=run('JSON.stringify(data)');
+assert.equal((app.innerHTML.match(/class="rail-driver"/g)||[]).length,1);
+assert.ok(app.innerHTML.indexOf('class="rail-driver"')>app.innerHTML.indexOf('class="rail-train"'));
+assert.ok(app.innerHTML.includes(run('avatarArt()')));
+for(const id of ['main','momo','sora','hoshi'])assert.ok(app.innerHTML.includes(run(`FRIENDS.find(f=>f.id==='${id}').icon`)));
+run('railRoom();railRoom()');assert.equal(run('JSON.stringify(data)'),trainSave);
+run("setAvatar('outfit','driver');setAvatar('accessory','railcap');railRoom()");
+assert.ok(app.innerHTML.includes(run('avatarArt()')));assert.ok(app.innerHTML.includes('fill="#284b77"'));
+run('data.current=1;railRoom()');assert.ok(app.innerHTML.includes(run('avatarArt()')));assert.equal(run('avatarState().outfit'),'everyday');
+run('data.current=0;railRoom()');assert.equal(run('avatarState().outfit'),'driver');
+const timers=[],cancelled=[];c.setTimeout=(f)=>{timers.push(f);return timers.length};c.clearTimeout=id=>cancelled.push(id);
+let trainNode=node(),statusNode=node();const priorAppQuery=app.querySelector;
+app.querySelector=s=>s==='.rail-train'?trainNode:s==='.rail-status'?statusNode:priorAppQuery(s);
+run('railDepart();railDepart()');assert.ok(cancelled.includes(timers.length-1));
+const oldArrival=timers.at(-1);trainNode=node();statusNode=node();statusNode.textContent='NEW SCREEN';oldArrival();assert.equal(statusNode.textContent,'NEW SCREEN');
+run('railDepart()');timers.at(-1)();assert.ok(statusNode.textContent.includes('とうちゃく'));
+console.log('PASS avatar inside train, all friends retained, clothing/profile changes, repeated render and departure, stale arrival isolated');
+
+run('data.current=0;avatarRoom()');
+const preservedBeforeOutfit=run('JSON.stringify({game:game(),stats:person().stats,flowers:person().flowers,practice:person().practice,flow:person().practiceFlow})');
+for(const [key,options] of run('Object.entries(AVATAR_OPTIONS)'))for(const option of options){
+ run(`setAvatar('${key}','${option[0]}')`);
+ assert.equal(run(`avatarState()['${key}']`),option[0]);
+ assert.ok(app.innerHTML.includes(run('avatarArt()')));
+}
+const selectedAvatar=run('JSON.stringify(person().avatar)');
+run('home();avatarRoom()');assert.equal(run('JSON.stringify(person().avatar)'),selectedAvatar);
+run('data=JSON.parse(localStorage.getItem(KEY));home();avatarRoom()');assert.equal(run('JSON.stringify(person().avatar)'),selectedAvatar);
+assert.equal(run('JSON.stringify({game:game(),stats:person().stats,flowers:person().flowers,practice:person().practice,flow:person().practiceFlow})'),preservedBeforeOutfit);
+run("data.current=1;setAvatar('hair','short');data.current=0;avatarRoom()");assert.equal(run('JSON.stringify(person().avatar)'),selectedAvatar);
+console.log('PASS all unlocked avatar choices preview and save; reopen/reload/profile isolation preserve coins, purchases and learning records');
