@@ -41,7 +41,7 @@ learningStageReport=function(){return '<section class="panel"><h2>じぶんに�
 function practiceSettings(){return `<section class="panel practice-settings"><h2>はじめの むずかしさ（任意）</h2><p>大人も子どもも、じぶんのペースで。年齢は保存せず、少しやさしい開始位置の目安にだけ使います。未回答の技能にだけ適用し、記録や持ち物は残ります。</p><label for="practiceAge">年齢（空欄でもOK）</label><input id="practiceAge" type="number" inputmode="numeric" min="3" max="120" autocomplete="off"><div class="actions"><button class="sub" onclick="practiceSeed(false)">目安から はじめる</button><button class="sub" onclick="practiceSeed(true)">やさしく はじめる</button></div><p id="practiceSeedStatus" role="status"></p></section>`}
 function practiceSeed(easy){const raw=document.querySelector('#practiceAge').value,age=raw===''?null:Number(raw);Practice.configure(person(),age,easy);save();home()}
 const practiceHome=home;
-home=function(){practiceItem=null;practiceClock=null;practiceHome();if(!Practice.state(person()).configured)app.insertAdjacentHTML('beforeend',practiceSettings());app.insertAdjacentHTML('beforeend','<p class="muted" style="text-align:center;font-size:12px">数の庭 v2026.10.24.4 · 更新 2026-10-24</p>')};
+home=function(){practiceItem=null;practiceClock=null;practiceHome();if(!Practice.state(person()).configured)app.insertAdjacentHTML('beforeend',practiceSettings());app.insertAdjacentHTML('beforeend','<p class="muted" style="text-align:center;font-size:12px">数の庭 v2026.10.24.5 · 更新 2026-10-24</p>')};
 const practiceParents=parents;
 parents=function(){practiceParents();app.insertAdjacentHTML('beforeend',practiceSettings())};
 document.querySelector('#parent').onclick=parents;
@@ -87,14 +87,14 @@ let practiceContinuation=null;
 const continuationFinish=finish;
 finish=function(){
  if(!session||session.rewarded)return;
- const completed=session,target={profile:person(),subject,auto:session.auto,course:session.i};
+ const completed=session,target={profile:person(),subject,auto:session.auto,course:session.i,focus:session.selectedPracticeFocus};
  continuationFinish();
  if(view==='result'&&completed.rewarded)practiceContinuation=target;
 };
 const continuationEnglishFinish=englishFinish;
 englishFinish=function(){
  if(!englishSession||englishSession.rewarded)return;
- const completed=englishSession,target={profile:person(),subject:'en',auto:true};
+ const completed=englishSession,target={profile:person(),subject:'en',auto:true,focus:englishSession.selectedPracticeFocus};
  continuationEnglishFinish();
  if(view==='result'&&completed.rewarded){
   practiceContinuation=target;
@@ -106,6 +106,7 @@ function continuePractice(){
  if(view!=='result'||!target||person()!==target.profile)return;
  practiceContinuation=null; // Consume before rendering: a second click cannot start another set.
  cancelAutoNext();
- if(target.subject==='en')startEnglish();
+ if(target.focus&&typeof startSelectedPractice==='function')startSelectedPractice(target.focus);
+ else if(target.subject==='en')startEnglish();
  else {subject=target.subject;start(target.auto?recommendationFor(target.subject):target.course,target.auto)}
 }

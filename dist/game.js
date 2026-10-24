@@ -57,7 +57,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden){stopMusic(
 function showWelcome(){leaveQuizScreen();session=null;view='welcome';if('speechSynthesis'in window)speechSynthesis.cancel();document.querySelector('#welcome')?.remove();let modal=document.createElement('div');modal.id='welcome';modal.className='welcome';modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-labelledby','welcomeTitle');modal.innerHTML=`<div class="welcome-box"><div style="font-size:58px">🌸📖</div><h1 id="welcomeTitle">だれが あそぶ？</h1><p>じぶんの なまえを おしてね。</p><button class="sub" data-music onclick="musicControl()">♫ おんがくを はじめる</button><p class="muted">おとが でないときは、うえの ボタンを おしてね。</p><div class="profile-buttons">${data.profiles.map((p,i)=>`<button class="profile-button" onclick="chooseChild(${i})"><span>${i%2?'🐰':'🐱'}</span>${esc(p.name)}</button>`).join('')}</div></div>`;document.body.appendChild(modal);document.querySelector('.wrap').inert=true;modal.addEventListener('keydown',e=>{if(e.key!=='Tab')return;let buttons=[...modal.querySelectorAll('button')],first=buttons[0],last=buttons.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}});modal.querySelector('button').focus();startMusic();refreshMusic()}
 function chooseChild(i){if(!data.profiles[i])return;data.current=i;game();save();document.querySelector('#welcome')?.remove();document.querySelector('.wrap').inert=false;refresh();home();startMusic()}
 function recommendationFor(which){let old=subject;subject=which;let i=recommended();subject=old;return i}
-function dailyStages(){let old=subject,lo=old==='math'?0:JP_START,hi=old==='math'?JP_START:TOPICS.length,learned=[];for(let i=lo;i<hi;i++)if(stats(i).total>0)learned.push(i);let c=learned.length?learned[(new Date().getDate()-1)%learned.length]:lo;return [{i:recommendationFor('math'),title:'🔢 さんすうの みち'},{i:recommendationFor('jp'),title:'📖 ことばの もり'},{i:c,title:'🌼 もういちどの おか'}]}
+function dailyStages(){let old=subject,lo=old==='math'?0:JP_START,hi=old==='math'?JP_START:TOPICS.length,learned=[];for(let i=0;i<TOPICS.length;i++)if(subjectForCourse(i)===old&&stats(i).total>0)learned.push(i);let c=learned.length?learned[(new Date().getDate()-1)%learned.length]:lo;return [{i:recommendationFor('math'),title:'🔢 さんすうの みち'},{i:recommendationFor('jp'),title:'📖 ことばの もり'},{i:c,title:'🌼 もういちどの おか'}]}
 home=function(){
  leaveQuizScreen();view='home';session=null;refresh();
  let g=game();
@@ -75,7 +75,7 @@ home=function(){
  refreshMusic();
 };
 const originalStart=start;
-start=function(i,auto){subject=i<JP_START?'math':'jp';let level=auto?adaptiveState().level:i;enterQuizScreen();originalStart(level,auto);session.stageStart=auto?'auto-'+subject:i;session.rewarded=false};
+start=function(i,auto){subject=subjectForCourse(i);let level=auto?adaptiveState().level:i;enterQuizScreen();originalStart(level,auto);session.stageStart=auto?'auto-'+subject:i;session.rewarded=false};
 const originalFinish=finish;
 finish=function(){if(!session||session.rewarded)return;session.rewarded=true;leaveQuizScreen();let g=game(),d=dailyRecord(),id=String(session.stageStart??session.i),reward=d[id]?3:10;d[id]=(Number.isSafeInteger(d[id])?d[id]:0)+1;g.coins+=reward;let keys=Object.keys(g.days).sort();for(let k of keys.slice(0,-90))delete g.days[k];save();originalFinish();let box=document.createElement('div');box.className='reward';box.innerHTML=`<strong>🪙 ${reward} コイン もらった！</strong><p>いま ${g.coins} コイン。にわっちに あいに いこう。</p><button class="primary" onclick="petRoom()">🌱 にわっちに あう</button>`;app.querySelector('.panel').appendChild(box)};
 
@@ -261,6 +261,8 @@ function englishNext(){
  if(e.n>=5){englishFinish();return}
  e.help=false;e.done=false;e.selected=null;
  const item=practiceSelection('en');e.level=item.course;e.count=e.level%4<2?2:3;practiceBegin(item);
+ e.curriculumKind=null;e.answerAudio=null;e.readingAlternative=false;
+ if(typeof buildCurriculumEnglish==='function'&&buildCurriculumEnglish(e,item))return;
  const bank=EN_WORDS[Math.floor(e.level/4)];
  let pool=bank.filter(w=>!e.seen.includes(w[0]));if(!pool.length)pool=bank;
  e.word=pool[rand(0,pool.length-1)];e.seen.push(e.word[0]);
@@ -281,7 +283,7 @@ function englishAnswer(i,button){
  document.querySelectorAll('.choice').forEach(b=>b.disabled=true);button.classList.add('correct');
  document.querySelector('#englishHint').disabled=true;document.querySelector('#englishNext').classList.remove('hidden');
  document.querySelector('#englishFeedback').textContent='✨ '+e.word[0]+' ＝ '+e.word[2]+'！';
- englishSay(e.word[0]+'. Great!');
+ englishSay((e.answerAudio||e.word[0])+'. Great!');
 }
 function englishAdvance(){if(!englishSession?.done)return;englishSession.n++;englishNext()}
 function englishFinish(){

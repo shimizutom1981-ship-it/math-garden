@@ -51,6 +51,7 @@ run('practiceTestToggle(false)');assert.equal(run('practiceTestMarkup()'),'');
 assert.equal(run('JSON.stringify(data)'),beforeToggle);assert.equal(storage.get('kazunoniwa-v1'),storedBefore);
 console.log('PASS test toggle defaults OFF and changes no learner/save data');
 run('practiceTestToggle(true)');
+c.speechSynthesis={cancel(){},getVoices(){return []},speak(){}};c.SpeechSynthesisUtterance=function(text){this.text=text};run('data.sound=true');
 for(const def of run('Practice.defs'))for(const course of def.courses){
  run(`Object.assign(Practice.skill(person(),Practice.defs.find(d=>d.id==='${def.id}')),{level:${def.courses.indexOf(course)},support:0,retry:null});Practice.state(person()).turns['${def.subject}']=0`);
  if(def.subject==='en')run(`session=null;englishSession={n:0,seen:[],practiceFocus:'${def.id}'};view='quiz';englishNext()`);
@@ -59,6 +60,7 @@ for(const def of run('Practice.defs'))for(const course of def.courses){
  assert.equal(run('practiceTestQuestion.skill'),def.id);assert.equal(run('practiceTestQuestion.mode'),'fluent');
 }
 console.log('PASS actual skill, generated stage and mode across every course in all subjects');
+run('data.sound=false');
 run("Object.assign(Practice.skill(person(),Practice.defs[1]),{level:0,support:0,retry:null});Practice.state(person()).turns.math=2;session={i:3,auto:true,practiceFocus:'addition',seen:{},n:0};subject='math';view='quiz';nextQuestion()");
 assert.equal(run('practiceTestQuestion.mode'),'challenge');assert.equal(run('practiceTestQuestion.stage'),2);assert.equal(run('practiceTestQuestion.estimate'),1);
 const snapshot=run('JSON.stringify(practiceTestQuestion)');run('Practice.skill(person(),Practice.defs[1]).level=2');assert.equal(run('JSON.stringify(practiceTestQuestion)'),snapshot);
@@ -91,3 +93,32 @@ for(const [animal,emoji] of [['cat','🐱'],['dog','🐶']]){
  assert.equal(rows.find(w=>w[0]===`The ${animal} is sleeping.`)[1],emoji+'💤');
  assert.equal(rows.find(w=>w[0]===`The ${animal} is eating.`)[1],emoji+'🍽️');
 }console.log('PASS running SVG maps to correct animal/action; other English action icons unchanged');
+assert.equal(run('vocabularyCount'),750);
+assert.equal(run('new Set(VOCABULARY_GROUPS.flatMap(g=>g.words.map(w=>w.word.toLowerCase()))).size'),750);
+assert.equal(run('JP_ADVANCED.reduce((n,g)=>n+g.banks.flat().length,0)+JP_EXPRESSIONS.reduce((n,g)=>n+g.rows.length*3,0)'),162);
+for(const kind of ['math','jp','en']){run(`openPracticeCourses('${kind}')`);assert.equal(run('view'),'courses')}
+for(const def of run('Practice.defs').filter(d=>/^(jp_|vocab_|math|enListening|enSpelling|enSocial|enInformation)/.test(d.id))){
+ run(`data.sound=false;startSelectedPractice('${def.id}')`);
+ const actual=run('practiceItem.skill');
+ for(let n=0;n<5;n++){
+  assert.equal(run('subject'),def.subject==='en'?'jp':def.subject);
+  run('practiceClock.start-=2000');
+  if(def.subject==='en'){
+   assert.equal(run('new Set(englishSession.choices.map(w=>w[1])).size===englishSession.choices.length'),true);
+   if(def.id.startsWith('vocab_'))assert.equal(run('englishSession.choices.filter(w=>w!==englishSession.word).every(w=>w[2]!==englishSession.word[2]&&(!englishSession.word[4].word.synonymGroup||w[4].word.synonymGroup!==englishSession.word[4].word.synonymGroup))'),true);
+   run("englishAnswer(englishSession.choices.findIndex(x=>x[0]===englishSession.word[0]),document.createElement('button'));englishAdvance()");
+  }else run("answer(q.choices.indexOf(q.answer),document.createElement('button'));advance()");
+ }
+ assert.equal(run('view'),'result');run('continuePractice()');
+ assert.equal(run(def.subject==='en'?'englishSession.selectedPracticeFocus':'session.selectedPracticeFocus'),def.id);
+ if(def.id==='enListening'||def.id==='enSpelling')assert.notEqual(actual,def.id);
+}
+console.log('PASS 750 distinct headwords,162 Japanese questions, all new skill flows/continuation, synonym-safe vocabulary and independent reading fallback');
+run("data.sound=false;startSelectedPractice('enListening');practiceClock.start-=2000");
+const listeningBefore=run("Practice.skill(person(),Practice.defs.find(d=>d.id==='enListening')).total"),readingId=run('practiceItem.skill');
+const readingBefore=run(`Practice.skill(person(),Practice.defs.find(d=>d.id==='${readingId}')).total`);
+run("englishAnswer(englishSession.choices.findIndex(x=>x[0]===englishSession.word[0]),document.createElement('button'))");
+assert.equal(run("Practice.skill(person(),Practice.defs.find(d=>d.id==='enListening')).total"),listeningBefore);
+assert.equal(run(`Practice.skill(person(),Practice.defs.find(d=>d.id==='${readingId}')).total`),readingBefore+1);
+assert.equal(run("person().game.equipped.hat"),'crown');
+console.log('PASS audio-free answers never credit listening mastery; inventory retained after curriculum sessions');
