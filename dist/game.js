@@ -56,6 +56,14 @@ function musicControl(){if(data.music&&musicCtx?.state==='running'){data.music=f
 document.addEventListener('visibilitychange',()=>{if(document.hidden){stopMusic();if('speechSynthesis'in window)speechSynthesis.cancel()}else startMusic()});
 function showWelcome(){leaveQuizScreen();session=null;view='welcome';if('speechSynthesis'in window)speechSynthesis.cancel();document.querySelector('#welcome')?.remove();let modal=document.createElement('div');modal.id='welcome';modal.className='welcome';modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-labelledby','welcomeTitle');modal.innerHTML=`<div class="welcome-box"><div style="font-size:58px">🌸📖</div><h1 id="welcomeTitle">だれが あそぶ？</h1><p>じぶんの なまえを おしてね。</p><button class="sub" data-music onclick="musicControl()">♫ おんがくを はじめる</button><p class="muted">おとが でないときは、うえの ボタンを おしてね。</p><div class="profile-buttons">${data.profiles.map((p,i)=>`<button class="profile-button" onclick="chooseChild(${i})"><span>${i%2?'🐰':'🐱'}</span>${esc(p.name)}</button>`).join('')}</div></div>`;document.body.appendChild(modal);document.querySelector('.wrap').inert=true;modal.addEventListener('keydown',e=>{if(e.key!=='Tab')return;let buttons=[...modal.querySelectorAll('button')],first=buttons[0],last=buttons.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}});modal.querySelector('button').focus();startMusic();refreshMusic()}
 function chooseChild(i){if(!data.profiles[i])return;data.current=i;game();save();document.querySelector('#welcome')?.remove();document.querySelector('.wrap').inert=false;refresh();home();startMusic()}
+function practiceFlow(){
+ const p=person();if(!p.practiceFlow||typeof p.practiceFlow!=='object'||Array.isArray(p.practiceFlow))p.practiceFlow={};
+ p.practiceFlow.freeChoice=p.practiceFlow.freeChoice===true;
+ if(!['math','jp','en'].includes(p.practiceFlow.next))p.practiceFlow.next='math';
+ return p.practiceFlow;
+}
+function freeSubjectChoice(){return practiceFlow().freeChoice}
+function guidedStartLabel(){return {math:'算数から はじめる →',jp:'つづきの国語へ →',en:'つづきの英語へ →'}[practiceFlow().next]}
 function recommendationFor(which){let old=subject;subject=which;let i=recommended();subject=old;return i}
 function dailyStages(){let old=subject,lo=old==='math'?0:JP_START,hi=old==='math'?JP_START:TOPICS.length,learned=[];for(let i=0;i<TOPICS.length;i++)if(subjectForCourse(i)===old&&stats(i).total>0)learned.push(i);let c=learned.length?learned[(new Date().getDate()-1)%learned.length]:lo;return [{i:recommendationFor('math'),title:'🔢 さんすうの みち'},{i:recommendationFor('jp'),title:'📖 ことばの もり'},{i:c,title:'🌼 もういちどの おか'}]}
 home=function(){
@@ -64,9 +72,9 @@ home=function(){
  app.innerHTML=`<section class="panel center subject-home">
  <div class="home-avatar-heading"><button class="sub avatar-home" onclick="avatarRoom()" aria-label="じぶんの アバターを きせかえる">${avatarArt()}<span>きせかえ</span></button><div><p class="eyebrow">${esc(person().name)} の にわ</p><h1>きょうは なにを する？</h1></div></div>
  <p>算数 → 国語 → 英語。ひとつずつ、5もんで おはなが さくよ。</p>
- <button class="primary" onclick="startGuidedPractice()">算数から順番に はじめる →</button>
- <p class="muted">すきな教科からでも、同じ教科をつづけても OK。</p>
- <div class="subject-home-choices">
+ <button class="primary" onclick="startGuidedPractice()">${guidedStartLabel()}</button>
+ <p class="muted" ${freeSubjectChoice()?'':'hidden'}>すきな教科・分野から はじめられます。</p>
+ <div class="subject-home-choices" ${freeSubjectChoice()?'':'hidden'}>
  <button class="subject-home-card math" onclick="start(recommendationFor('math'),true)"><span aria-hidden="true">🔢</span><strong>さんすう</strong>${homeStageLabel(0)}</button>
  <button class="subject-home-card language" onclick="start(recommendationFor('jp'),true)"><span aria-hidden="true">📖</span><strong>こくご</strong>${homeStageLabel(1)}</button>
  <button class="subject-home-card english" onclick="startEnglish()"><span aria-hidden="true">🔤</span><strong>えいご</strong>${homeStageLabel(2)}</button></div>

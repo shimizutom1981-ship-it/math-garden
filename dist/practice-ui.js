@@ -41,14 +41,14 @@ learningStageReport=function(){return '<section class="panel"><h2>じぶんに�
 function practiceSettings(){return `<section class="panel practice-settings"><h2>はじめの むずかしさ（任意）</h2><p>大人も子どもも、じぶんのペースで。年齢は保存せず、少しやさしい開始位置の目安にだけ使います。未回答の技能にだけ適用し、記録や持ち物は残ります。</p><label for="practiceAge">年齢（空欄でもOK）</label><input id="practiceAge" type="number" inputmode="numeric" min="3" max="120" autocomplete="off"><div class="actions"><button class="sub" onclick="practiceSeed(false)">目安から はじめる</button><button class="sub" onclick="practiceSeed(true)">やさしく はじめる</button></div><p id="practiceSeedStatus" role="status"></p></section>`}
 function practiceSeed(easy){const raw=document.querySelector('#practiceAge').value,age=raw===''?null:Number(raw);Practice.configure(person(),age,easy);save();home()}
 const practiceHome=home;
-home=function(){practiceContinuation=null;practiceItem=null;practiceClock=null;practiceHome();if(!Practice.state(person()).configured)app.insertAdjacentHTML('beforeend',practiceSettings());app.insertAdjacentHTML('beforeend','<p class="muted" style="text-align:center;font-size:12px">数の庭 v2026.10.24.6 · 更新 2026-10-24</p>')};
+home=function(){practiceContinuation=null;practiceItem=null;practiceClock=null;practiceHome();if(!Practice.state(person()).configured)app.insertAdjacentHTML('beforeend',practiceSettings());app.insertAdjacentHTML('beforeend','<p class="muted" style="text-align:center;font-size:12px">数の庭 v2026.10.24.7 · 更新 2026-10-24</p>')};
 const practiceParents=parents;
 parents=function(){practiceParents();app.insertAdjacentHTML('beforeend',practiceSettings())};
 document.querySelector('#parent').onclick=parents;
 const practiceStart=start;
-start=function(i,auto){Practice.state(person()).configured=true;practiceStart(i,auto)};
+start=function(i,auto){Practice.state(person()).configured=true;rememberPracticeSubject(subjectForCourse(i));practiceStart(i,auto)};
 const practiceStartEnglish=startEnglish;
-startEnglish=function(){Practice.state(person()).configured=true;practiceStartEnglish()};
+startEnglish=function(){Practice.state(person()).configured=true;rememberPracticeSubject('en');practiceStartEnglish()};
 document.head.insertAdjacentHTML('beforeend','<style>.practice-settings input{display:block;max-width:100%;width:10em;font-size:20px;padding:12px;margin:10px 0}.practice-settings .actions{flex-wrap:wrap}.practice-settings button{min-height:48px}</style>');
 
 // Opt-in inspection only: memory-local, reset on reload, never writes learner saves.
@@ -89,7 +89,7 @@ finish=function(){
  if(!session||session.rewarded)return;
  const completed=session,target={profile:person(),subject,auto:session.auto,course:session.i,focus:session.selectedPracticeFocus};
  continuationFinish();
- if(view==='result'&&completed.rewarded){practiceContinuation=target;renderSubjectContinuation()}
+ if(view==='result'&&completed.rewarded){completePracticeSubject(target.subject);practiceContinuation=target;renderSubjectContinuation()}
 };
 const continuationEnglishFinish=englishFinish;
 englishFinish=function(){
@@ -97,19 +97,13 @@ englishFinish=function(){
  const completed=englishSession,target={profile:person(),subject:'en',auto:true,focus:englishSession.selectedPracticeFocus};
  continuationEnglishFinish();
  if(view==='result'&&completed.rewarded){
+  completePracticeSubject('en');
   practiceContinuation=target;
-  app.querySelector('.actions')?.insertAdjacentHTML('afterbegin','<button class="primary" onclick="continuePractice()">つづけて解く</button>');
   renderSubjectContinuation();
  }
 };
 function continuePractice(){
- const target=practiceContinuation;
- if(view!=='result'||!target||person()!==target.profile)return;
- practiceContinuation=null; // Consume before rendering: a second click cannot start another set.
- cancelAutoNext();
- if(target.focus&&typeof startSelectedPractice==='function')startSelectedPractice(target.focus);
- else if(target.subject==='en')startEnglish();
- else {subject=target.subject;start(target.auto?recommendationFor(target.subject):target.course,target.auto)}
+ // Retired handler: stale same-subject controls must never start another set.
 }
 const practiceSubjectOrder=['math','jp','en'];
 function renderSubjectContinuation(){
@@ -117,14 +111,21 @@ function renderSubjectContinuation(){
  const next=practiceSubjectOrder[(practiceSubjectOrder.indexOf(target.subject)+1)%3];
  const name={math:'算数',jp:'国語',en:'英語'}[next];
  app.querySelector('.actions')?.insertAdjacentHTML('afterbegin','<button class="primary" onclick="nextSubjectPractice()">次は'+name+'へ →</button>');
- const same=app.querySelector('[onclick="continuePractice()"]');
- if(same){same.textContent='同じ教科をつづけて解く';same.setAttribute('aria-label','同じ教科をつづけて解く')}
 }
 function startGuidedPractice(){
  if(view!=='home')return;
  practiceContinuation=null;curriculumRequestedFocus=null;
- start(recommendationFor('math'),true);
+ const next=practiceFlow().next;
+ if(next==='en')startEnglish();else start(recommendationFor(next),true);
 }
+// Per-profile navigation preferences; separate from skill mastery and rewards.
+function rememberPracticeSubject(kind){practiceFlow().next=kind;save()}
+function completePracticeSubject(kind){practiceFlow().next=practiceSubjectOrder[(practiceSubjectOrder.indexOf(kind)+1)%3];save()}
+function setFreeSubjectChoice(on){if(view!=='parent')return;practiceFlow().freeChoice=on===true;practiceContinuation=null;save();parents()}
+const subjectChoiceParents=parents;
+parents=function(){subjectChoiceParents();app.insertAdjacentHTML('beforeend',`<section class="panel"><h2>教科の進め方</h2><p>${esc(person().name)}さんの設定です。</p><label style="display:flex;align-items:center;gap:12px"><input id="freeSubjectChoice" type="checkbox" ${freeSubjectChoice()?'checked':''} onchange="setFreeSubjectChoice(this.checked)">教科・分野を自由に選べるようにする</label><p class="muted">OFFでは算数 → 国語 → 英語の順に5問ずつ進みます。途中でやめても、次は取り組み中の教科から再開できます。ONではホームで好きな教科・分野を選べます。結果画面はどちらの設定でも次の教科へ進みます。難易度・持ち物・報酬は変わりません。</p></section>`)};
+document.querySelector('#parent').onclick=parents;
+document.head.insertAdjacentHTML('beforeend','<style>.subject-home-choices[hidden]{display:none!important}</style>');
 function nextSubjectPractice(){
  const target=practiceContinuation;
  if(view!=='result'||!target||person()!==target.profile)return;

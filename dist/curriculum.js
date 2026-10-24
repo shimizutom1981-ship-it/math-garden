@@ -32,17 +32,19 @@ practiceSelection=function(kind){
  return curriculumSelection(kind);
 };
 function startSelectedPractice(id){
+ if(!freeSubjectChoice())return;
  const d=Practice.defs.find(x=>x.id===id);if(!d)return;
  curriculumRequestedFocus=id;
  if(d.subject==='en')startEnglish();else start(d.courses[Practice.skill(person(),d).level],true);
 }
 function openPracticeCourses(kind){
+ if(!freeSubjectChoice())return;
  leaveQuizScreen();cancelAutoNext();session=null;englishSession=null;view='courses';
  const name={math:'さんすう',jp:'こくご',en:'えいご'}[kind];
  app.innerHTML='<section class="panel"><button class="sub" onclick="home()">← にわへ</button><h1>'+name+' · 分野をえらぶ</h1><p>どこからでも練習できます。選んだ分野の中で、じぶんに合う問題に調整します。</p>'+(kind==='en'?'<p class="muted">追加の単語帳：'+vocabularyCount+'見出し語。活用形や会話の文は別の単語として数えません。音声が使えないときは読む練習に切り替えます。</p>':'')+'<div class="curriculum-grid">'+Practice.defs.filter(d=>d.subject===kind).map(d=>'<button class="sub" onclick="startSelectedPractice(\''+d.id+'\')">'+esc(curriculumTitles[d.id]||practiceTestNames[d.id]||d.id)+'</button>').join('')+'</div><p class="muted">選択式で扱える内容を練習します。全教科書の網羅や、書く・話す力の習得を保証するものではありません。</p></section>';
 }
 const curriculumHome=home;
-home=function(){curriculumRequestedFocus=null;curriculumHome();app.insertAdjacentHTML('beforeend','<section class="panel"><h2>分野をえらんで練習</h2><div class="actions"><button class="sub" onclick="openPracticeCourses(\'math\')">さんすう</button><button class="sub" onclick="openPracticeCourses(\'jp\')">こくご</button><button class="sub" onclick="openPracticeCourses(\'en\')">えいご</button></div></section>')};
+home=function(){curriculumRequestedFocus=null;curriculumHome();if(freeSubjectChoice())app.insertAdjacentHTML('beforeend','<section class="panel"><h2>分野をえらんで練習</h2><div class="actions"><button class="sub" onclick="openPracticeCourses(\'math\')">さんすう</button><button class="sub" onclick="openPracticeCourses(\'jp\')">こくご</button><button class="sub" onclick="openPracticeCourses(\'en\')">えいご</button></div></section>')};
 function buildCurriculumEnglish(e,item){
  const meta=curriculumEnglishBanks[Math.floor(item.course/4)];if(!meta)return false;
  if(meta.kind!=='vocabulary')return buildAdvancedEnglish(e,item,meta);

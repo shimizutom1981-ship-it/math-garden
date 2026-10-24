@@ -5,8 +5,11 @@ const legacy={version:1,mentalCurriculumVersion:1,current:0,sound:false,music:fa
 const storage=new Map([['kazunoniwa-v1',JSON.stringify(legacy)]]);
 const c={console,document,localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)},setTimeout:()=>1,clearTimeout(){},setInterval:()=>1,clearInterval(){},Date,Math,performance:{now:()=>Date.now()},scrollTo(){},addEventListener(){},requestAnimationFrame(){},matchMedia:()=>({matches:true}),navigator:{},location:{},confirm:()=>true};c.window=c;vm.createContext(c);
 const html=fs.readFileSync('dist/index.html','utf8');
+for(const source of [html,fs.readFileSync('dist/game.js','utf8'),fs.readFileSync('dist/practice-ui.js','utf8')])assert.doesNotMatch(source,/onclick=["']continuePractice\(\)/);
 for(const m of html.matchAll(/<script(?:\s+src="([^"]+)")?[^>]*>([\s\S]*?)<\/script>/g))vm.runInContext(m[1]?fs.readFileSync('dist/'+m[1].split('?')[0].replace('./',''),'utf8'):m[2],c);
 const run=s=>vm.runInContext(s,c);
+assert.equal(run('freeSubjectChoice()'),false);assert.equal(run('practiceFlow().next'),'math');
+run("data.profiles.forEach(p=>p.practiceFlow={freeChoice:true,next:'math'})");
 run("Practice.configure(person(),44,false);data.sound=false;data.music=false;");
 for(const subject of ['math','jp','en']){
  run(subject==='en'?'startEnglish()':`start(recommendationFor('${subject}'),true)`);
@@ -68,24 +71,6 @@ run("Practice.state(person()).turns.math=5;nextQuestion()");assert.equal(run('pr
 run("Object.assign(Practice.skill(person(),Practice.defs[1]),{support:2,retry:2});nextQuestion()");assert.equal(run('practiceTestQuestion.mode'),'prerequisite');
 run("session.auto=false;session.i=12;nextQuestion()");assert.equal(run('practiceTestQuestion.mode'),'manual');assert.equal(run('practiceTestQuestion.course'),12);
 console.log('PASS generated stage differs from frozen learner estimate; challenge/review/prerequisite/manual labels');
-for(const [kind,auto,course] of [['math',true,3],['jp',true,18],['en',true,0],['math',false,7],['jp',false,24]]){
- run("data.current=0;person().game.coins=100;person().game.days={};person().flowers=10;practiceTestVisible=true");
- run(kind==='en'?'startEnglish()':`start(${course},${auto})`);
- for(let set=0;set<3;set++){
-  for(let n=0;n<5;n++){
-   run('if(practiceClock)practiceClock.start-=2000');
-   run(kind==='en'?"englishAnswer(englishSession.choices.findIndex(x=>x[0]===englishSession.word[0]),document.createElement('button'));englishAdvance()":"answer(q.choices.indexOf(q.answer),document.createElement('button'));advance()");
-  }
-  assert.equal(run('view'),'result');assert.equal(run('person().game.coins'),110+set*3);assert.equal(run('person().flowers'),11+set);
-  run(kind==='en'?'englishFinish()':'finish()');assert.equal(run('person().game.coins'),110+set*3);
-  run('continuePractice()');const active=run(kind==='en'?'englishSession':'session');
-  assert.equal(run('view'),'quiz');assert.equal(active.n,0);assert.equal(run('practiceTestVisible'),true);
-  if(kind!=='en'){assert.equal(run('subject'),kind);assert.equal(active.auto,auto);if(!auto)assert.equal(active.i,course)}
-  run('continuePractice()');assert.equal(run(kind==='en'?'englishSession':'session'),active);
-  assert.equal(run('person().game.coins'),110+set*3);
- }
- console.log('PASS repeated continuation + double-click/reward guard: '+kind+' '+(auto?'adaptive':'manual'));
-}
 run("home();continuePractice()");assert.equal(run('view'),'home');console.log('PASS home route retained; stale continuation ignored');
 for(const [animal,emoji] of [['cat','🐱'],['dog','🐶']]){
  const rows=run('EN_WORDS[5]'),running=rows.find(w=>w[0]===`The ${animal} is running.`);
@@ -109,8 +94,8 @@ for(const def of run('Practice.defs').filter(d=>/^(jp_|vocab_|math|enListening|e
    run("englishAnswer(englishSession.choices.findIndex(x=>x[0]===englishSession.word[0]),document.createElement('button'));englishAdvance()");
   }else run("answer(q.choices.indexOf(q.answer),document.createElement('button'));advance()");
  }
- assert.equal(run('view'),'result');run('continuePractice()');
- assert.equal(run(def.subject==='en'?'englishSession.selectedPracticeFocus':'session.selectedPracticeFocus'),def.id);
+ assert.equal(run('view'),'result');run('continuePractice()');assert.equal(run('view'),'result');run('nextSubjectPractice()');
+ assert.equal(run('view'),'quiz');assert.equal(run('(session||englishSession)?.selectedPracticeFocus'),undefined);
  if(def.id==='enListening'||def.id==='enSpelling')assert.notEqual(actual,def.id);
 }
 console.log('PASS 750 distinct headwords,162 Japanese questions, all new skill flows/continuation, synonym-safe vocabulary and independent reading fallback');
@@ -123,7 +108,7 @@ assert.equal(run(`Practice.skill(person(),Practice.defs.find(d=>d.id==='${readin
 assert.equal(run("person().game.equipped.hat"),'crown');
 console.log('PASS audio-free answers never credit listening mastery; inventory retained after curriculum sessions');
 function finishSyntheticSet(kind){for(let n=0;n<5;n++){run('if(practiceClock)practiceClock.start-=2000');run(kind==='en'?"englishAnswer(englishSession.choices.findIndex(x=>x[0]===englishSession.word[0]),document.createElement('button'));englishAdvance()":"answer(q.choices.indexOf(q.answer),document.createElement('button'));advance()")}}
-run("data.current=0;person().game.coins=100;person().game.days={};person().flowers=10;home();startGuidedPractice()");
+run("data.current=0;person().game.coins=100;person().game.days={};person().flowers=10;practiceFlow().next='math';home();startGuidedPractice()");
 let initialSession=run('session');run('startGuidedPractice()');assert.equal(run('session'),initialSession);
 let expectedCoins=100;
 for(const [i,kind] of ['math','jp','en','math','jp','en'].entries()){
@@ -139,10 +124,32 @@ console.log('PASS two math/Japanese/English cycles; independent mastery, repeat-
 run("home();startSelectedPractice('mathCarry')");finishSyntheticSet('math');run('nextSubjectPractice()');assert.equal(run('subject'),'jp');assert.equal(run('session.selectedPracticeFocus'),undefined);assert.equal(run('curriculumRequestedFocus'),null);
 finishSyntheticSet('jp');const previousProfile=run('data.current');run('chooseChild(1);nextSubjectPractice()');assert.equal(run('view'),'home');assert.equal(run('practiceContinuation'),null);
 run('startEnglish()');finishSyntheticSet('en');run('home();nextSubjectPractice()');assert.equal(run('view'),'home');
-run("start(7,false)");finishSyntheticSet('math');run('continuePractice()');assert.equal(run('session.auto'),false);assert.equal(run('session.i'),7);
-run("home();startGuidedPractice()");assert.equal(run('subject'),'math');
+run("start(7,false)");finishSyntheticSet('math');run('continuePractice()');assert.equal(run('view'),'result');run('nextSubjectPractice()');assert.equal(run('subject'),'jp');
+run("home();startGuidedPractice()");assert.equal(run('subject'),'jp');
 const fresh={...c};fresh.window=fresh;vm.createContext(fresh);
 for(const m of html.matchAll(/<script(?:\s+src="([^"]+)")?[^>]*>([\s\S]*?)<\/script>/g))vm.runInContext(m[1]?fs.readFileSync('dist/'+m[1].split('?')[0].replace('./',''),'utf8'):m[2],fresh);
 assert.equal(vm.runInContext('practiceContinuation',fresh),null);vm.runInContext('nextSubjectPractice()',fresh);assert.equal(vm.runInContext('view',fresh),'welcome');
 assert.equal(vm.runInContext('person().flowers',fresh),run('person().flowers'));
 console.log('PASS category reset on subject change, profile/navigation isolation, manual/free practice and reload without stale reward/continuation');
+run("data.current=0;delete person().practiceFlow;home()");
+assert.equal(run('freeSubjectChoice()'),false);assert.match(app.innerHTML,/subject-home-choices" hidden/);
+run('startSelectedPractice("mathCarry");openPracticeCourses("en")');assert.equal(run('view'),'home');
+run('startGuidedPractice()');assert.equal(run('subject'),'math');
+finishSyntheticSet('math');assert.equal(run('practiceFlow().next'),'jp');
+const rewardAfterMath=run('person().game.coins');run('continuePractice();finish()');assert.equal(run('view'),'result');assert.equal(run('person().game.coins'),rewardAfterMath);
+run('home();startGuidedPractice()');assert.equal(run('subject'),'jp');
+run("practiceClock.start-=2000;answer(q.choices.indexOf(q.answer),document.createElement('button'));advance();home();startGuidedPractice()");assert.equal(run('subject'),'jp');assert.equal(run('session.n'),0);
+finishSyntheticSet('jp');assert.equal(run('practiceFlow().next'),'en');run('home();startGuidedPractice()');finishSyntheticSet('en');assert.equal(run('practiceFlow().next'),'math');
+run('parents()');assert.equal(run('view'),'parent');run('setFreeSubjectChoice(true)');assert.equal(run('freeSubjectChoice()'),true);
+run('home();startSelectedPractice("mathCarry")');assert.equal(run('session.selectedPracticeFocus'),'mathCarry');finishSyntheticSet('math');run('continuePractice()');assert.equal(run('view'),'result');
+const inventoryBeforeToggle=run('JSON.stringify(person().game.owned)'),skillsBeforeToggle=run('JSON.stringify(person().practice)');
+run('parents();setFreeSubjectChoice(false);home()');assert.equal(run('freeSubjectChoice()'),false);assert.equal(run('JSON.stringify(person().game.owned)'),inventoryBeforeToggle);assert.equal(run('JSON.stringify(person().practice)'),skillsBeforeToggle);
+run('data.current=1;delete person().practiceFlow;home()');assert.equal(run('freeSubjectChoice()'),false);assert.equal(run('practiceFlow().next'),'math');
+run('parents();setFreeSubjectChoice(true);home();startEnglish();home()');assert.equal(run('practiceFlow().next'),'en');
+run('chooseChild(0)');assert.equal(run('freeSubjectChoice()'),false);run('chooseChild(1)');assert.equal(run('freeSubjectChoice()'),true);assert.equal(run('practiceFlow().next'),'en');
+const resumed={...c};resumed.window=resumed;vm.createContext(resumed);
+for(const m of html.matchAll(/<script(?:\s+src="([^"]+)")?[^>]*>([\s\S]*?)<\/script>/g))vm.runInContext(m[1]?fs.readFileSync('dist/'+m[1].split('?')[0].replace('./',''),'utf8'):m[2],resumed);
+assert.equal(vm.runInContext('freeSubjectChoice()',resumed),true);assert.equal(vm.runInContext('practiceFlow().next',resumed),'en');
+vm.runInContext('home();startGuidedPractice()',resumed);assert.equal(vm.runInContext('!!englishSession&&session===null',resumed),true);
+run('parents();practiceTestToggle(true)');assert.equal(run('practiceTestVisible'),true);
+console.log('PASS default/migrated profiles sequential; parent toggle both ways, per-profile persisted resume, stop/restart, full cycle, no shortcut and unchanged mastery/inventory');
