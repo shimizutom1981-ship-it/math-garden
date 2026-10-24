@@ -178,3 +178,63 @@ for(const id of ['words','jp_kanjiContext']){
 run("subject='jp';session={i:24,auto:false,seen:{},n:0};view='quiz';nextQuestion()");assert.equal(spoken.at(-1),run('speechText(q.text)'));
 run("subject='math';session={i:12,auto:false,seen:{},n:0};view='quiz';nextQuestion()");assert.equal(spoken.at(-1),run('speechText(q.text)'));
 console.log('PASS all 26 kanji +8 kana reading items: neutral automatic/replay audio, pronunciation only after correct answer, adaptive routes and other speech unchanged');
+
+// Cosmetic milestones migrate old saves without touching purchases or learning.
+run("data.current=0;data.sound=false;game().growth=147;game().friends={momo:{growth:27,equipped:{}},sora:{growth:12,equipped:{}},hoshi:{growth:5,equipped:{}}};game().activeFriend='main';delete game().friendKeepsakes;home()");
+assert.equal(run('game().friendKeepsakes.earned.length'),5);
+run('petRoom()');
+const beforeKeepsakes=run('JSON.stringify(data)');
+for(let i=0;i<20;i++)run('syncFriendKeepsakes();home();petRoom()');
+assert.equal(run('JSON.stringify(data)'),beforeKeepsakes);
+assert.equal(run('friendKeepsakeShelf().includes("はなのはた")'),true);
+run("game().activeFriend='hoshi';petRoom()");
+assert.equal(run('friendKeepsakeProgress().includes("つぎは Lv.3")'),true);
+const coinsBeforeFeed=run('game().coins');
+run("feedPet('apple')");
+assert.equal(run('game().coins'),coinsBeforeFeed-10);
+assert.equal(run('game().friendKeepsakes.earned.filter(x=>x==="hoshi-3").length'),1);
+const earnedSave=run('JSON.stringify(data)');
+run('data=JSON.parse(localStorage.getItem(KEY));home()');
+assert.equal(run('JSON.stringify(data)'),earnedSave);
+run('data.current=1;home()');assert.equal(run('game().friendKeepsakes.earned.length'),0);
+run('data.current=0;home()');assert.equal(run('game().friendKeepsakes.earned.length'),6);
+assert.equal(run('game().owned.includes("crown")'),true);
+run("game().friends.hoshi.growth=0;game().activeFriend='main';home()");
+assert.equal(run('game().friendKeepsakes.earned.length'),6);
+assert.equal(run('syncFriendKeepsakes().length'),0);
+console.log('PASS friend milestones: retroactive grants once, repeated renders, feeding threshold, reload, independent profiles, permanent collection and purchased inventory');
+
+// Enter via the real welcome handler; removing the modal alone leaves .wrap inert.
+const wrap=node();wrap.inert=true;
+const previousQuery=document.querySelector;
+document.querySelector=s=>s==='.wrap'?wrap:previousQuery(s);
+run('chooseChild(0);petRoom()');assert.equal(wrap.inert,false);
+const navigationSave=run('JSON.stringify(data)');
+for(let i=0;i<10;i++){
+ run('home();home()');assert.equal(run('view'),'home');
+ assert.ok(app.innerHTML.includes('onclick="petRoom()"'));
+ run('petRoom()');assert.equal(run('view'),'pet');
+ assert.equal(run('JSON.stringify(data)'),navigationSave);
+}
+assert.equal(wrap.inert,false);
+console.log('PASS welcome releases inert; repeated garden return and pet re-entry preserve complete profile data');
+
+const hintNode=node(),hintButton=node();
+document.querySelector=s=>s==='#hint'?hintNode:s==='#hintButton'?hintButton:s==='.wrap'?wrap:previousQuery(s);
+run("data.sound=true;subject='math';view='quiz';session={help:false,done:false};q={arithmetic:{op:'subtract',a:402,b:187},answer:215,hint:'ANSWER LEAK'}");
+const beforeHint=run('JSON.stringify(data)');
+run('showHint()');assert.ok(hintNode.innerHTML.includes('1 / 2'));assert.ok(!hintNode.innerHTML.includes('215'));assert.equal(run('session.help'),true);
+run('showHint()');assert.ok(hintNode.innerHTML.includes('2 / 2'));assert.ok(hintNode.innerHTML.includes('12'));
+for(let i=0;i<20;i++)run('showHint()');
+assert.ok(hintNode.innerHTML.includes('2 / 2'));assert.ok(!spoken.at(-1).includes('ANSWER LEAK'));assert.ok(!spoken.at(-1).includes('215'));
+assert.equal(run('JSON.stringify(data)'),beforeHint);
+run("q={arithmetic:{op:'add',a:9,b:8}};showHint()");assert.ok(hintNode.innerHTML.includes('1 / 2'));
+run("q={type:'fraction',hint:'KEEP ORIGINAL'};showHint()");assert.equal(hintNode.textContent,'KEEP ORIGINAL');
+run("session.done=true;q={arithmetic:{op:'add',a:1,b:2}};showHint()");assert.equal(hintNode.textContent,'KEEP ORIGINAL');
+for(let i=0;i<13;i++)for(let j=0;j<20;j++){
+ const x=run(`makeMathQuestion(${i})`);
+ if(['add','sub','mul','div','mixed'].includes(x.type))assert.ok(c.WrittenHints.model(x));
+ else assert.equal(c.WrittenHints.model(x),null);
+}
+for(const i of [14,16])for(let j=0;j<20;j++)assert.ok(c.WrittenHints.model(run(`makeMentalQuestion(${i})`)));
+console.log('PASS structured generators, staged hints/reset, rapid repeated hints, no speech answer leak, unchanged saves and concept fallback');
