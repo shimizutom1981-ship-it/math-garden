@@ -122,3 +122,27 @@ assert.equal(run("Practice.skill(person(),Practice.defs.find(d=>d.id==='enListen
 assert.equal(run(`Practice.skill(person(),Practice.defs.find(d=>d.id==='${readingId}')).total`),readingBefore+1);
 assert.equal(run("person().game.equipped.hat"),'crown');
 console.log('PASS audio-free answers never credit listening mastery; inventory retained after curriculum sessions');
+function finishSyntheticSet(kind){for(let n=0;n<5;n++){run('if(practiceClock)practiceClock.start-=2000');run(kind==='en'?"englishAnswer(englishSession.choices.findIndex(x=>x[0]===englishSession.word[0]),document.createElement('button'));englishAdvance()":"answer(q.choices.indexOf(q.answer),document.createElement('button'));advance()")}}
+run("data.current=0;person().game.coins=100;person().game.days={};person().flowers=10;home();startGuidedPractice()");
+let initialSession=run('session');run('startGuidedPractice()');assert.equal(run('session'),initialSession);
+let expectedCoins=100;
+for(const [i,kind] of ['math','jp','en','math','jp','en'].entries()){
+ assert.equal(run(kind==='en'?'!!englishSession&&session===null':`subject==='${kind}'&&!!session`),true);
+ const otherSkills=run(`JSON.stringify(Object.fromEntries(Object.entries(Practice.state(person()).skills).filter(([id])=>Practice.defs.find(d=>d.id===id)?.subject!=='${kind}')))`);
+ finishSyntheticSet(kind);expectedCoins+=i<3?10:3;
+ assert.equal(run('person().game.coins'),expectedCoins);assert.equal(run('person().flowers'),11+i);
+ assert.equal(run(`JSON.stringify(Object.fromEntries(Object.entries(Practice.state(person()).skills).filter(([id])=>Practice.defs.find(d=>d.id===id)?.subject!=='${kind}')))`),otherSkills);
+ run(kind==='en'?'englishFinish()':'finish()');assert.equal(run('person().game.coins'),expectedCoins);
+ run('nextSubjectPractice()');const nextSession=run('session||englishSession');run('nextSubjectPractice();continuePractice()');assert.equal(run('session||englishSession'),nextSession);assert.equal(run('person().game.coins'),expectedCoins);
+}
+console.log('PASS two math/Japanese/English cycles; independent mastery, repeat-click guards and unchanged reward amounts');
+run("home();startSelectedPractice('mathCarry')");finishSyntheticSet('math');run('nextSubjectPractice()');assert.equal(run('subject'),'jp');assert.equal(run('session.selectedPracticeFocus'),undefined);assert.equal(run('curriculumRequestedFocus'),null);
+finishSyntheticSet('jp');const previousProfile=run('data.current');run('chooseChild(1);nextSubjectPractice()');assert.equal(run('view'),'home');assert.equal(run('practiceContinuation'),null);
+run('startEnglish()');finishSyntheticSet('en');run('home();nextSubjectPractice()');assert.equal(run('view'),'home');
+run("start(7,false)");finishSyntheticSet('math');run('continuePractice()');assert.equal(run('session.auto'),false);assert.equal(run('session.i'),7);
+run("home();startGuidedPractice()");assert.equal(run('subject'),'math');
+const fresh={...c};fresh.window=fresh;vm.createContext(fresh);
+for(const m of html.matchAll(/<script(?:\s+src="([^"]+)")?[^>]*>([\s\S]*?)<\/script>/g))vm.runInContext(m[1]?fs.readFileSync('dist/'+m[1].split('?')[0].replace('./',''),'utf8'):m[2],fresh);
+assert.equal(vm.runInContext('practiceContinuation',fresh),null);vm.runInContext('nextSubjectPractice()',fresh);assert.equal(vm.runInContext('view',fresh),'welcome');
+assert.equal(vm.runInContext('person().flowers',fresh),run('person().flowers'));
+console.log('PASS category reset on subject change, profile/navigation isolation, manual/free practice and reload without stale reward/continuation');

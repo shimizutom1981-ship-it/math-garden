@@ -41,7 +41,7 @@ learningStageReport=function(){return '<section class="panel"><h2>じぶんに�
 function practiceSettings(){return `<section class="panel practice-settings"><h2>はじめの むずかしさ（任意）</h2><p>大人も子どもも、じぶんのペースで。年齢は保存せず、少しやさしい開始位置の目安にだけ使います。未回答の技能にだけ適用し、記録や持ち物は残ります。</p><label for="practiceAge">年齢（空欄でもOK）</label><input id="practiceAge" type="number" inputmode="numeric" min="3" max="120" autocomplete="off"><div class="actions"><button class="sub" onclick="practiceSeed(false)">目安から はじめる</button><button class="sub" onclick="practiceSeed(true)">やさしく はじめる</button></div><p id="practiceSeedStatus" role="status"></p></section>`}
 function practiceSeed(easy){const raw=document.querySelector('#practiceAge').value,age=raw===''?null:Number(raw);Practice.configure(person(),age,easy);save();home()}
 const practiceHome=home;
-home=function(){practiceItem=null;practiceClock=null;practiceHome();if(!Practice.state(person()).configured)app.insertAdjacentHTML('beforeend',practiceSettings());app.insertAdjacentHTML('beforeend','<p class="muted" style="text-align:center;font-size:12px">数の庭 v2026.10.24.5 · 更新 2026-10-24</p>')};
+home=function(){practiceContinuation=null;practiceItem=null;practiceClock=null;practiceHome();if(!Practice.state(person()).configured)app.insertAdjacentHTML('beforeend',practiceSettings());app.insertAdjacentHTML('beforeend','<p class="muted" style="text-align:center;font-size:12px">数の庭 v2026.10.24.6 · 更新 2026-10-24</p>')};
 const practiceParents=parents;
 parents=function(){practiceParents();app.insertAdjacentHTML('beforeend',practiceSettings())};
 document.querySelector('#parent').onclick=parents;
@@ -89,7 +89,7 @@ finish=function(){
  if(!session||session.rewarded)return;
  const completed=session,target={profile:person(),subject,auto:session.auto,course:session.i,focus:session.selectedPracticeFocus};
  continuationFinish();
- if(view==='result'&&completed.rewarded)practiceContinuation=target;
+ if(view==='result'&&completed.rewarded){practiceContinuation=target;renderSubjectContinuation()}
 };
 const continuationEnglishFinish=englishFinish;
 englishFinish=function(){
@@ -99,6 +99,7 @@ englishFinish=function(){
  if(view==='result'&&completed.rewarded){
   practiceContinuation=target;
   app.querySelector('.actions')?.insertAdjacentHTML('afterbegin','<button class="primary" onclick="continuePractice()">つづけて解く</button>');
+  renderSubjectContinuation();
  }
 };
 function continuePractice(){
@@ -109,4 +110,27 @@ function continuePractice(){
  if(target.focus&&typeof startSelectedPractice==='function')startSelectedPractice(target.focus);
  else if(target.subject==='en')startEnglish();
  else {subject=target.subject;start(target.auto?recommendationFor(target.subject):target.course,target.auto)}
+}
+const practiceSubjectOrder=['math','jp','en'];
+function renderSubjectContinuation(){
+ const target=practiceContinuation;if(!target)return;
+ const next=practiceSubjectOrder[(practiceSubjectOrder.indexOf(target.subject)+1)%3];
+ const name={math:'算数',jp:'国語',en:'英語'}[next];
+ app.querySelector('.actions')?.insertAdjacentHTML('afterbegin','<button class="primary" onclick="nextSubjectPractice()">次は'+name+'へ →</button>');
+ const same=app.querySelector('[onclick="continuePractice()"]');
+ if(same){same.textContent='同じ教科をつづけて解く';same.setAttribute('aria-label','同じ教科をつづけて解く')}
+}
+function startGuidedPractice(){
+ if(view!=='home')return;
+ practiceContinuation=null;curriculumRequestedFocus=null;
+ start(recommendationFor('math'),true);
+}
+function nextSubjectPractice(){
+ const target=practiceContinuation;
+ if(view!=='result'||!target||person()!==target.profile)return;
+ practiceContinuation=null;cancelAutoNext();curriculumRequestedFocus=null;
+ const next=practiceSubjectOrder[(practiceSubjectOrder.indexOf(target.subject)+1)%3];
+ // A selected category belongs only to its original subject. Each new subject
+ // uses its own skill rotation and mastery, with the existing reward policy.
+ if(next==='en')startEnglish();else start(recommendationFor(next),true);
 }

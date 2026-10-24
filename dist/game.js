@@ -63,7 +63,9 @@ home=function(){
  let g=game();
  app.innerHTML=`<section class="panel center subject-home">
  <div class="home-avatar-heading"><button class="sub avatar-home" onclick="avatarRoom()" aria-label="じぶんの アバターを きせかえる">${avatarArt()}<span>きせかえ</span></button><div><p class="eyebrow">${esc(person().name)} の にわ</p><h1>きょうは なにを する？</h1></div></div>
- <p>すきな ほうを おしてね。5もんで おはなが さくよ。</p>
+ <p>算数 → 国語 → 英語。ひとつずつ、5もんで おはなが さくよ。</p>
+ <button class="primary" onclick="startGuidedPractice()">算数から順番に はじめる →</button>
+ <p class="muted">すきな教科からでも、同じ教科をつづけても OK。</p>
  <div class="subject-home-choices">
  <button class="subject-home-card math" onclick="start(recommendationFor('math'),true)"><span aria-hidden="true">🔢</span><strong>さんすう</strong>${homeStageLabel(0)}</button>
  <button class="subject-home-card language" onclick="start(recommendationFor('jp'),true)"><span aria-hidden="true">📖</span><strong>こくご</strong>${homeStageLabel(1)}</button>
