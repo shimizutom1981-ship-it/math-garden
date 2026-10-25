@@ -6,7 +6,12 @@ const storage=new Map([['kazunoniwa-v1',JSON.stringify(legacy)]]);
 const c={console,document,localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)},setTimeout:()=>1,clearTimeout(){},setInterval:()=>1,clearInterval(){},Date,Math,performance:{now:()=>Date.now()},scrollTo(){},addEventListener(){},requestAnimationFrame(){},matchMedia:()=>({matches:true}),navigator:{},location:{},confirm:()=>true};c.window=c;vm.createContext(c);
 const html=fs.readFileSync('dist/index.html','utf8');
 for(const source of [html,fs.readFileSync('dist/game.js','utf8'),fs.readFileSync('dist/practice-ui.js','utf8')])assert.doesNotMatch(source,/onclick=["']continuePractice\(\)/);
-for(const m of html.matchAll(/<script(?:\s+src="([^"]+)")?[^>]*>([\s\S]*?)<\/script>/g))vm.runInContext(m[1]?fs.readFileSync('dist/'+m[1].split('?')[0].replace('./',''),'utf8'):m[2],c);
+for(const m of html.matchAll(/<script(?:\s+src="([^"]+)")?[^>]*>([\s\S]*?)<\/script>/g)){
+ const adding=m[1]?.includes('garden-questions-ui.js');
+ const baseline=adding?vm.runInContext('JSON.stringify({data,defs:Practice.defs,topics:TOPICS})',c):null;
+ vm.runInContext(m[1]?fs.readFileSync('dist/'+m[1].split('?')[0].replace('./',''),'utf8'):m[2],c);
+ if(adding){const before=JSON.parse(baseline),after=JSON.parse(vm.runInContext('JSON.stringify({data,defs:Practice.defs,topics:TOPICS})',c));assert.deepEqual(after.data,before.data);assert.deepEqual(after.defs.slice(0,before.defs.length),before.defs);assert.deepEqual(after.topics.slice(0,before.topics.length),before.topics);}
+}
 const run=s=>vm.runInContext(s,c);
 assert.equal(run('freeSubjectChoice()'),false);assert.equal(run('practiceFlow().next'),'math');
 run("data.profiles.forEach(p=>p.practiceFlow={freeChoice:true,next:'math'})");
@@ -271,3 +276,52 @@ run('data=JSON.parse(localStorage.getItem(KEY));home();avatarRoom()');assert.equ
 assert.equal(run('JSON.stringify({game:game(),stats:person().stats,flowers:person().flowers,practice:person().practice,flow:person().practiceFlow})'),preservedBeforeOutfit);
 run("data.current=1;setAvatar('hair','short');data.current=0;avatarRoom()");assert.equal(run('JSON.stringify(person().avatar)'),selectedAvatar);
 console.log('PASS all unlocked avatar choices preview and save; reopen/reload/profile isolation preserve coins, purchases and learning records');
+// New content registration and actual routes, using synthetic profiles only.
+const oldSkills=run('Practice.defs.filter(d=>!d.id.startsWith("life")).map(d=>({id:d.id,courses:d.courses.slice()}))');
+assert.equal(run('Practice.defs.filter(d=>d.id.startsWith("life")).length'),3);
+for(const d of run('GardenQuestions.defs')){
+ for(let stage=0;stage<3;stage++){
+  const course=run(`Practice.defs.find(d=>d.id==='${d.id}').courses[${stage}]`);
+  run(`session={i:${course},auto:false,seen:{},n:0};subject='math';view='quiz';nextQuestion()`);
+  assert.equal(run('q.skill'),d.id);assert.equal(run('q.stage'),stage);
+  assert.ok(app.innerHTML.includes(run('q.text')));
+  const seen=new Set();for(let n=0;n<5;n++){run(`q=makeQuestion(${course})`);const key=run('q.text+JSON.stringify(q.meta)');assert.ok(!seen.has(key));seen.add(key);}
+  run(`Object.assign(Practice.skill(person(),Practice.defs.find(d=>d.id==='${d.id}')),{level:${stage},support:0,retry:null});session={i:${course},auto:true,practiceFocus:'${d.id}',seen:{},n:0};nextQuestion()`);
+  assert.equal(run('q.practice.skill'),d.id);assert.equal(run('practiceItem.course'),run('q.i'));
+ }
+ run(`startSelectedPractice('${d.id}')`);
+ for(let n=0;n<5;n++){run("practiceClock.start-=2000;answer(q.choices.indexOf(q.answer),document.createElement('button'));advance()");}
+ assert.equal(run('view'),'result');
+}
+assert.equal(JSON.stringify(run('Practice.defs.filter(d=>!d.id.startsWith("life")).map(d=>({id:d.id,courses:d.courses.slice()}))')),JSON.stringify(oldSkills));
+// Exhaust each reading bank through the real generator and check narration.
+for(let stage=0;stage<4;stage++){
+ const course=run(`readingCourses[${stage}]`),expected=run(`GardenQuestions.japanese[${stage}].map(r=>r[0])`),found=new Set();
+ run(`session={i:${course},auto:false,seen:{},n:0};subject='jp';view='quiz';data.sound=true`);
+ const size=run(`JP_BANK[TOPICS[${course}][4]??${course}-JP_START].length`);
+ for(let n=0;n<size;n++){run(`q=makeQuestion(${course})`);if(expected.includes(run('q.text'))){found.add(run('q.text'));run('speakQuestion()');assert.equal(spoken.at(-1),run('speechText(q.text)'));}}
+ assert.equal(found.size,8);
+}
+for(let stage=0;stage<3;stage++){
+ const items=run(`GardenQuestions.english[${stage}]`);
+ for(const item of items){
+  const excluded=run(`social.stages[${stage}].items.map(q=>q.id).filter(id=>id!==${JSON.stringify(item.id)})`);
+  run(`englishSession={n:0,count:3,seen:${JSON.stringify(excluded)}};data.sound=true;view='quiz';buildAdvancedEnglish(englishSession,{index:${stage}},{skill:social,reading:false})`);
+  assert.equal(run('englishSession.extensionQuestion.id'),item.id);
+  assert.equal(spoken.at(-1),item.audioText);
+  assert.ok(app.innerHTML.includes(item.prompt));
+  run(`englishSession={n:0,count:3,seen:${JSON.stringify(excluded)}};data.sound=false;buildAdvancedEnglish(englishSession,{index:${stage}},{skill:social,reading:false})`);
+  assert.equal(run('englishSession.readingAlternative'),true);assert.ok(app.innerHTML.includes(item.audioText));
+ }
+}
+console.log('PASS new content: all nine life stages manual/adaptive, five-question completion, reading narration, 18 dialogue audio/fallback routes, original skill IDs retained');
+const naturalRandom=Math.random;
+try{
+ Math.random=()=>.75;
+ for(let stage=0;stage<3;stage++){
+  const course=run(`Practice.defs.find(d=>d.id==='mathDecompose').courses[${stage}]`);
+  run(`session={i:${course},auto:false,seen:{},n:0};subject='math';view='quiz'`);
+  const seen=new Set();for(let n=0;n<5;n++){run(`q=makeQuestion(${course})`);assert.equal(run('q.skill'),'mathDecompose');assert.equal(run('q.stage'),stage);const key=run('q.text');assert.ok(!seen.has(key));seen.add(key);}
+ }
+}finally{Math.random=naturalRandom}
+console.log('PASS content registration does not change saves or previous course IDs; new mental forms route through all existing decomposition stages without repetition');
