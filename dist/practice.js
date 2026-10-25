@@ -40,7 +40,8 @@
   s.support=bounded(s.support,2);s.misses=bounded(s.misses,3);
   return s;
  }
- function available(p,subject){return defs.filter(d=>d.subject===subject&&(!d.prerequisite||state(p).seed>0||skill(p,defs.find(x=>x.id===d.prerequisite)).total>=4&&skill(p,defs.find(x=>x.id===d.prerequisite)).level>=Math.min(1,defs.find(x=>x.id===d.prerequisite).courses.length-1)))}
+ function upperEnglishReady(p){const d=defs.find(x=>x.id==="enReply"),s=skill(p,d);return state(p).seed>=2||(s.total>=20&&s.level===d.courses.length-1)}
+ function available(p,subject){return defs.filter(d=>d.subject===subject&&(!d.upperEnglish||upperEnglishReady(p))&&(!d.prerequisite||state(p).seed>0||skill(p,defs.find(x=>x.id===d.prerequisite)).total>=4&&skill(p,defs.find(x=>x.id===d.prerequisite)).level>=Math.min(1,defs.find(x=>x.id===d.prerequisite).courses.length-1)))}
  function focus(p,subject){const ds=available(p,subject),a=state(p);return ds[bounded(a.rotations[subject],1000000000)%ds.length]}
  function pick(p,subject,focusId){
   const a=state(p),d=defs.find(x=>x.id===focusId)||focus(p,subject),s=skill(p,d);
