@@ -1,0 +1,136 @@
+{
+  "newCards": 1629,
+  "newSingleWords": 1581,
+  "headwordUnion": 2386,
+  "multiwordEntries": 108,
+  "groups": [
+    {
+      "key": "actions",
+      "count": 400,
+      "levels": [
+        86,
+        150,
+        134,
+        30
+      ]
+    },
+    {
+      "key": "daily",
+      "count": 390,
+      "levels": [
+        76,
+        152,
+        129,
+        33
+      ]
+    },
+    {
+      "key": "world",
+      "count": 400,
+      "levels": [
+        37,
+        183,
+        162,
+        18
+      ]
+    },
+    {
+      "key": "qualities",
+      "count": 391,
+      "levels": [
+        70,
+        136,
+        151,
+        34
+      ]
+    },
+    {
+      "key": "phrases",
+      "count": 48,
+      "levels": [
+        12,
+        12,
+        12,
+        12
+      ]
+    }
+  ],
+  "duplicates": [
+    {
+      "word": "sink",
+      "group": "daily"
+    },
+    {
+      "word": "comb",
+      "group": "daily"
+    },
+    {
+      "word": "handle",
+      "group": "daily"
+    },
+    {
+      "word": "lock",
+      "group": "daily"
+    },
+    {
+      "word": "tie",
+      "group": "daily"
+    },
+    {
+      "word": "cough",
+      "group": "daily"
+    },
+    {
+      "word": "brake",
+      "group": "daily"
+    },
+    {
+      "word": "swing",
+      "group": "daily"
+    },
+    {
+      "word": "slide",
+      "group": "daily"
+    },
+    {
+      "word": "clip",
+      "group": "daily"
+    },
+    {
+      "word": "dry",
+      "group": "qualities"
+    },
+    {
+      "word": "correct",
+      "group": "qualities"
+    },
+    {
+      "word": "complete",
+      "group": "qualities"
+    },
+    {
+      "word": "separate",
+      "group": "qualities"
+    },
+    {
+      "word": "yet",
+      "group": "qualities"
+    },
+    {
+      "word": "enough",
+      "group": "qualities"
+    },
+    {
+      "word": "remote",
+      "group": "qualities"
+    },
+    {
+      "word": "clear",
+      "group": "qualities"
+    },
+    {
+      "word": "fit",
+      "group": "qualities"
+    }
+  ]
+}
