@@ -13,6 +13,8 @@ for(const m of html.matchAll(/<script(?:\s+src="([^"]+)")?[^>]*>([\s\S]*?)<\/scr
  if(adding){const before=JSON.parse(baseline),after=JSON.parse(vm.runInContext('JSON.stringify({data,defs:Practice.defs,topics:TOPICS})',c));assert.deepEqual(after.data,before.data);assert.deepEqual(after.defs.slice(0,before.defs.length),before.defs);assert.deepEqual(after.topics.slice(0,before.topics.length),before.topics);}
 }
 const run=s=>vm.runInContext(s,c);
+// Rendering/reward suite uses a fully learned synthetic profile. Foundation gates have their own regression suite.
+run("for(const p of data.profiles){const a=Practice.state(p);a.settings={kanji:true,carry:true};for(const d of Practice.defs){const s=Practice.skill(p,d);s.level=d.courses.length-1;d.courses.forEach((_,i)=>s.stages[i]={mastered:true,attempts:20,firstCorrect:20,recent:[]})}}");
 assert.equal(run('freeSubjectChoice()'),false);assert.equal(run('practiceFlow().next'),'math');
 run("data.profiles.forEach(p=>p.practiceFlow={freeChoice:true,next:'math'})");
 run("Practice.configure(person(),44,false);data.sound=false;data.music=false;");
@@ -70,7 +72,7 @@ for(const def of run('Practice.defs'))for(const course of def.courses){
 console.log('PASS actual skill, generated stage and mode across every course in all subjects');
 run('data.sound=false');
 run("Object.assign(Practice.skill(person(),Practice.defs[1]),{level:0,support:0,retry:null});Practice.state(person()).turns.math=2;session={i:3,auto:true,practiceFocus:'addition',seen:{},n:0};subject='math';view='quiz';nextQuestion()");
-assert.equal(run('practiceTestQuestion.mode'),'challenge');assert.equal(run('practiceTestQuestion.stage'),2);assert.equal(run('practiceTestQuestion.estimate'),1);
+assert.equal(run('practiceTestQuestion.mode'),'challenge');assert.equal(run('practiceTestQuestion.stage'),1);assert.equal(run('practiceTestQuestion.estimate'),1);
 const snapshot=run('JSON.stringify(practiceTestQuestion)');run('Practice.skill(person(),Practice.defs[1]).level=2');assert.equal(run('JSON.stringify(practiceTestQuestion)'),snapshot);
 run("Practice.state(person()).turns.math=5;nextQuestion()");assert.equal(run('practiceTestQuestion.mode'),'review');assert.equal(run('practiceTestQuestion.stage'),2);assert.equal(run('practiceTestQuestion.estimate'),3);
 run("Object.assign(Practice.skill(person(),Practice.defs[1]),{support:2,retry:2});nextQuestion()");assert.equal(run('practiceTestQuestion.mode'),'prerequisite');
@@ -176,8 +178,8 @@ for(const course of readingCourses){
  }
 }
 assert.equal(readingChecks,34);assert.equal(previousLeakCases,26);
-for(const id of ['words','jp_kanjiContext']){
- run(`Object.assign(Practice.skill(person(),Practice.defs.find(d=>d.id==='${id}')),{level:${id==='words'?1:2},support:0,retry:null});Practice.state(person()).turns.jp=0;session={i:22,auto:true,practiceFocus:'${id}',seen:{},n:0};subject='jp';view='quiz';nextQuestion()`);
+for(const id of ['kanji','jp_kanjiContext']){
+ run(`Object.assign(Practice.skill(person(),Practice.defs.find(d=>d.id==='${id}')),{level:${id==='kanji'?0:2},support:0,retry:null});Practice.state(person()).turns.jp=0;session={i:22,auto:true,practiceFocus:'${id}',seen:{},n:0};subject='jp';view='quiz';nextQuestion()`);
  assert.equal(spoken.at(-1),run('speechText(q.instructionSpeech)'));
 }
 run("subject='jp';session={i:24,auto:false,seen:{},n:0};view='quiz';nextQuestion()");assert.equal(spoken.at(-1),run('speechText(q.text)'));
@@ -319,7 +321,7 @@ const naturalRandom=Math.random;
 try{
  Math.random=()=>.75;
  for(let stage=0;stage<3;stage++){
-  const course=run(`Practice.defs.find(d=>d.id==='mathDecompose').courses[${stage}]`);
+  const course=run(`oldDecompose[${stage}]`);
   run(`session={i:${course},auto:false,seen:{},n:0};subject='math';view='quiz'`);
   const seen=new Set();for(let n=0;n<5;n++){run(`q=makeQuestion(${course})`);assert.equal(run('q.skill'),'mathDecompose');assert.equal(run('q.stage'),stage);const key=run('q.text');assert.ok(!seen.has(key));seen.add(key);}
  }

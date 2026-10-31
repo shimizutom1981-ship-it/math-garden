@@ -31,6 +31,7 @@ for(const skill of skills){
 }
 // Low seeds never enter upper English by automatic rotation; old IDs and math remain intact.
 for(const seed of [0,1]){run('person().practice={version:1,configured:true,seed:'+seed+',skills:{},turns:{},rotations:{}}');for(let n=0;n<250;n++){run('person().practice.rotations.en='+n);assert.ok(!run('Practice.focus(person(),"en").upperEnglish'));}}
+run("for(const p of data.profiles){const a=Practice.state(p);a.settings={kanji:true,carry:true};for(const d of Practice.defs){const s=Practice.skill(p,d);s.level=d.courses.length-1;d.courses.forEach((_,i)=>s.stages[i]={mastered:true,attempts:20,firstCorrect:20,recent:[]})}}");
 const speech=[];let cancels=0;c.speechSynthesis.speak=u=>speech.push(u);c.speechSynthesis.cancel=()=>cancels++;
 for(const id of ['junior_breadth_listen','junior_soundPatterns']){
  run('data.sound=true;englishSession={n:0,seen:[],practiceFocus:"'+id+'"};view="quiz";englishNext()');assert.equal(speech.at(-1).lang,'en-US');assert.equal(speech.at(-1).rate,.75);

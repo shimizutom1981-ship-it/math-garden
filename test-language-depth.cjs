@@ -26,8 +26,8 @@ for(const course of run("Practice.defs.find(d=>d.id==='jp_gradeKanji').courses")
 }
 // Real upper-course gating leaves seeds 0/1 out, while explicit course choice still works.
 for(const seed of [0,1]){run('person().practice={version:1,configured:true,seed:'+seed+',skills:{},turns:{},rotations:{}}');for(let n=0;n<200;n++){run('person().practice.rotations.en='+n);assert.ok(!run('Practice.focus(person(),"en").upperEnglish'))}}
-run('person().practice.seed=2');let upper=false;for(let n=0;n<200;n++){run('person().practice.rotations.en='+n);upper ||=run('!!Practice.focus(person(),"en").upperEnglish')}assert.ok(upper);
-run('person().practice.seed=0;person().practice.skills.enReply={level:3,total:20}');upper=false;for(let n=0;n<200;n++){run('person().practice.rotations.en='+n);upper ||=run('!!Practice.focus(person(),"en").upperEnglish')}assert.ok(upper);
+run('person().practice.seed=2');for(let n=0;n<200;n++){run('person().practice.rotations.en='+n);assert.ok(!run('Practice.focus(person(),"en").upperEnglish'))}
+run("for(const p of data.profiles){const a=Practice.state(p);a.settings={kanji:true,carry:true};for(const d of Practice.defs){const s=Practice.skill(p,d);s.level=d.courses.length-1;d.courses.forEach((_,i)=>s.stages[i]={mastered:true,attempts:20,firstCorrect:20,recent:[]})}}");
 // Rendering and replay use English voice/rate. Text/next/home cancel previous audio.
 for(const id of ['enConversationDepth','junior_listening']){
  run('data.sound=true;englishSession={n:0,seen:[],practiceFocus:"'+id+'"};view="quiz";englishNext()');

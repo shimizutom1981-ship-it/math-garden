@@ -1,14 +1,16 @@
 const assert=require('node:assert/strict'),P=require('./dist/practice.js');
-const profile=()=>({name:'synthetic',stats:{},flowers:12,game:{coins:100,growth:15,owned:['crown'],equipped:{hat:'crown'},avatar:{owned:['blue']}}});
-let count=0;function test(name,fn){fn();count++;console.log('PASS '+name)}
-test('age optional and never stored; easy seed and adult seed',()=>{for(const [age,easy,seed] of [[null,false,0],[5,false,0],[10,false,1],[44,false,3],[44,true,0]]){const p=profile();P.configure(p,age,easy);assert.equal(p.practice.seed,seed);assert.ok(!JSON.stringify(p.practice).includes('age'));}});
-test('mix is exactly 7 fluent 2 challenge 1 review',()=>{const p=profile(),m=[];for(let n=0;n<10;n++){const q=P.pick(p,'math');m.push(q.kind);P.record(p,q,true,2000)}assert.equal(m.filter(x=>x==='fluent').length,7);assert.equal(m.filter(x=>x==='challenge').length,2);assert.equal(m.filter(x=>x==='review').length,1)});
-test('child starts count; no name or profile-index rule',()=>{const p=profile();assert.equal(P.pick(p,'math').course,0);assert.equal(P.pick(p,'jp').course,18);assert.equal(P.pick(p,'en').course,0)});
-test('rapid calibration and age never caps progress',()=>{const p=profile();P.configure(p,5,false);for(let n=0;n<40;n++)P.record(p,P.pick(p,'math','addition'),true,3000);assert.equal(P.skill(p,P.defs.find(x=>x.id==='addition')).level,2)});
-test('adult reaches existing top stages; no curriculum added',()=>{const p=profile();P.configure(p,44,false);for(const d of P.defs){for(let n=0;n<100;n++)P.record(p,P.pick(p,d.subject,d.id),true,3000);assert.equal(P.skill(p,d).level,d.courses.length-1)}});
-test('skills and learners independent',()=>{const p=profile(),other=profile();for(let n=0;n<30;n++)P.record(p,P.pick(p,'math','addition'),true,2000);assert.equal(P.skill(p,P.defs.find(x=>x.id==='subtraction')).level,0);assert.equal(P.pick(other,'math').course,0)});
-test('wrong attempts cause prerequisite then retry',()=>{const p=profile();P.configure(p,12,false);for(let n=0;n<2;n++)P.record(p,P.pick(p,'math','addition'),false,2000);for(let n=0;n<2;n++){const q=P.pick(p,'math','addition');assert.equal(q.kind,'prerequisite');P.record(p,q,true,2000)}assert.equal(P.pick(p,'math','addition').kind,'retry')});
-test('slow correct / background excluded still progresses; fast guessing cannot',()=>{for(const ms of [100000,null]){const p=profile();for(let n=0;n<30;n++)P.record(p,P.pick(p,'math','addition'),true,ms);assert.equal(P.skill(p,P.defs[1]).level,2)}const p=profile();for(let n=0;n<50;n++)P.record(p,P.pick(p,'math','addition'),true,50);assert.equal(P.skill(p,P.defs[1]).level,0)});
-test('migration preserves rewards inventory and per-course evidence',()=>{const p=profile();p.stats[7]={total:20,ok:19,mastered:true};p.english={level:22,total:20,correct:18};const before=JSON.stringify(p);P.pick(p,'math');assert.equal(P.skill(p,P.defs[1]).level,2);assert.equal(P.skill(p,P.defs.find(d=>d.id==='enSentence')).level,2);const {practice,...rest}=p;assert.equal(JSON.stringify(rest),before)});
-test('save roundtrip resumes exact next mix and skill',()=>{const p=profile();P.record(p,P.pick(p,'math'),false,1000);assert.deepEqual(P.pick(JSON.parse(JSON.stringify(p)),'math'),P.pick(p,'math'));P.complete(p,'math');assert.deepEqual(P.state(JSON.parse(JSON.stringify(p))),P.state(p))});
-console.log(count+' engine tests passed');
+const profile=()=>({stats:{7:{total:20,ok:19,mastered:true}},flowers:12,game:{coins:100,growth:15,owned:['crown']}});
+for(const age of [null,5,10,44]){const p=profile();P.configure(p,age,false);assert.equal(p.practice.seed,0);assert.equal(P.pick(p,'math').course,0);assert.ok(!Object.hasOwn(p.practice,'age'))}
+console.log('PASS age cannot establish mastery or bypass prerequisites');
+const p=profile();p.practice={version:1,configured:true,seed:3,skills:{addition:{level:2,total:50}}};const before=p.practice;
+P.state(p);assert.equal(p.practice.previous,before);assert.equal(P.skill(p,P.defs[1]).level,0);assert.equal(p.game.coins,100);assert.equal(p.stats[7].total,20);
+console.log('PASS legacy evidence archived without losing learning or rewards');
+for(let n=0;n<30;n++){const q=P.pick(p,'math','addition');assert.equal(q.skill,'number');assert.equal(q.index,0);P.record(p,{...q,example:String(n)},true,3000)}
+assert.equal(P.skill(p,P.defs[0]).level,0);P.complete(p,'math');
+for(let n=0;n<10;n++)P.record(p,{...P.pick(p,'math','number'),example:String(n)},true,3000);
+assert.equal(P.skill(p,P.defs[0]).level,1);
+console.log('PASS one sitting cannot promote; stable evidence across sets can');
+P.setLimit(p,'number',0);for(let n=0;n<10;n++){assert.equal(P.pick(p,'math').index,0);P.state(p).turns.math++}
+P.configure(p,null,true);assert.equal(P.skill(p,P.defs[0]).level,0);assert.equal(P.limit(p,P.defs[0]),0);assert.ok(p.practice.estimateHistory.length);
+assert.deepEqual(P.pick(JSON.parse(JSON.stringify(p)),'math'),P.pick(p,'math'));
+console.log('PASS caps, easy start and save roundtrip');

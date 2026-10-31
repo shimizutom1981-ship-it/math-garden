@@ -1,3 +1,5 @@
+現行の難易度設計: [分野別の段階・設定・移行 v2026.11.01.1](FOUNDATIONS-V2.md)。以下には旧版の記録を含みます。
+
 # Adaptive practice v2026.10.24.1
 
 Source: shimizutom1981-ship-it/math-garden, base 93c1f65.
