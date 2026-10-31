@@ -22,7 +22,7 @@ foundationSkill('compare','かずを くらべる','math',[2],'number');
 const add3=foundationCourse('3まで あわせる','math',()=>foundationAdd(3));
 const add9=foundationCourse('9まで あわせる','math',()=>foundationAdd(9));
 const add19=foundationCourse('20まで・くりあがりなし','math',()=>foundationAdd(19,true));
-foundationUpdate('addition',{courses:[add3,3,add9,add19],exampleCount:3});
+foundationUpdate('addition',{courses:[add3,3,add9,add19],exampleCount:3,variantCount:2});
 const sub9=foundationCourse('9まで・くりさがりなし','math',()=>{const a=rand(3,9),b=rand(1,a);return foundationNumeric(a-b,{type:'sub',a,b,arithmetic:{op:'subtract',a,b},text:`${a} − ${b} ＝ ？`,hint:`${a}こから ${b}こ とって かぞえよう。`,objects:a})});
 foundationUpdate('subtraction',{courses:[4,sub9]});
 const complement5=foundationCourse('5を つくる','math',()=>foundationComplement(5));
@@ -33,8 +33,8 @@ foundationSkill('mathHundreds','100のまとまり・まとめて暗算','math',
 const carrySmall=foundationCourse('10を こえる・こたえは13まで','math',()=>{
  const a=rand(7,9),b=rand(11-a,13-a);return foundationNumeric(a+b,{a,b,type:'add',arithmetic:{op:'add',a,b},text:`${a} ＋ ${b} ＝ ？`,hint:`まず${10-a}こを たして10。のこりを たそう。`,variant:a===9?'near-ten':'make-ten'});
 });
-foundationUpdate('mathCarry',{courses:[carrySmall,...foundationById('mathCarry').courses],requires:['addition','mathDecompose'],carry:true});
-foundationUpdate('mathBorrow',{requires:['subtraction','mathDecompose'],carry:true});
+foundationUpdate('mathCarry',{courses:[carrySmall,...foundationById('mathCarry').courses],requires:['addition','mathDecompose'],carry:true,variantCount:2});
+foundationUpdate('mathBorrow',{requires:['subtraction','mathDecompose'],carry:true,variantCount:2});
 foundationUpdate('mental',{requires:['mathCarry','mathBorrow','mathHundreds'],carry:true});
 const groups=foundationCourse('おなじ かずを あつめる','math',()=>{const a=rand(2,3),b=rand(2,4);return foundationNumeric(a*b,{text:`${a}こずつ ${b}くみ。ぜんぶで いくつ？`,hint:`${Array(b).fill(a).join(' ＋ ')} を かんがえよう。`,visualHTML:'<div style="display:flex;flex-wrap:wrap;gap:12px">'+Array(b).fill('<span>'+ '🍎'.repeat(a)+'</span>').join('')+'</div>'})});
 const smallProduct=foundationCourse('2と5の だん','math',()=>{const a=Math.random()<.5?2:5,b=rand(1,9);return foundationNumeric(a*b,{type:'mul',a,b,arithmetic:{op:'multiply',a,b},text:`${a} × ${b} ＝ ？`,hint:`${a}こずつ ${b}くみ。${Array(b).fill(a).join(' ＋ ')} を かんがえよう。`})});
@@ -79,6 +79,11 @@ practiceAttempt=function(clean){
  if(practiceItem){const english=practiceItem.skill&&Practice.defs.find(d=>d.id===practiceItem.skill)?.subject==='en';
   practiceItem.example=english?(englishSession.extensionQuestion?.id||englishSession.word?.[0]):q.text+'|'+q.answer+'|'+(q.visual||'');
   if(!practiceItem.variant)practiceItem.variant=english?'select':q.type;
+  if(!english){const ar=q.arithmetic||q.meta||{},a=ar.a??q.a,b=ar.b??q.b;
+   if(practiceItem.skill==='addition')practiceItem.form=b===1?'one-more':'combine';
+   if(practiceItem.skill==='mathCarry')practiceItem.form=a%10>=8?'near-ten':'make-ten';
+   if(practiceItem.skill==='mathBorrow')practiceItem.form=a%10===0?'from-ten':'from-teen';
+  }
  }
  foundationAttempt(clean);
 };
@@ -109,7 +114,7 @@ openPracticeCourses=function(kind){
 learningStageReport=function(){return '<section class="panel"><h2>分野ごとの進み方</h2><p>年齢や過去の合計正答数で、新しい内容へ飛ばしません。同じ段階の直近10問を5問ずつ確認し、両方で4問以上の自力正解、異なる問題、2セット以上での安定を確かめます。回数はこのアプリの設計上の目安です。</p><p>2回続けてつまずいたら1段階戻り、安定するまでその段階を練習します。挑戦問題も同じ段階です。ヒント利用・速すぎる連打は習得の根拠にしません。ゆっくり正解することは不利になりません。</p><p>旧方式の難易度推定は履歴として残し、新しい技能の習得判定は基礎から確認します。回答記録・コイン・育成データは残ります。</p></section>'};
 practiceSettings=function(){
  const a=Practice.state(person());
- return `<section class="panel practice-settings"><h2>分野ごとの出題範囲</h2><p>${esc(person().name)}さんの設定です。上限を上げても前提の練習を飛ばしません。</p><label class="practice-check"><input type="checkbox" ${a.settings.kanji?'checked':''} onchange="setPracticePermission('kanji',this.checked)">漢字を使う国語の問題を許可する</label><label class="practice-check"><input type="checkbox" ${a.settings.carry?'checked':''} onchange="setPracticePermission('carry',this.checked)">くり上がり・くり下がりの問題を許可する</label><p>どちらも最初はOFFです。算数の基礎問題・ヒントはひらがなで出します。</p>${['math','jp','en'].map(kind=>`<details><summary>${{math:'算数',jp:'国語',en:'英語'}[kind]}の上限</summary><div class="practice-limits">${Practice.defs.filter(d=>d.subject===kind).map(d=>`<label>${esc(curriculumTitles[d.id]||practiceTestNames[d.id]||d.id)}<select aria-label="${esc(curriculumTitles[d.id]||practiceTestNames[d.id]||d.id)}の上限" onchange="setPracticeLimit('${d.id}',this.value)">${(d.prerequisite?[-1]:[]).concat(d.courses.map((_,i)=>i)).map(i=>`<option value="${i}" ${Practice.limit(person(),d)===i?'selected':''}>${i<0?'出さない':(i+1)+'：'+esc(kind==='en'?(curriculumCourseMeta['en:'+d.courses[i]]?.title||'ステップ '+(i+1)):TOPICS[d.courses[i]][1])+'まで'}</option>`).join('')}</select></label>`).join('')}</div></details>`).join('')}<button class="sub" onclick="practiceSeed(true)">やさしく はじめなおす</button><p>このボタンは難易度の推定を基礎へ戻します。過去の回答・コイン・育成データ・分野別上限は残し、漢字とくり上がりの許可はOFFにします。</p><p id="practiceSeedStatus" role="status"></p></section>`;
+ return `<section class="panel practice-settings"><h2>分野ごとの出題範囲</h2><p>${esc(person().name)}さんの設定です。上限を上げても前提の練習を飛ばしません。</p><label class="practice-check"><input type="checkbox" ${a.settings.kanji?'checked':''} onchange="setPracticePermission('kanji',this.checked)">漢字を使う国語の問題を許可する</label><label class="practice-check"><input type="checkbox" ${a.settings.carry?'checked':''} onchange="setPracticePermission('carry',this.checked)">くり上がり・くり下がりの問題を許可する</label><p>どちらも最初はOFFです。算数の基礎問題・ヒントはひらがなで出します。</p>${['math','jp','en'].map(kind=>`<details><summary>${{math:'算数',jp:'国語',en:'英語'}[kind]}の上限</summary><div class="practice-limits">${Practice.defs.filter(d=>d.subject===kind).map(d=>`<label>${esc(curriculumTitles[d.id]||practiceTestNames[d.id]||d.id)}<select aria-label="${esc(curriculumTitles[d.id]||practiceTestNames[d.id]||d.id)}の上限" onchange="setPracticeLimit('${d.id}',this.value)">${(d.prerequisite?[-1]:[]).concat(d.courses.map((_,i)=>i)).map(i=>`<option value="${i}" ${Practice.absoluteLimit(person(),d)===i?'selected':''}>${i<0?'出さない':(i+1)+'：'+esc(kind==='en'?(curriculumCourseMeta['en:'+d.courses[i]]?.title||'ステップ '+(i+1)):TOPICS[d.courses[i]][1])+'まで'+(typeof PracticePresets==='object'?' / '+(PracticePresets.build(Practice)[d.id]?.[i]?.label||'目安未設定'):'')}</option>`).join('')}</select></label>`).join('')}</div></details>`).join('')}<button class="sub" onclick="practiceSeed(true)">やさしく はじめなおす</button><p>このボタンは難易度の推定を基礎へ戻します。過去の回答・コイン・育成データ・分野別上限は残し、漢字とくり上がりの許可はOFFにします。</p><p id="practiceSeedStatus" role="status"></p></section>`;
 };
 function setPracticePermission(key,value){if(view!=='parent'||!['kanji','carry'].includes(key))return;Practice.state(person()).settings[key]=value===true;save()}
 function setPracticeLimit(id,value){if(view!=='parent')return;Practice.setLimit(person(),id,Number(value));save()}
