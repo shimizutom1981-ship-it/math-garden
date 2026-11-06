@@ -4,7 +4,8 @@ const body=node(),app=node(),document={body,head:node(),documentElement:node(),h
 const legacy={version:1,mentalCurriculumVersion:1,current:0,sound:false,music:false,profiles:[{name:'Synthetic adult',stats:{},flowers:10,game:{coins:100,growth:30,owned:['crown'],equipped:{hat:'crown'},days:{}}},{name:'Synthetic child',stats:{},flowers:0}]};
 const storage=new Map([['kazunoniwa-v1',JSON.stringify(legacy)]]);
 const c={console,document,localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)},setTimeout:()=>1,clearTimeout(){},setInterval:()=>1,clearInterval(){},Date,Math,performance:{now:()=>Date.now()},scrollTo(){},addEventListener(){},requestAnimationFrame(){},matchMedia:()=>({matches:true}),navigator:{},location:{},confirm:()=>true};c.window=c;vm.createContext(c);
-const html=fs.readFileSync('dist/index.html','utf8');
+// Legacy curriculum/navigation contract; the overriding reward cycle is covered by test-learning-cycle.cjs.
+const html=fs.readFileSync('dist/index.html','utf8').replace(/<script src="\.\/learning-cycle\.js[^"]*"><\/script>/,'');
 for(const source of [html,fs.readFileSync('dist/game.js','utf8'),fs.readFileSync('dist/practice-ui.js','utf8')])assert.doesNotMatch(source,/onclick=["']continuePractice\(\)/);
 for(const m of html.matchAll(/<script(?:\s+src="([^"]+)")?[^>]*>([\s\S]*?)<\/script>/g)){
  const adding=m[1]?.includes('garden-questions-ui.js');
@@ -29,6 +30,8 @@ for(const subject of ['math','jp','en']){
 assert.equal(run('person().flowers'),13);assert.equal(run('person().game.coins'),130);
 assert.equal(run('person().game.growth'),30);assert.equal(run('person().game.equipped.hat'),'crown');assert.equal(run('person().game.owned.includes("crown")'),true);
 run('finish()');assert.equal(run('person().game.coins'),130);console.log('PASS rewards exactly once and inventory retained');
+// Independent learning regression cases start with no outstanding tile reward.
+run('delete person().tileCycle');
 run("start(3,false);practiceClock=null;answer(q.choices.indexOf(q.answer),document.createElement('button'));advance()");assert.equal(run('session.n'),1);console.log('PASS manual selection gameplay');
 run("start(recommendationFor('math'),true);practiceClock.start-=2000;answer(q.choices.findIndex(x=>x!==q.answer),document.createElement('button'))");
 const attempts=run('Practice.state(person()).turns.math');run("answer(q.choices.indexOf(q.answer),document.createElement('button'))");assert.equal(run('Practice.state(person()).turns.math'),attempts);console.log('PASS wrong then corrected counted once');
