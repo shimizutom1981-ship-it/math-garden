@@ -48,13 +48,13 @@ function friendSilhouette(){
 function petArt(){let g=friendState(),growth=Math.min(12,g.growth),season=Math.floor((petLevel()-1)/5),e=slot=>SHOP.find(i=>i.id===g.equipped[slot]);return `<div class="pet-scene ${petLevel()>=100?'pet-rainbow':''}" role="button" tabindex="0" onclick="petNiwatchi()" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();petNiwatchi()}" aria-label="レベル${petLevel()}の ${selectedFriend().name}を なでる"><div class="pet-body friend-${selectedFriend().id}" style="--scale:${.83+growth*.022};--pet-fill:${petLevel()>=100?'linear-gradient(135deg,#ffd3e5,#ffe5a3,#d8f3bc,#bfe9ff,#e1caff)':`hsl(${(42+growth+season*29+FRIENDS.findIndex(f=>f.id===game().activeFriend)*65)%360},78%,${72-growth*.4}%)`};background:var(--pet-fill);">${friendSilhouette()}<span class="pet-leaf" style="transform:scale(${.75+growth*.035})">${selectedFriend().id!=='main'?selectedFriend().icon:growth>=12?['🌸','🌻','🌺','🌼','🌷'][season%5]:growth>=9?'🌷':growth>=6?'🌿':'🌱'}</span><span class="pet-face">• •</span><span class="pet-mouth"></span><span class="cheek left"></span><span class="cheek right"></span>${e('hat')?`<span class="pet-hat">${e('hat').emoji}</span>`:''}${e('bow')?`<span class="pet-bow">${e('bow').emoji}</span>`:''}</div>${e('badge')?`<span class="pet-badge">${e('badge').emoji}</span>`:''}</div>`}
 let musicCtx=null,musicTimer=null,musicNodes=[],musicGeneration=0;
 if(typeof data.music!=='boolean')data.music=true;
-function refreshMusic(){let status=!data.music?'♫ おんがく OFF':musicCtx?.state==='running'?'♫ おんがく ON':'♫ おんがくを はじめる';document.querySelectorAll('[data-music]').forEach(b=>b.textContent=status)}
+function refreshMusic(){let status=data.noListening?'♫ おんがく OFF（リスニングなし）':!data.music?'♫ おんがく OFF':musicCtx?.state==='running'?'♫ おんがく ON':'♫ おんがくを はじめる';document.querySelectorAll('[data-music]').forEach(b=>{b.textContent=status;b.disabled=data.noListening===true})}
 function stopMusic(){musicGeneration++;if(musicTimer)clearInterval(musicTimer);musicTimer=null;for(let n of musicNodes){try{n.stop()}catch{}}musicNodes=[]}
-function musicPhrase(){if(!data.music||document.hidden||musicCtx?.state!=='running')return;musicNodes=[];let notes=[523,659,784,659,587,698,784,0,659,784,880,784,659,587,523,0,523,659,784,1047,880,784,659,0,587,659,698,587,523,0,523,0],t=musicCtx.currentTime+.05;notes.forEach((f,i)=>{if(!f)return;let o=musicCtx.createOscillator(),v=musicCtx.createGain(),at=t+i*.34;o.type='sine';o.frequency.value=f;v.gain.setValueAtTime(0,at);v.gain.linearRampToValueAtTime(.022,at+.02);v.gain.exponentialRampToValueAtTime(.0001,at+.28);o.connect(v);v.connect(musicCtx.destination);o.start(at);o.stop(at+.3);musicNodes.push(o)})}
-function startMusic(){if(!data.music||document.hidden)return;try{let C=window.AudioContext||window.webkitAudioContext;if(!C)return;if(!musicCtx){musicCtx=new C();musicCtx.onstatechange=()=>{refreshMusic();if(musicCtx.state==='running'&&data.music&&!document.hidden&&!musicTimer){musicPhrase();musicTimer=setInterval(musicPhrase,12000)}}}let gen=musicGeneration;musicCtx.resume().then(()=>{if(gen!==musicGeneration||!data.music||document.hidden)return;if(!musicTimer){musicPhrase();musicTimer=setInterval(musicPhrase,12000)}refreshMusic()}).catch(()=>refreshMusic());refreshMusic()}catch{refreshMusic()}}
-function musicControl(){if(data.music&&musicCtx?.state==='running'){data.music=false;stopMusic()}else{data.music=true;startMusic()}save();refreshMusic()}
+function musicPhrase(){if(data.noListening||!data.music||document.hidden||musicCtx?.state!=='running')return;musicNodes=[];let notes=[523,659,784,659,587,698,784,0,659,784,880,784,659,587,523,0,523,659,784,1047,880,784,659,0,587,659,698,587,523,0,523,0],t=musicCtx.currentTime+.05;notes.forEach((f,i)=>{if(!f)return;let o=musicCtx.createOscillator(),v=musicCtx.createGain(),at=t+i*.34;o.type='sine';o.frequency.value=f;v.gain.setValueAtTime(0,at);v.gain.linearRampToValueAtTime(.022,at+.02);v.gain.exponentialRampToValueAtTime(.0001,at+.28);o.connect(v);v.connect(musicCtx.destination);o.start(at);o.stop(at+.3);musicNodes.push(o)})}
+function startMusic(){if(data.noListening||!data.music||document.hidden)return;try{let C=window.AudioContext||window.webkitAudioContext;if(!C)return;if(!musicCtx){musicCtx=new C();musicCtx.onstatechange=()=>{refreshMusic();if(musicCtx.state==='running'&&!data.noListening&&data.music&&!document.hidden&&!musicTimer){musicPhrase();musicTimer=setInterval(musicPhrase,12000)}}}let gen=musicGeneration;musicCtx.resume().then(()=>{if(gen!==musicGeneration||data.noListening||!data.music||document.hidden)return;if(!musicTimer){musicPhrase();musicTimer=setInterval(musicPhrase,12000)}refreshMusic()}).catch(()=>refreshMusic());refreshMusic()}catch{refreshMusic()}}
+function musicControl(){if(data.noListening)return;if(data.music&&musicCtx?.state==='running'){data.music=false;stopMusic()}else{data.music=true;startMusic()}save();refreshMusic()}
 document.addEventListener('visibilitychange',()=>{if(document.hidden){stopMusic();if('speechSynthesis'in window)speechSynthesis.cancel()}else startMusic()});
-function showWelcome(){leaveQuizScreen();session=null;view='welcome';if('speechSynthesis'in window)speechSynthesis.cancel();document.querySelector('#welcome')?.remove();let modal=document.createElement('div');modal.id='welcome';modal.className='welcome';modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-labelledby','welcomeTitle');modal.innerHTML=`<div class="welcome-box"><div style="font-size:58px">🌸📖</div><h1 id="welcomeTitle">だれが あそぶ？</h1><p>じぶんの なまえを おしてね。</p><button class="sub" data-music onclick="musicControl()">♫ おんがくを はじめる</button><p class="muted">おとが でないときは、うえの ボタンを おしてね。</p><div class="profile-buttons">${data.profiles.map((p,i)=>`<button class="profile-button" onclick="chooseChild(${i})"><span>${i%2?'🐰':'🐱'}</span>${esc(p.name)}</button>`).join('')}</div></div>`;document.body.appendChild(modal);document.querySelector('.wrap').inert=true;modal.addEventListener('keydown',e=>{if(e.key!=='Tab')return;let buttons=[...modal.querySelectorAll('button')],first=buttons[0],last=buttons.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}});modal.querySelector('button').focus();startMusic();refreshMusic()}
+function showWelcome(){leaveQuizScreen();session=null;view='welcome';if('speechSynthesis'in window)speechSynthesis.cancel();document.querySelector('#welcome')?.remove();let modal=document.createElement('div');modal.id='welcome';modal.className='welcome';modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-labelledby','welcomeTitle');modal.innerHTML=`<div class="welcome-box"><div style="font-size:58px">🌸📖</div><h1 id="welcomeTitle">だれが あそぶ？</h1><p>じぶんの なまえを おしてね。</p><button class="sub" data-listening-mode aria-pressed="${data.noListening===true}" onclick="setNoListening(!data.noListening)">${data.noListening?'🔇 リスニングなし':'🔊 リスニングあり'}</button><p class="muted">音を出せない場所では「リスニングなし」。文字や絵で答えられる問題になります。</p><button class="sub" data-music onclick="musicControl()">♫ おんがくを はじめる</button><p class="muted">おとが でないときは、うえの ボタンを おしてね。</p><div class="profile-buttons">${data.profiles.map((p,i)=>`<button class="profile-button" onclick="chooseChild(${i})"><span>${i%2?'🐰':'🐱'}</span>${esc(p.name)}</button>`).join('')}</div></div>`;document.body.appendChild(modal);document.querySelector('.wrap').inert=true;modal.addEventListener('keydown',e=>{if(e.key!=='Tab')return;let buttons=[...modal.querySelectorAll('button')],first=buttons[0],last=buttons.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}});modal.querySelector('button').focus();startMusic();refreshMusic()}
 function chooseChild(i){if(!data.profiles[i])return;data.current=i;game();save();document.querySelector('#welcome')?.remove();document.querySelector('.wrap').inert=false;refresh();home();startMusic()}
 function practiceFlow(){
  const p=person();if(!p.practiceFlow||typeof p.practiceFlow!=='object'||Array.isArray(p.practiceFlow))p.practiceFlow={};
@@ -149,13 +149,13 @@ function petRoom(message=''){
 
 let petSoundContext=null;
 function playFeedSound(levelUp){
- if(!data.sound)return;
+ if(data.noListening||!data.sound)return;
  try{
   const C=window.AudioContext||window.webkitAudioContext;if(!C)return;
   if(!petSoundContext||petSoundContext.state==='closed')petSoundContext=new C();
   const ctx=petSoundContext;
   ctx.resume().then(()=>{
-   if(!data.sound||document.hidden)return;
+   if(data.noListening||!data.sound||document.hidden)return;
    const notes=levelUp?[523,659,784,1047]:[659,784,988];
    notes.forEach((hz,i)=>{
     const o=ctx.createOscillator(),v=ctx.createGain(),t=ctx.currentTime+i*.13;
@@ -255,7 +255,7 @@ function englishProgress(){
  return e;
 }
 function englishSay(text){
- if(!data.sound||!('speechSynthesis'in window))return;
+ if(data.noListening||!data.sound||!('speechSynthesis'in window))return;
  speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=.75;
  const voices=speechSynthesis.getVoices(),v=voices.find(v=>/^en-US$/i.test(v.lang))||voices.find(v=>/^en[-_]/i.test(v.lang));
  if(v)u.voice=v;speechSynthesis.speak(u);
@@ -271,15 +271,23 @@ function englishNext(){
  if(e.n>=5){englishFinish();return}
  e.help=false;e.done=false;e.selected=null;
  const item=practiceSelection('en');e.level=item.course;e.count=e.level%4<2?2:3;practiceBegin(item);
- e.curriculumKind=null;e.answerAudio=null;e.readingAlternative=false;
+ e.curriculumKind=null;e.answerAudio=null;e.extensionQuestion=null;e.readingAlternative=false;
  if(typeof buildCurriculumEnglish==='function'&&buildCurriculumEnglish(e,item))return;
  const bank=EN_WORDS[Math.floor(e.level/4)];
  let pool=bank.filter(w=>!e.seen.includes(w[0]));if(!pool.length)pool=bank;
  e.word=pool[rand(0,pool.length-1)];e.seen.push(e.word[0]);
  const others=bank.filter(w=>w!==e.word).map(w=>({w,r:Math.random()})).sort((a,b)=>a.r-b.r).slice(0,e.count-1).map(x=>x.w);
  e.choices=[e.word,...others].map(w=>({w,r:Math.random()})).sort((a,b)=>a.r-b.r).map(x=>x.w);
+ const reading=data.noListening===true||!data.sound||!('speechSynthesis'in window);
+ e.readingAlternative=reading;
+ if(reading){
+  e.curriculumKind=e.word[3]?'読んで返事をえらぶ':'読んで絵をえらぶ';
+  app.innerHTML=`<section class="quiz"><div class="quiztop"><button class="sub" onclick="home()">⌂ にわへ</button><strong>🔤 えいご</strong><span>${e.n+1} / 5</span></div><div class="board"><div class="eyebrow">リスニングなし · 読む練習</div><h1 class="question">${e.word[3]?'ことばを よんで、へんじを えらぼう！':'えいごを よんで、えを えらぼう！'}</h1><p class="english-context">${esc(e.word[3]||e.word[0])}</p><div class="choices">${e.choices.map((w,i)=>`<button class="choice" style="font-size:54px;min-height:85px" aria-label="${esc(e.word[3]?w[0]:w[2])}" onclick="englishAnswer(${i},this)">${w[1]}${e.word[3]?`<span class="quiet-reply">${esc(w[0])}</span>`:''}</button>`).join('')}</div><div id="englishFeedback" class="feedback" role="status"></div><div class="actions"><button class="sub" id="englishHint" onclick="englishHint()">💡 ヒント</button><button class="primary hidden" id="englishNext" onclick="englishAdvance()">つぎへ →</button></div></div></section>`;
+ }else{
  app.innerHTML=`<section class="quiz"><div class="quiztop"><button class="sub" onclick="home()">⌂ にわへ</button><strong>🔤 えいご</strong><span>${e.n+1} / 5</span></div><div class="board"><h1 class="question">${e.word[3]?'あう へんじを えらぼう！':'えいごを きいて、えを えらぼう！'}</h1><button class="primary" onclick="englishSay(englishSession.word[3]||englishSession.word[0])">🔊 もういちど きく</button><div class="choices">${e.choices.map((w,i)=>`<button class="choice" style="font-size:54px;min-height:85px" aria-label="${esc(w[2])}" onclick="${e.word[3]?`englishOptionPreview(${i})`:`englishAnswer(${i},this)`}">${w[1]}${e.word[3]?`<small style="display:block;font-size:14px">🔊 きく</small>`:''}</button>`).join('')}</div>${e.word[3]?'<button class="primary" id="confirmEnglish" disabled onclick="englishConfirm()">へんじを きいて えらぼう</button>':''}<div id="englishFeedback" class="feedback" role="status"></div><div class="actions"><button class="sub" id="englishHint" onclick="englishHint()">💡 ヒント</button><button class="primary hidden" id="englishNext" onclick="englishAdvance()">つぎへ →</button></div></div></section>`;
  englishSay(e.word[3]||e.word[0]);
+ }
+
 }
 function englishHint(){
  const e=englishSession;if(view!=='quiz'||!e||e.done)return;e.help=true;
@@ -684,3 +692,4 @@ for(let p of data.profiles)initGame(p);save();
 let toolsBar=document.querySelector('.tools');let musicButton=document.createElement('button');musicButton.setAttribute('data-music','');musicButton.onclick=musicControl;toolsBar.appendChild(musicButton);let switchButton=document.createElement('button');switchButton.textContent='ひとを かえる';switchButton.onclick=showWelcome;toolsBar.appendChild(switchButton);
 document.querySelector('#profile').onchange=e=>chooseChild(Number(e.target.value));
 refresh();home();showWelcome();
+

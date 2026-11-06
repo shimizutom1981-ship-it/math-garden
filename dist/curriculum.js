@@ -25,7 +25,7 @@ const curriculumSelection=practiceSelection;
 practiceSelection=function(kind){
  const active=kind==='en'?englishSession:session;
  if(curriculumRequestedFocus){const d=Practice.defs.find(x=>x.id===curriculumRequestedFocus&&x.subject===kind);if(d){active.practiceFocus=d.id;active.selectedPracticeFocus=d.id}curriculumRequestedFocus=null}
- if(kind==='en'&&(!data.sound||!('speechSynthesis' in window))){
+ if(kind==='en'&&(data.noListening||!data.sound||!('speechSynthesis' in window))){
   const id=active.practiceFocus||Practice.focus(person(),kind).id, fallback=curriculumAudioFallback[id];
   if(fallback)active.practiceFocus=fallback;
  }
@@ -54,7 +54,7 @@ function buildCurriculumEnglish(e,item){
  const target=e.word[4].word;
  const others=bank.filter(w=>w!==e.word&&w[2]!==e.word[2]&&(!target.synonymGroup||target.synonymGroup!==w[4].word.synonymGroup)).map(w=>({w,r:Math.random()})).sort((a,b)=>a.r-b.r).slice(0,e.count-1).map(x=>x.w);
  e.choices=[e.word,...others].sort(()=>Math.random()-.5);e.curriculumKind='単語の意味';e.answerAudio=e.word[0];e.audioTarget=e.word[0];
- const reading=!data.sound||!('speechSynthesis'in window);
+ const reading=data.noListening||!data.sound||!('speechSynthesis'in window);
  e.readingAlternative=reading;
  renderCurriculumEnglish(e,'ことばの意味をえらぼう',esc(e.word[0]),reading?'音声なし：読む練習':'英語を聞く・読む',e.word[0]);
  return true;
@@ -94,7 +94,7 @@ function buildAdvancedEnglish(e,item,meta){
  e.word=[question.answer,esc(question.answer),question.hint];
  e.choices=question.choices.map(x=>[x,esc(x),question.hint]).sort(()=>Math.random()-.5);
  e.curriculumKind={listen:'聞き取り',spell:'つづり',dialog:'会話'}[question.mode]||meta.skill.title;
- e.readingAlternative=meta.reading||!data.sound||!('speechSynthesis'in window);
+ e.readingAlternative=meta.reading||data.noListening||!data.sound||!('speechSynthesis'in window);
  e.answerAudio=question.answer;e.extensionQuestion=question;
  renderCurriculumEnglish(e,meta.skill.title,esc(e.readingAlternative?question.fallbackPrompt:question.prompt),e.readingAlternative?'音声なし：読む練習':'聞いて・考えてえらぼう',question.audioText);
  if(question.requiresAudio&&!meta.reading&&!e.readingAlternative)document.querySelector('.actions')?.insertAdjacentHTML('beforeend','<button class="sub" onclick="useReadingPractice()">音が出ないとき：読む練習へ</button>');
@@ -105,3 +105,4 @@ function useReadingPractice(){
  const fallback=curriculumAudioFallback[e.practiceFocus];if(!fallback)return;
  e.practiceFocus=fallback;e.selectedPracticeFocus=fallback;englishNext();
 }
+

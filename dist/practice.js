@@ -62,7 +62,9 @@
   const requirements=d.requires||(d.prerequisite?[d.prerequisite]:[]);
   return requirements.every(id=>{const pre=defs.find(x=>x.id===id);return pre&&allowed(p,pre,new Set(seen))&&mastered(p,pre)});
  }
- function available(p,subject){return defs.filter(d=>d.subject===subject&&allowed(p,d))}
+ // Selection filters never change prerequisite evidence or saved difficulty limits.
+ function selectable(p,d){return allowed(p,d)&&(!api.canSelect||api.canSelect(p,d))}
+ function available(p,subject){return defs.filter(d=>d.subject===subject&&selectable(p,d))}
  function ceiling(p,d){
   let cap=limit(p,d);
   for(let i=1;i<=cap;i++)if(!(d.stageRequires?.[i]||[]).every(id=>{const pre=defs.find(x=>x.id===id);return pre&&allowed(p,pre)&&mastered(p,pre)})){cap=i-1;break}
@@ -71,7 +73,7 @@
  function focus(p,subject){const ds=available(p,subject);return ds[bounded(state(p).rotations[subject],1e9)%ds.length]}
  function pick(p,subject,focusId){
   const a=state(p),requested=defs.find(x=>x.id===focusId&&x.subject===subject);
-  const d=requested&&allowed(p,requested)?requested:focus(p,subject),s=skill(p,d);
+  const d=requested&&selectable(p,requested)?requested:focus(p,subject),s=skill(p,d);
   const turn=bounded(a.turns[subject],1e9),mode=mix[turn%10];
   let index=Math.min(s.level,ceiling(p,d)),kind=s.support?'prerequisite':mode;
   // Challenge means a different example of the current concept, never a new concept.
@@ -110,3 +112,4 @@
  const api={defs,mix,state,configure,skill,focus,pick,record,complete,available,allowed,mastered,limit,absoluteLimit,ceiling,setLimit,setRange};
  if(typeof module==='object')module.exports=api;else root.Practice=api;
 })(typeof globalThis==='object'?globalThis:this);
+
