@@ -43,6 +43,22 @@
   a.settings.kanji=preset.kanji;a.settings.carry=preset.carry;a.rangePreset=id;return true;
  }
  function selected(p,P){build(P);const id=P.state(p).rangePreset,preset=presets.find(x=>x.id===id);return preset&&matches(p,preset,P)?id:'custom'}
+ // Absolute caps are independent of the starting range and permission switches.
+ // Reuse the same content map, while keeping the existing per-skill controls.
+ const limitScopes=['all','math','jp','en'];
+ function limitDefs(P,scope){return limitScopes.includes(scope)?P.defs.filter(d=>scope==='all'||d.subject===scope):[]}
+ function presetLimit(preset,d){return preset.limits[d.id]??(d.prerequisite?-1:0)}
+ function applyLimit(p,id,P,scope='all'){
+  build(P);const preset=presets.find(x=>x.id===id),defs=limitDefs(P,scope);
+  if(!defs.length||id!=='unlimited'&&!preset)return false;
+  for(const d of defs)P.setLimit(p,d.id,id==='unlimited'?d.courses.length-1:presetLimit(preset,d));
+  return true;
+ }
+ function selectedLimit(p,P,scope='all'){
+  build(P);const defs=limitDefs(P,scope);if(!defs.length)return 'custom';
+  if(defs.every(d=>P.absoluteLimit(p,d)===d.courses.length-1))return 'unlimited';
+  return presets.find(preset=>defs.every(d=>P.absoluteLimit(p,d)===presetLimit(preset,d)))?.id||'custom';
+ }
  function stableStage(p,d,index,P){
   const stage=P.skill(p,d).stages[index],recent=stage?.recent||[],correct=recent.filter(x=>x.ok);
   return !!stage?.mastered&&recent.length===10&&recent.slice(0,5).filter(x=>x.ok).length>=4&&recent.slice(5).filter(x=>x.ok).length>=4&&new Set(correct.map(x=>x.example)).size>=Math.min(4,d.exampleCount||4)&&new Set(correct.map(x=>x.variant)).size>=(d.variantCount||1)&&new Set(correct.map(x=>x.session)).size>=2;
@@ -74,7 +90,7 @@
   let label=unknown?'学年の目安を設けていない問題':subject==='en'&&stages.every(s=>s.id==='enWords')?'英語入門の問題':labels[lo]+(lo===hi?'':'〜'+labels[hi])+'相当の問題';
   return {label,stages,atLimit:stages.some(x=>x.atLimit),support:defs.filter(d=>P.skill(p,d).support).map(d=>d.id)};
  }
- const api={presets,apply,selected,matches,range,build,advancement,advance,stableStage};
+ const api={presets,apply,selected,matches,range,build,advancement,advance,stableStage,applyLimit,selectedLimit};
  if(typeof module==='object')module.exports=api;else root.PracticePresets=api;
 })(typeof globalThis==='object'?globalThis:this);
 
@@ -82,6 +98,29 @@ if(typeof document!=='undefined'){
  PracticePresets.build(Practice);
  Practice.onMastered=(p,d)=>PracticePresets.advance(p,d,Practice);
  const detailedPracticeSettings=practiceSettings;
+ const practiceLimitNames={all:'算数・国語・英語すべて',math:'算数',jp:'国語',en:'英語'};
+ function practiceLimitLabel(id){if(id==='unlimited')return '全段階（上限なし）';const preset=PracticePresets.presets.find(x=>x.id===id);return preset?preset.label.split('・')[0]+'まで':'個別設定（分野ごとに異なります）'}
+ function practiceBulkLimitMarkup(){
+  const selected=PracticePresets.selectedLimit(person(),Practice);
+  return `<section class="practice-bulk-limit" aria-labelledby="practiceBulkLimitTitle"><h3 id="practiceBulkLimitTitle">難易度の上限を一括設定</h3><p>自動で進級しても、この上限を超える問題は出しません。</p><label class="preset-label" for="practiceLimitScope">変更する教科</label><select id="practiceLimitScope" onchange="refreshPracticeLimitSelection()">${Object.entries(practiceLimitNames).map(([id,name])=>`<option value="${id}">${name}</option>`).join('')}</select><label class="preset-label" for="practiceBulkLimit">ここまでの難しさにする</label><select id="practiceBulkLimit" aria-describedby="practiceBulkLimitHelp" onchange="refreshPracticeLimitButton()"><option value="custom" ${selected==='custom'?'selected':''}>個別設定（変更しない）</option>${PracticePresets.presets.map(x=>`<option value="${x.id}" ${selected===x.id?'selected':''}>${esc(practiceLimitLabel(x.id))}</option>`).join('')}<option value="unlimited" ${selected==='unlimited'?'selected':''}>全段階（上限なし）</option></select><p id="practiceBulkLimitCurrent">現在の上限：${esc(practiceLimitLabel(selected))}</p><p id="practiceBulkLimitHelp" class="muted">「上限をまとめて適用」を押すと、選んだ教科の分野別上限を置き換えます。開始範囲・漢字とくり上がりの許可・過去の回答・コインは変わりません。上限を下げると難易度の推定も上限内に戻します。学年は実装済み内容の目安です。上限を上げても開始範囲は広がらず、習得前の問題へ飛ばしません。あとから分野ごとに調整できます。</p><button id="practiceBulkLimitApply" class="primary" ${selected==='custom'?'disabled':''} onclick="applyPracticeBulkLimit()">上限をまとめて適用</button><p id="practiceBulkLimitStatus" role="status"></p></section>`;
+ }
+ function refreshPracticeLimitButton(){const control=document.querySelector('#practiceBulkLimit'),button=document.querySelector('#practiceBulkLimitApply');if(control&&button)button.disabled=control.value==='custom'}
+ function refreshPracticeLimitSelection(scope){
+  const scopeControl=document.querySelector('#practiceLimitScope');if(!scopeControl)return;
+  if(scope)scopeControl.value=scope;
+  const selected=PracticePresets.selectedLimit(person(),Practice,scopeControl.value);
+  const control=document.querySelector('#practiceBulkLimit');if(control)control.value=selected;
+  const summary=document.querySelector('#practiceBulkLimitCurrent');if(summary)summary.textContent='現在の上限：'+practiceLimitLabel(selected);
+  const status=document.querySelector('#practiceBulkLimitStatus');if(status)status.textContent='';
+  refreshPracticeLimitButton();
+ }
+ function applyPracticeBulkLimit(){
+  if(view!=='parent')return;
+  const scope=document.querySelector('#practiceLimitScope')?.value,id=document.querySelector('#practiceBulkLimit')?.value;
+  if(!PracticePresets.applyLimit(person(),id,Practice,scope))return;
+  curriculumRequestedFocus=null;practiceItem=null;practiceContinuation=null;save();parents();refreshPracticeLimitSelection(scope);
+  const status=document.querySelector('#practiceBulkLimitStatus');if(status)status.textContent=person().name+'さんの'+practiceLimitNames[scope]+'の上限を「'+practiceLimitLabel(id)+'」で保存しました。';
+ }
  function practiceProgressMarkup(){
   const a=Practice.state(person());
   return Object.entries(a.rangeProgress||{}).map(([id,status])=>{const d=Practice.defs.find(x=>x.id===id);if(!d)return '';const title=curriculumTitles[id]||practiceTestNames[id]||id;
@@ -93,7 +132,7 @@ if(typeof document!=='undefined'){
  practiceSettings=function(){
   const selected=PracticePresets.selected(person(),Practice),preset=PracticePresets.presets.find(x=>x.id===selected);
   const details=detailedPracticeSettings().replace('class="panel practice-settings"','class="practice-details"').replace('<h2>分野ごとの出題範囲</h2>','<h3>保護者が決める絶対上限</h3>');
-  return `<section class="panel practice-settings"><h2>まとめて むずかしさを調整</h2><p><strong>${esc(person().name)}さんだけの設定</strong>です。他の子の設定・記録・コインは変わりません。</p><label class="preset-label" for="practicePreset">何学年相当の範囲から始める？</label><select id="practicePreset" aria-describedby="practicePresetHelp" onchange="applyPracticePreset(this.value)"><option value="custom" ${selected==='custom'?'selected':''}>個別設定（現在の範囲）</option>${PracticePresets.presets.map(x=>`<option value="${x.id}" ${selected===x.id?'selected':''}>${esc(x.label)}</option>`).join('')}</select><p id="practicePresetSummary">${preset?esc(preset.description):'現在の設定を保っています。目安を選ぶと開始範囲をまとめて変更します。親が指定した絶対上限は残ります。'}</p><p id="practicePresetHelp" class="muted">実年齢・学力の判定ではなく、このアプリにある内容の目安です。学年の全範囲を網羅しません。英語入門は絵ことばの量の目安です。中学英語は学年を細分化しません。上げても、まだ習得していない前提は飛ばしません。</p><p id="practicePresetStatus" role="status"></p>${practiceRangeMarkup()}${practiceProgressMarkup()}<p class="muted">開始範囲は自動進級で広がります。詳細設定の絶対上限と漢字OFF・くり上がりOFFは、自動では解除しません。範囲クリア後に次の学年帯がない場合や上限に達した場合は、復習を続けられます。</p><details class="practice-advanced"><summary>必要なときだけ：分野ごとの絶対上限</summary>${details}</details></section>`;
+  return `<section class="panel practice-settings"><h2>まとめて むずかしさを調整</h2><p><strong>${esc(person().name)}さんだけの設定</strong>です。他の子の設定・記録・コインは変わりません。</p>${practiceBulkLimitMarkup()}<h3>開始範囲の設定</h3><label class="preset-label" for="practicePreset">何学年相当の範囲から始める？</label><select id="practicePreset" aria-describedby="practicePresetHelp" onchange="applyPracticePreset(this.value)"><option value="custom" ${selected==='custom'?'selected':''}>個別設定（現在の範囲）</option>${PracticePresets.presets.map(x=>`<option value="${x.id}" ${selected===x.id?'selected':''}>${esc(x.label)}</option>`).join('')}</select><p id="practicePresetSummary">${preset?esc(preset.description):'現在の設定を保っています。目安を選ぶと開始範囲をまとめて変更します。親が指定した絶対上限は残ります。'}</p><p id="practicePresetHelp" class="muted">実年齢・学力の判定ではなく、このアプリにある内容の目安です。学年の全範囲を網羅しません。英語入門は絵ことばの量の目安です。中学英語は学年を細分化しません。上げても、まだ習得していない前提は飛ばしません。</p><p id="practicePresetStatus" role="status"></p>${practiceRangeMarkup()}${practiceProgressMarkup()}<p class="muted">開始範囲は自動進級で広がります。詳細設定の絶対上限と漢字OFF・くり上がりOFFは、自動では解除しません。範囲クリア後に次の学年帯がない場合や上限に達した場合は、復習を続けられます。</p><details class="practice-advanced"><summary>必要なときだけ：分野ごとの絶対上限</summary>${details}</details></section>`;
  };
  function refreshPresetSummary(message){
   const selected=PracticePresets.selected(person(),Practice),preset=PracticePresets.presets.find(x=>x.id===selected);
@@ -112,6 +151,7 @@ if(typeof document!=='undefined'){
  }
  const presetPermission=setPracticePermission,presetLimit=setPracticeLimit;
  setPracticePermission=function(key,value){presetPermission(key,value);if(view==='parent')refreshPresetSummary('この子の詳細設定を保存しました。')};
- setPracticeLimit=function(id,value){presetLimit(id,value);if(view==='parent')refreshPresetSummary('この子の詳細設定を保存しました。')};
- document.head.insertAdjacentHTML('beforeend','<style>.preset-label{display:block;font-weight:700;margin:14px 0 8px}#practicePreset{display:block;width:100%;max-width:100%;min-width:0;min-height:48px;padding:10px;font-size:16px;border:1px solid #c8d5c8;border-radius:12px;background:white;color:#234638}.practice-details{padding:4px}.practice-advanced{border-top:1px solid #dce3d6;padding-top:8px}.practice-settings #practicePresetStatus:empty{display:none}</style>');
+ setPracticeLimit=function(id,value){presetLimit(id,value);if(view==='parent'){refreshPresetSummary('この子の詳細設定を保存しました。');refreshPracticeLimitSelection()}};
+ document.head.insertAdjacentHTML('beforeend','<style>.preset-label{display:block;font-weight:700;margin:14px 0 8px}.practice-settings select{display:block;width:100%;max-width:100%;min-width:0;min-height:48px;padding:10px;font-size:16px;border:1px solid #c8d5c8;border-radius:12px;background:white;color:#234638}.practice-bulk-limit{margin:16px 0 24px;padding:16px;border:1px solid #c8d5c8;border-radius:14px;background:#f2f7ef}.practice-bulk-limit h3{margin-top:0}.practice-settings #practiceBulkLimitStatus:empty{display:none}.practice-details{padding:4px}.practice-advanced{border-top:1px solid #dce3d6;padding-top:8px}.practice-settings #practicePresetStatus:empty{display:none}</style>');
 }
+
