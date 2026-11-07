@@ -1,0 +1,38 @@
+[
+  {
+    "course": 92,
+    "stage": 0,
+    "n": 24,
+    "hash": "39f3de32fd194bf671c5118667a6e6c6f1a91a98fdb65303195fae9315cfd300"
+  },
+  {
+    "course": 93,
+    "stage": 1,
+    "n": 24,
+    "hash": "15dd8d71f7ecc27dcbffaa3093b46ce10bf9fab7117e2ba773fd1799afe6ba0f"
+  },
+  {
+    "course": 94,
+    "stage": 2,
+    "n": 24,
+    "hash": "29ba134b42c68fb5febf52e26692ea958efd64a177f77c8c48e0e734f8a52f8c"
+  },
+  {
+    "course": 95,
+    "stage": 3,
+    "n": 12,
+    "hash": "ed7a25c7710c4a25743c6e52d268fde94d0b25e8a19c2f1d5b3dcc87e14397ab"
+  },
+  {
+    "course": 96,
+    "stage": 4,
+    "n": 12,
+    "hash": "9bc87b4f34e7ad858d5046f519a5d8c4cc1720c7045b0a0afce389f891229304"
+  },
+  {
+    "course": 97,
+    "stage": 5,
+    "n": 12,
+    "hash": "bd9ebbd4108b2f061e84d688cd65b8277f734d06a912d791ebb3580fb73aa9e7"
+  }
+]
