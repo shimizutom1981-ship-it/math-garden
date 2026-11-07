@@ -246,20 +246,37 @@ const EN_WORDS=[
  // sentences, spelling tasks, more answer buttons, or extra course IDs.
  [['cat','🐱','ねこ'],['dog','🐶','いぬ'],['rabbit','🐰','うさぎ'],['bear','🐻','くま'],['elephant','🐘','ぞう'],['fish','🐟','さかな'],['bird','🐦','とり'],['frog','🐸','かえる'],
   ['lion','🦁','らいおん'],['tiger','🐯','とら'],['monkey','🐵','さる'],['panda','🐼','ぱんだ'],['giraffe','🦒','きりん'],['zebra','🦓','しまうま'],['horse','🐴','うま'],['cow','🐮','うし'],
-  ['pig','🐷','ぶた'],['sheep','🐑','ひつじ'],['mouse','🐭','ねずみ'],['turtle','🐢','かめ'],['whale','🐳','くじら'],['dolphin','🐬','いるか'],['fox','🦊','きつね'],['koala','🐨','こあら']],
+  ['pig','🐷','ぶた'],['sheep','🐑','ひつじ'],['mouse','🐭','ねずみ'],['turtle','🐢','かめ'],['whale','🐳','くじら'],['dolphin','🐬','いるか'],['fox','🦊','きつね'],['koala','🐨','こあら'],
+  ['duck','🦆','かも'],['chicken','🐔','にわとり'],['penguin','🐧','ぺんぎん'],['owl','🦉','ふくろう'],['eagle','🦅','わし'],['parrot','🦜','いんこ'],['swan','🦢','はくちょう'],['goat','🐐','やぎ'],
+  ['deer','🦌','しか'],['camel','🐪','らくだ'],['kangaroo','🦘','かんがるー'],['gorilla','🦍','ごりら'],['hippo','🦛','かば'],['rhino','🦏','さい'],['crocodile','🐊','わに'],['snake','🐍','へび'],
+  ['lizard','🦎','とかげ'],['shark','🦈','さめ'],['octopus','🐙','たこ'],['crab','🦀','かに'],['butterfly','🦋','ちょうちょ'],['bee','🐝','はち'],['ant','🐜','あり'],['snail','🐌','かたつむり']],
  [['apple','🍎','りんご'],['banana','🍌','ばなな'],['grapes','🍇','ぶどう'],['strawberry','🍓','いちご'],['bread','🍞','ぱん'],['rice ball','🍙','おにぎり'],['cake','🍰','けーき'],['egg','🥚','たまご'],
   ['orange','🍊','おれんじ'],['peach','🍑','もも'],['pear','🍐','ようなし'],['melon','🍈','めろん'],['watermelon','🍉','すいか'],['lemon','🍋','れもん'],['pineapple','🍍','ぱいなっぷる'],['cherry','🍒','さくらんぼ'],
-  ['carrot','🥕','にんじん'],['tomato','🍅','とまと'],['potato','🥔','じゃがいも'],['corn','🌽','とうもろこし'],['cucumber','🥒','きゅうり'],['cheese','🧀','ちーず'],['cookie','🍪','くっきー'],['milk','🥛','ぎゅうにゅう']],
+  ['carrot','🥕','にんじん'],['tomato','🍅','とまと'],['potato','🥔','じゃがいも'],['corn','🌽','とうもろこし'],['cucumber','🥒','きゅうり'],['cheese','🧀','ちーず'],['cookie','🍪','くっきー'],['milk','🥛','ぎゅうにゅう'],
+  ['kiwi','🥝','きうい'],['mango','🥭','まんごー'],['blueberries','🫐','ぶるーべりー'],['coconut','🥥','ここなっつ'],['broccoli','🥦','ぶろっこりー'],['eggplant','🍆','なす'],['sweet potato','🍠','さつまいも'],['peanuts','🥜','ぴーなっつ'],
+  ['chestnut','🌰','くり'],['pizza','🍕','ぴざ'],['hamburger','🍔','はんばーがー'],['sandwich','🥪','さんどいっち'],['hot dog','🌭','ほっとどっぐ'],['pancakes','🥞','ぱんけーき'],['croissant','🥐','くろわっさん'],['donut','🍩','どーなつ'],
+  ['ice cream','🍦','あいすくりーむ'],['chocolate','🍫','ちょこれーと'],['candy','🍬','あめ'],['lollipop','🍭','ぺろぺろきゃんでぃー'],['popcorn','🍿','ぽっぷこーん'],['honey','🍯','はちみつ'],['juice','🧃','じゅーす'],['tea','🍵','おちゃ']],
  [['car','🚗','くるま'],['train','🚃','でんしゃ'],['airplane','✈️','ひこうき'],['bicycle','🚲','じてんしゃ'],['book','📖','ほん'],['umbrella','☂️','かさ'],['hat','👒','ぼうし'],['ball','⚽','ぼーる'],
   ['bus','🚌','ばす'],['boat','⛵','ふね'],['rocket','🚀','ろけっと'],['truck','🚚','とらっく'],['pencil','✏️','えんぴつ'],['key','🔑','かぎ'],['bed','🛏️','べっど'],['chair','🪑','いす'],
-  ['door','🚪','どあ'],['clock','🕒','とけい'],['phone','📱','でんわ'],['bag','🎒','かばん'],['guitar','🎸','ぎたー'],['spoon','🥄','すぷーん'],['drum','🥁','たいこ'],['kite','🪁','たこ']]
+  ['door','🚪','どあ'],['clock','🕒','とけい'],['phone','📱','でんわ'],['bag','🎒','かばん'],['guitar','🎸','ぎたー'],['spoon','🥄','すぷーん'],['drum','🥁','たいこ'],['kite','🪁','たこ'],
+  ['watch','⌚','うでどけい'],['camera','📷','かめら'],['television','📺','てれび'],['computer','💻','こんぴゅーたー'],['scissors','✂️','はさみ'],['ruler','📏','ものさし'],['paintbrush','🖌️','えふで'],['magnet','🧲','じしゃく'],
+  ['hammer','🔨','かなづち'],['basket','🧺','かご'],['balloon','🎈','ふうせん'],['gift','🎁','ぷれぜんと'],['ring','💍','ゆびわ'],['crown','👑','おうかん'],['glasses','👓','めがね'],['gloves','🧤','てぶくろ'],
+  ['scarf','🧣','まふらー'],['shoe','👟','くつ'],['socks','🧦','くつした'],['dress','👗','わんぴーす'],['shirt','👕','しゃつ'],['pants','👖','ずぼん'],['keyboard','🎹','けんばん'],['violin','🎻','ばいおりん']]
 ];
 // Page-local, per-child rotation across five-question sets. It is deliberately
 // separate from saved progress/mastery and resets on reload or profile restore.
 const englishPictureHistory=new WeakMap();
-// Avoid broader/narrower meanings and the Japanese hint "くるま", which can
-// also describe a bus or truck. Keep picture choices unambiguous after a hint.
-const englishPictureConflicts=[['bear','panda'],['melon','watermelon'],['car','bus','truck']];
+// Conservative exclusions cover broader meanings, Japanese hints and visually
+// similar pictures. They are safeguards for beginning learners, not taxonomy
+// lessons or claims that every word in a group means the same thing.
+const englishPictureConflicts=[
+ ['bear','panda'],['bird','duck','chicken','penguin','owl','eagle','parrot','swan'],
+ ['fish','shark','whale','dolphin'],['monkey','gorilla'],['sheep','goat'],
+ ['melon','watermelon'],['potato','sweet potato'],
+ ['bread','croissant','sandwich','hot dog','hamburger'],
+ ['cake','pancakes'],['candy','chocolate','lollipop'],
+ ['car','bus','truck'],['clock','watch'],['computer','keyboard']
+];
 function englishPictureDistractor(target,other){
  return target[0]!==other[0]&&target[1]!==other[1]&&target[2]!==other[2]&&!englishPictureConflicts.some(group=>group.includes(target[0])&&group.includes(other[0]));
 }
