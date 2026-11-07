@@ -14,20 +14,20 @@ function fresh(){run("home();data.current=0;data.profiles[0]={name:'Synthetic',s
 function at(stage){P.skill(run('person()'),def()).level=stage;P.state(run('person()')).turns.en=0;run("session=null;view='quiz';englishSession={n:0,clean:0,seen:[],practiceFocus:'enWords'}");}
 function next(){run('englishNext()');return run('englishSession');}
 function correct(){run("practiceClock.start-=2000;englishAnswer(englishSession.choices.findIndex(w=>w[0]===englishSession.word[0]),document.createElement('button'));englishAdvance()");}
-test('all three introductory banks expand to 48 familiar picture words without changing course IDs',()=>{
+test('introductory banks retain familiar picture words without changing course IDs',()=>{
  assert.deepEqual(Array.from(def().courses),Array.from({length:12},(_,i)=>i));
  const words=[];
  banks.forEach((bank,i)=>{
-  assert.equal(bank.length,bankSize);assert.deepEqual(JSON.parse(JSON.stringify(bank.slice(0,24))),published[i]);assert.deepEqual(Array.from(bank.slice(0,8),w=>w[0]),original[i]);
-  for(const field of [0,1,2])assert.equal(new Set(bank.map(w=>w[field])).size,bankSize);
-  for(const w of bank){assert.equal(w.length,3);assert.match(w[0],/^[a-z]+(?: [a-z]+)?$/);assert.ok(w[0].length<=12);assert.match(w[2],/^[ぁ-ゖー]+$/u);assert.ok(w[1]);words.push(w[0]);}
+  assert.equal(bank.length,[48,48,87][i]);assert.deepEqual(JSON.parse(JSON.stringify(bank.slice(0,24))),published[i]);assert.deepEqual(Array.from(bank.slice(0,8),w=>w[0]),original[i]);
+  for(const field of [0,1,2])assert.equal(new Set(bank.map(w=>w[field])).size,bank.length);
+  for(const w of bank){assert.equal(w.length,3);assert.match(w[0],/^[a-z]+(?: [a-z]+)?$/);assert.ok(w[0].length<=12);assert.match(w[2],/^[ぁ-ゖー ]+$/u);assert.ok(w[1]);words.push(w[0]);}
  });
- assert.equal(new Set(words).size,144);
+ assert.equal(new Set(words).size,183);
 });
 test('all 12 stages keep their 2/3 choices and expose every word in listening and quiet modes',()=>{
  for(const quiet of [false,true])for(let stage=0;stage<12;stage++){
   fresh();run('data.noListening='+quiet+';data.sound='+!quiet);at(stage);
-  const expected=banks[Math.floor(stage/4)],seen=new Set(),beforeSpeech=spoken.length;
+  const expected=banks[Math.floor(stage/4)],bankSize=expected.length,seen=new Set(),beforeSpeech=spoken.length;
   for(let n=0;n<bankSize;n++){
    if(n%5===0)run('englishSession.seen=[]');
    const e=next();assert.equal(e.level,stage);assert.equal(e.choices.length,stage%4<2?2:3);

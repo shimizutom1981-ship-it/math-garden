@@ -85,6 +85,6 @@
   previousAnswer(i,el);
  };
  const previousParents=parents;
- parents=function(){previousParents();app.insertAdjacentHTML('beforeend','<section class="panel"><h2>初級英単語のくり返し</h2><p>動物・食べ物・身の回りの144語を、お子さんごと・単語ごとに調整します。何回か間を空けて自力正解できた語は回数を減らし、ときどき復習します。間違えた語は少し出やすくしますが、すぐ同じ語を続けず、新しい語も出します。</p><p class="muted">2択の偶然の正解もあるため、1回の正解では覚えたとみなしません。最初の回答・ヒントを記録し、音声あり（英単語の文字表示つき）と無音の練習は別に扱います。現在の出題範囲の中だけで調整し、上限・下限を変えません。このブラウザに保存され、バックアップにも含まれます。過去の集計から単語別の成績は推測しません。</p></section>')};
+ parents=function(){previousParents();app.insertAdjacentHTML('beforeend','<section class="panel"><h2>初級英単語のくり返し</h2><p>動物・食べ物・身の回り・動作の183項目を、お子さんごと・単語ごとに調整します。何回か間を空けて自力正解できた語は回数を減らし、ときどき復習します。間違えた語は少し出やすくしますが、すぐ同じ語を続けず、新しい語も出します。</p><p class="muted">2択の偶然の正解もあるため、1回の正解では覚えたとみなしません。最初の回答・ヒントを記録し、音声あり（英単語の文字表示つき）と無音の練習は別に扱います。現在の出題範囲の中だけで調整し、上限・下限を変えません。このブラウザに保存され、バックアップにも含まれます。過去の集計から単語別の成績は推測しません。</p></section>')};
  document.querySelector('#parent').onclick=parents;
 })(typeof globalThis==='object'?globalThis:this);

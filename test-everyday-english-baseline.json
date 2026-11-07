@@ -1,0 +1,1892 @@
+{
+  "banks": [
+    [
+      [
+        "cat",
+        "🐱",
+        "ねこ"
+      ],
+      [
+        "dog",
+        "🐶",
+        "いぬ"
+      ],
+      [
+        "rabbit",
+        "🐰",
+        "うさぎ"
+      ],
+      [
+        "bear",
+        "🐻",
+        "くま"
+      ],
+      [
+        "elephant",
+        "🐘",
+        "ぞう"
+      ],
+      [
+        "fish",
+        "🐟",
+        "さかな"
+      ],
+      [
+        "bird",
+        "🐦",
+        "とり"
+      ],
+      [
+        "frog",
+        "🐸",
+        "かえる"
+      ],
+      [
+        "lion",
+        "🦁",
+        "らいおん"
+      ],
+      [
+        "tiger",
+        "🐯",
+        "とら"
+      ],
+      [
+        "monkey",
+        "🐵",
+        "さる"
+      ],
+      [
+        "panda",
+        "🐼",
+        "ぱんだ"
+      ],
+      [
+        "giraffe",
+        "🦒",
+        "きりん"
+      ],
+      [
+        "zebra",
+        "🦓",
+        "しまうま"
+      ],
+      [
+        "horse",
+        "🐴",
+        "うま"
+      ],
+      [
+        "cow",
+        "🐮",
+        "うし"
+      ],
+      [
+        "pig",
+        "🐷",
+        "ぶた"
+      ],
+      [
+        "sheep",
+        "🐑",
+        "ひつじ"
+      ],
+      [
+        "mouse",
+        "🐭",
+        "ねずみ"
+      ],
+      [
+        "turtle",
+        "🐢",
+        "かめ"
+      ],
+      [
+        "whale",
+        "🐳",
+        "くじら"
+      ],
+      [
+        "dolphin",
+        "🐬",
+        "いるか"
+      ],
+      [
+        "fox",
+        "🦊",
+        "きつね"
+      ],
+      [
+        "koala",
+        "🐨",
+        "こあら"
+      ],
+      [
+        "duck",
+        "🦆",
+        "かも"
+      ],
+      [
+        "chicken",
+        "🐔",
+        "にわとり"
+      ],
+      [
+        "penguin",
+        "🐧",
+        "ぺんぎん"
+      ],
+      [
+        "owl",
+        "🦉",
+        "ふくろう"
+      ],
+      [
+        "eagle",
+        "🦅",
+        "わし"
+      ],
+      [
+        "parrot",
+        "🦜",
+        "いんこ"
+      ],
+      [
+        "swan",
+        "🦢",
+        "はくちょう"
+      ],
+      [
+        "goat",
+        "🐐",
+        "やぎ"
+      ],
+      [
+        "deer",
+        "🦌",
+        "しか"
+      ],
+      [
+        "camel",
+        "🐪",
+        "らくだ"
+      ],
+      [
+        "kangaroo",
+        "🦘",
+        "かんがるー"
+      ],
+      [
+        "gorilla",
+        "🦍",
+        "ごりら"
+      ],
+      [
+        "hippo",
+        "🦛",
+        "かば"
+      ],
+      [
+        "rhino",
+        "🦏",
+        "さい"
+      ],
+      [
+        "crocodile",
+        "🐊",
+        "わに"
+      ],
+      [
+        "snake",
+        "🐍",
+        "へび"
+      ],
+      [
+        "lizard",
+        "🦎",
+        "とかげ"
+      ],
+      [
+        "shark",
+        "🦈",
+        "さめ"
+      ],
+      [
+        "octopus",
+        "🐙",
+        "たこ"
+      ],
+      [
+        "crab",
+        "🦀",
+        "かに"
+      ],
+      [
+        "butterfly",
+        "🦋",
+        "ちょうちょ"
+      ],
+      [
+        "bee",
+        "🐝",
+        "はち"
+      ],
+      [
+        "ant",
+        "🐜",
+        "あり"
+      ],
+      [
+        "snail",
+        "🐌",
+        "かたつむり"
+      ]
+    ],
+    [
+      [
+        "apple",
+        "🍎",
+        "りんご"
+      ],
+      [
+        "banana",
+        "🍌",
+        "ばなな"
+      ],
+      [
+        "grapes",
+        "🍇",
+        "ぶどう"
+      ],
+      [
+        "strawberry",
+        "🍓",
+        "いちご"
+      ],
+      [
+        "bread",
+        "🍞",
+        "ぱん"
+      ],
+      [
+        "rice ball",
+        "🍙",
+        "おにぎり"
+      ],
+      [
+        "cake",
+        "🍰",
+        "けーき"
+      ],
+      [
+        "egg",
+        "🥚",
+        "たまご"
+      ],
+      [
+        "orange",
+        "🍊",
+        "おれんじ"
+      ],
+      [
+        "peach",
+        "🍑",
+        "もも"
+      ],
+      [
+        "pear",
+        "🍐",
+        "ようなし"
+      ],
+      [
+        "melon",
+        "🍈",
+        "めろん"
+      ],
+      [
+        "watermelon",
+        "🍉",
+        "すいか"
+      ],
+      [
+        "lemon",
+        "🍋",
+        "れもん"
+      ],
+      [
+        "pineapple",
+        "🍍",
+        "ぱいなっぷる"
+      ],
+      [
+        "cherry",
+        "🍒",
+        "さくらんぼ"
+      ],
+      [
+        "carrot",
+        "🥕",
+        "にんじん"
+      ],
+      [
+        "tomato",
+        "🍅",
+        "とまと"
+      ],
+      [
+        "potato",
+        "🥔",
+        "じゃがいも"
+      ],
+      [
+        "corn",
+        "🌽",
+        "とうもろこし"
+      ],
+      [
+        "cucumber",
+        "🥒",
+        "きゅうり"
+      ],
+      [
+        "cheese",
+        "🧀",
+        "ちーず"
+      ],
+      [
+        "cookie",
+        "🍪",
+        "くっきー"
+      ],
+      [
+        "milk",
+        "🥛",
+        "ぎゅうにゅう"
+      ],
+      [
+        "kiwi",
+        "🥝",
+        "きうい"
+      ],
+      [
+        "mango",
+        "🥭",
+        "まんごー"
+      ],
+      [
+        "blueberries",
+        "🫐",
+        "ぶるーべりー"
+      ],
+      [
+        "coconut",
+        "🥥",
+        "ここなっつ"
+      ],
+      [
+        "broccoli",
+        "🥦",
+        "ぶろっこりー"
+      ],
+      [
+        "eggplant",
+        "🍆",
+        "なす"
+      ],
+      [
+        "sweet potato",
+        "🍠",
+        "さつまいも"
+      ],
+      [
+        "peanuts",
+        "🥜",
+        "ぴーなっつ"
+      ],
+      [
+        "chestnut",
+        "🌰",
+        "くり"
+      ],
+      [
+        "pizza",
+        "🍕",
+        "ぴざ"
+      ],
+      [
+        "hamburger",
+        "🍔",
+        "はんばーがー"
+      ],
+      [
+        "sandwich",
+        "🥪",
+        "さんどいっち"
+      ],
+      [
+        "hot dog",
+        "🌭",
+        "ほっとどっぐ"
+      ],
+      [
+        "pancakes",
+        "🥞",
+        "ぱんけーき"
+      ],
+      [
+        "croissant",
+        "🥐",
+        "くろわっさん"
+      ],
+      [
+        "donut",
+        "🍩",
+        "どーなつ"
+      ],
+      [
+        "ice cream",
+        "🍦",
+        "あいすくりーむ"
+      ],
+      [
+        "chocolate",
+        "🍫",
+        "ちょこれーと"
+      ],
+      [
+        "candy",
+        "🍬",
+        "あめ"
+      ],
+      [
+        "lollipop",
+        "🍭",
+        "ぺろぺろきゃんでぃー"
+      ],
+      [
+        "popcorn",
+        "🍿",
+        "ぽっぷこーん"
+      ],
+      [
+        "honey",
+        "🍯",
+        "はちみつ"
+      ],
+      [
+        "juice",
+        "🧃",
+        "じゅーす"
+      ],
+      [
+        "tea",
+        "🍵",
+        "おちゃ"
+      ]
+    ],
+    [
+      [
+        "car",
+        "🚗",
+        "くるま"
+      ],
+      [
+        "train",
+        "🚃",
+        "でんしゃ"
+      ],
+      [
+        "airplane",
+        "✈️",
+        "ひこうき"
+      ],
+      [
+        "bicycle",
+        "🚲",
+        "じてんしゃ"
+      ],
+      [
+        "book",
+        "📖",
+        "ほん"
+      ],
+      [
+        "umbrella",
+        "☂️",
+        "かさ"
+      ],
+      [
+        "hat",
+        "👒",
+        "ぼうし"
+      ],
+      [
+        "ball",
+        "⚽",
+        "ぼーる"
+      ],
+      [
+        "bus",
+        "🚌",
+        "ばす"
+      ],
+      [
+        "boat",
+        "⛵",
+        "ふね"
+      ],
+      [
+        "rocket",
+        "🚀",
+        "ろけっと"
+      ],
+      [
+        "truck",
+        "🚚",
+        "とらっく"
+      ],
+      [
+        "pencil",
+        "✏️",
+        "えんぴつ"
+      ],
+      [
+        "key",
+        "🔑",
+        "かぎ"
+      ],
+      [
+        "bed",
+        "🛏️",
+        "べっど"
+      ],
+      [
+        "chair",
+        "🪑",
+        "いす"
+      ],
+      [
+        "door",
+        "🚪",
+        "どあ"
+      ],
+      [
+        "clock",
+        "🕒",
+        "とけい"
+      ],
+      [
+        "phone",
+        "📱",
+        "でんわ"
+      ],
+      [
+        "bag",
+        "🎒",
+        "かばん"
+      ],
+      [
+        "guitar",
+        "🎸",
+        "ぎたー"
+      ],
+      [
+        "spoon",
+        "🥄",
+        "すぷーん"
+      ],
+      [
+        "drum",
+        "🥁",
+        "たいこ"
+      ],
+      [
+        "kite",
+        "🪁",
+        "たこ"
+      ],
+      [
+        "watch",
+        "⌚",
+        "うでどけい"
+      ],
+      [
+        "camera",
+        "📷",
+        "かめら"
+      ],
+      [
+        "television",
+        "📺",
+        "てれび"
+      ],
+      [
+        "computer",
+        "💻",
+        "こんぴゅーたー"
+      ],
+      [
+        "scissors",
+        "✂️",
+        "はさみ"
+      ],
+      [
+        "ruler",
+        "📏",
+        "ものさし"
+      ],
+      [
+        "paintbrush",
+        "🖌️",
+        "えふで"
+      ],
+      [
+        "magnet",
+        "🧲",
+        "じしゃく"
+      ],
+      [
+        "hammer",
+        "🔨",
+        "かなづち"
+      ],
+      [
+        "basket",
+        "🧺",
+        "かご"
+      ],
+      [
+        "balloon",
+        "🎈",
+        "ふうせん"
+      ],
+      [
+        "gift",
+        "🎁",
+        "ぷれぜんと"
+      ],
+      [
+        "ring",
+        "💍",
+        "ゆびわ"
+      ],
+      [
+        "crown",
+        "👑",
+        "おうかん"
+      ],
+      [
+        "glasses",
+        "👓",
+        "めがね"
+      ],
+      [
+        "gloves",
+        "🧤",
+        "てぶくろ"
+      ],
+      [
+        "scarf",
+        "🧣",
+        "まふらー"
+      ],
+      [
+        "shoe",
+        "👟",
+        "くつ"
+      ],
+      [
+        "socks",
+        "🧦",
+        "くつした"
+      ],
+      [
+        "dress",
+        "👗",
+        "わんぴーす"
+      ],
+      [
+        "shirt",
+        "👕",
+        "しゃつ"
+      ],
+      [
+        "pants",
+        "👖",
+        "ずぼん"
+      ],
+      [
+        "keyboard",
+        "🎹",
+        "けんばん"
+      ],
+      [
+        "violin",
+        "🎻",
+        "ばいおりん"
+      ]
+    ]
+  ],
+  "defs": [
+    {
+      "id": "number",
+      "courses": [
+        109,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "addition",
+      "courses": [
+        110,
+        3,
+        111,
+        112
+      ]
+    },
+    {
+      "id": "subtraction",
+      "courses": [
+        4,
+        113
+      ]
+    },
+    {
+      "id": "mental",
+      "courses": [
+        9,
+        13,
+        14,
+        15,
+        17
+      ]
+    },
+    {
+      "id": "multiply",
+      "courses": [
+        117,
+        118,
+        10
+      ]
+    },
+    {
+      "id": "divide",
+      "courses": [
+        11
+      ]
+    },
+    {
+      "id": "fraction",
+      "courses": [
+        12
+      ]
+    },
+    {
+      "id": "letters",
+      "courses": [
+        119,
+        18,
+        19
+      ]
+    },
+    {
+      "id": "words",
+      "courses": [
+        21,
+        27
+      ]
+    },
+    {
+      "id": "sentence",
+      "courses": [
+        23,
+        26,
+        28
+      ]
+    },
+    {
+      "id": "reading",
+      "courses": [
+        24,
+        25,
+        29
+      ]
+    },
+    {
+      "id": "enWords",
+      "courses": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ]
+    },
+    {
+      "id": "enDescribe",
+      "courses": [
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ]
+    },
+    {
+      "id": "enSentence",
+      "courses": [
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27
+      ]
+    },
+    {
+      "id": "enReply",
+      "courses": [
+        28,
+        29,
+        30,
+        31
+      ]
+    },
+    {
+      "id": "jp_kanjiContext",
+      "courses": [
+        31,
+        32,
+        33
+      ]
+    },
+    {
+      "id": "jp_vocabularyContext",
+      "courses": [
+        34,
+        35,
+        36
+      ]
+    },
+    {
+      "id": "jp_structure",
+      "courses": [
+        37,
+        38,
+        39
+      ]
+    },
+    {
+      "id": "jp_readingAdvanced",
+      "courses": [
+        40,
+        41,
+        42
+      ]
+    },
+    {
+      "id": "jp_wordRelations",
+      "courses": [
+        43,
+        44,
+        45
+      ]
+    },
+    {
+      "id": "jp_proverbs",
+      "courses": [
+        46,
+        47,
+        48
+      ]
+    },
+    {
+      "id": "jp_idioms",
+      "courses": [
+        49,
+        50,
+        51
+      ]
+    },
+    {
+      "id": "jp_fourCharacters",
+      "courses": [
+        52,
+        53,
+        54
+      ]
+    },
+    {
+      "id": "vocab_family",
+      "courses": [
+        32,
+        33,
+        34,
+        35
+      ]
+    },
+    {
+      "id": "vocab_body",
+      "courses": [
+        36,
+        37,
+        38,
+        39
+      ]
+    },
+    {
+      "id": "vocab_feelings",
+      "courses": [
+        40,
+        41,
+        42,
+        43
+      ]
+    },
+    {
+      "id": "vocab_animals",
+      "courses": [
+        44,
+        45,
+        46,
+        47
+      ]
+    },
+    {
+      "id": "vocab_nature",
+      "courses": [
+        48,
+        49,
+        50,
+        51
+      ]
+    },
+    {
+      "id": "vocab_produce",
+      "courses": [
+        52,
+        53,
+        54,
+        55
+      ]
+    },
+    {
+      "id": "vocab_food",
+      "courses": [
+        56,
+        57,
+        58,
+        59
+      ]
+    },
+    {
+      "id": "vocab_home",
+      "courses": [
+        60,
+        61,
+        62,
+        63
+      ]
+    },
+    {
+      "id": "vocab_school",
+      "courses": [
+        64,
+        65,
+        66,
+        67
+      ]
+    },
+    {
+      "id": "vocab_clothes",
+      "courses": [
+        68,
+        69,
+        70,
+        71
+      ]
+    },
+    {
+      "id": "vocab_colors",
+      "courses": [
+        72,
+        73,
+        74,
+        75
+      ]
+    },
+    {
+      "id": "vocab_numbers",
+      "courses": [
+        76,
+        77,
+        78,
+        79
+      ]
+    },
+    {
+      "id": "vocab_time",
+      "courses": [
+        80,
+        81,
+        82,
+        83
+      ]
+    },
+    {
+      "id": "vocab_calendar",
+      "courses": [
+        84,
+        85,
+        86,
+        87
+      ]
+    },
+    {
+      "id": "vocab_places",
+      "courses": [
+        88,
+        89,
+        90,
+        91
+      ]
+    },
+    {
+      "id": "vocab_travel",
+      "courses": [
+        92,
+        93,
+        94,
+        95
+      ]
+    },
+    {
+      "id": "vocab_basicverbs",
+      "courses": [
+        96,
+        97,
+        98,
+        99
+      ]
+    },
+    {
+      "id": "vocab_daily",
+      "courses": [
+        100,
+        101,
+        102,
+        103
+      ]
+    },
+    {
+      "id": "vocab_motion",
+      "courses": [
+        104,
+        105,
+        106,
+        107
+      ]
+    },
+    {
+      "id": "vocab_communication",
+      "courses": [
+        108,
+        109,
+        110,
+        111
+      ]
+    },
+    {
+      "id": "vocab_sports",
+      "courses": [
+        112,
+        113,
+        114,
+        115
+      ]
+    },
+    {
+      "id": "vocab_qualities",
+      "courses": [
+        116,
+        117,
+        118,
+        119
+      ]
+    },
+    {
+      "id": "vocab_relations",
+      "courses": [
+        120,
+        121,
+        122,
+        123
+      ]
+    },
+    {
+      "id": "vocab_grammar",
+      "courses": [
+        124,
+        125,
+        126,
+        127
+      ]
+    },
+    {
+      "id": "vocab_world",
+      "courses": [
+        128,
+        129,
+        130,
+        131
+      ]
+    },
+    {
+      "id": "vocab_jobs",
+      "courses": [
+        132,
+        133,
+        134,
+        135
+      ]
+    },
+    {
+      "id": "vocab_events",
+      "courses": [
+        136,
+        137,
+        138,
+        139
+      ]
+    },
+    {
+      "id": "vocab_weather",
+      "courses": [
+        140,
+        141,
+        142,
+        143
+      ]
+    },
+    {
+      "id": "vocab_conversation",
+      "courses": [
+        144,
+        145,
+        146,
+        147
+      ]
+    },
+    {
+      "id": "vocab_useful",
+      "courses": [
+        148,
+        149,
+        150,
+        151
+      ]
+    },
+    {
+      "id": "mathDecompose",
+      "courses": [
+        114,
+        115
+      ]
+    },
+    {
+      "id": "mathCarry",
+      "courses": [
+        116,
+        58,
+        59,
+        60
+      ]
+    },
+    {
+      "id": "mathBorrow",
+      "courses": [
+        61,
+        62,
+        63
+      ]
+    },
+    {
+      "id": "mathProduct",
+      "courses": [
+        64,
+        65,
+        66
+      ]
+    },
+    {
+      "id": "mathQuotient",
+      "courses": [
+        67,
+        68,
+        69
+      ]
+    },
+    {
+      "id": "mathOrder",
+      "courses": [
+        70,
+        71,
+        72
+      ]
+    },
+    {
+      "id": "mathRational",
+      "courses": [
+        73,
+        74,
+        75,
+        76
+      ]
+    },
+    {
+      "id": "mathDecimal",
+      "courses": [
+        77,
+        78,
+        79
+      ]
+    },
+    {
+      "id": "mathPercent",
+      "courses": [
+        80,
+        81,
+        82
+      ]
+    },
+    {
+      "id": "enListening",
+      "courses": [
+        152,
+        153,
+        154
+      ]
+    },
+    {
+      "id": "enListeningReading",
+      "courses": [
+        156,
+        157,
+        158
+      ]
+    },
+    {
+      "id": "enSpelling",
+      "courses": [
+        160,
+        161,
+        162
+      ]
+    },
+    {
+      "id": "enSpellingReading",
+      "courses": [
+        164,
+        165,
+        166
+      ]
+    },
+    {
+      "id": "enSocialDialog",
+      "courses": [
+        168,
+        169,
+        170
+      ]
+    },
+    {
+      "id": "enInformationDialog",
+      "courses": [
+        172,
+        173,
+        174
+      ]
+    },
+    {
+      "id": "lifeShopping",
+      "courses": [
+        83,
+        84,
+        85
+      ]
+    },
+    {
+      "id": "lifeClock",
+      "courses": [
+        86,
+        87,
+        88
+      ]
+    },
+    {
+      "id": "lifeLength",
+      "courses": [
+        89,
+        90,
+        91
+      ]
+    },
+    {
+      "id": "jp_gradeKanji",
+      "courses": [
+        92,
+        93,
+        94,
+        95,
+        96,
+        97
+      ]
+    },
+    {
+      "id": "jp_radicalDictionary",
+      "courses": [
+        98,
+        99,
+        100,
+        101
+      ]
+    },
+    {
+      "id": "jp_polite",
+      "courses": [
+        102,
+        103
+      ]
+    },
+    {
+      "id": "jp_punctuation",
+      "courses": [
+        104,
+        105
+      ]
+    },
+    {
+      "id": "jp_passageEvidence",
+      "courses": [
+        106,
+        107,
+        108
+      ]
+    },
+    {
+      "id": "enConversationDepth",
+      "courses": [
+        176,
+        177,
+        178,
+        179
+      ]
+    },
+    {
+      "id": "enConversationDepthReading",
+      "courses": [
+        180,
+        181,
+        182,
+        183
+      ]
+    },
+    {
+      "id": "junior_be",
+      "courses": [
+        184,
+        185
+      ]
+    },
+    {
+      "id": "junior_present",
+      "courses": [
+        188,
+        189
+      ]
+    },
+    {
+      "id": "junior_past",
+      "courses": [
+        192,
+        193
+      ]
+    },
+    {
+      "id": "junior_future",
+      "courses": [
+        196,
+        197
+      ]
+    },
+    {
+      "id": "junior_progressive",
+      "courses": [
+        200,
+        201
+      ]
+    },
+    {
+      "id": "junior_question",
+      "courses": [
+        204,
+        205
+      ]
+    },
+    {
+      "id": "junior_negative",
+      "courses": [
+        208,
+        209
+      ]
+    },
+    {
+      "id": "junior_modal",
+      "courses": [
+        212,
+        213
+      ]
+    },
+    {
+      "id": "junior_comparison",
+      "courses": [
+        216,
+        217
+      ]
+    },
+    {
+      "id": "junior_infinitive",
+      "courses": [
+        220,
+        221
+      ]
+    },
+    {
+      "id": "junior_gerund",
+      "courses": [
+        224,
+        225
+      ]
+    },
+    {
+      "id": "junior_passive",
+      "courses": [
+        228,
+        229
+      ]
+    },
+    {
+      "id": "junior_perfect",
+      "courses": [
+        232,
+        233
+      ]
+    },
+    {
+      "id": "junior_perfectProgressive",
+      "courses": [
+        236,
+        237
+      ]
+    },
+    {
+      "id": "junior_relative",
+      "courses": [
+        240,
+        241
+      ]
+    },
+    {
+      "id": "junior_participle",
+      "courses": [
+        244,
+        245
+      ]
+    },
+    {
+      "id": "junior_hypothetical",
+      "courses": [
+        248,
+        249
+      ]
+    },
+    {
+      "id": "junior_indirect",
+      "courses": [
+        252,
+        253
+      ]
+    },
+    {
+      "id": "junior_conjunction",
+      "courses": [
+        256,
+        257
+      ]
+    },
+    {
+      "id": "junior_pronoun",
+      "courses": [
+        260,
+        261
+      ]
+    },
+    {
+      "id": "junior_quantity",
+      "courses": [
+        264,
+        265
+      ]
+    },
+    {
+      "id": "junior_preposition",
+      "courses": [
+        268,
+        269
+      ]
+    },
+    {
+      "id": "junior_there",
+      "courses": [
+        272,
+        273
+      ]
+    },
+    {
+      "id": "junior_svoo",
+      "courses": [
+        276,
+        277
+      ]
+    },
+    {
+      "id": "junior_svoc",
+      "courses": [
+        280,
+        281
+      ]
+    },
+    {
+      "id": "junior_complement",
+      "courses": [
+        284,
+        285
+      ]
+    },
+    {
+      "id": "junior_imperative",
+      "courses": [
+        288,
+        289
+      ]
+    },
+    {
+      "id": "junior_lexicon0",
+      "courses": [
+        292
+      ]
+    },
+    {
+      "id": "junior_lexicon1",
+      "courses": [
+        296
+      ]
+    },
+    {
+      "id": "junior_lexicon2",
+      "courses": [
+        300
+      ]
+    },
+    {
+      "id": "junior_lexicon3",
+      "courses": [
+        304
+      ]
+    },
+    {
+      "id": "junior_lexicon4",
+      "courses": [
+        308
+      ]
+    },
+    {
+      "id": "junior_lexicon5",
+      "courses": [
+        312
+      ]
+    },
+    {
+      "id": "junior_lexicon6",
+      "courses": [
+        316
+      ]
+    },
+    {
+      "id": "junior_lexicon7",
+      "courses": [
+        320
+      ]
+    },
+    {
+      "id": "junior_lexicon8",
+      "courses": [
+        324
+      ]
+    },
+    {
+      "id": "junior_lexicon9",
+      "courses": [
+        328
+      ]
+    },
+    {
+      "id": "junior_lexicon10",
+      "courses": [
+        332
+      ]
+    },
+    {
+      "id": "junior_lexicon11",
+      "courses": [
+        336
+      ]
+    },
+    {
+      "id": "junior_reading",
+      "courses": [
+        340,
+        341,
+        342,
+        343
+      ]
+    },
+    {
+      "id": "junior_listening",
+      "courses": [
+        344,
+        345,
+        346,
+        347
+      ]
+    },
+    {
+      "id": "junior_listeningReading",
+      "courses": [
+        348,
+        349,
+        350,
+        351
+      ]
+    },
+    {
+      "id": "junior_response",
+      "courses": [
+        352,
+        353,
+        354,
+        355
+      ]
+    },
+    {
+      "id": "junior_breadth_actions",
+      "courses": [
+        356,
+        357,
+        358,
+        359
+      ]
+    },
+    {
+      "id": "junior_breadth_daily",
+      "courses": [
+        360,
+        361,
+        362,
+        363
+      ]
+    },
+    {
+      "id": "junior_breadth_world",
+      "courses": [
+        364,
+        365,
+        366,
+        367
+      ]
+    },
+    {
+      "id": "junior_breadth_qualities",
+      "courses": [
+        368,
+        369,
+        370,
+        371
+      ]
+    },
+    {
+      "id": "junior_breadth_phrases",
+      "courses": [
+        372,
+        373,
+        374,
+        375
+      ]
+    },
+    {
+      "id": "junior_breadth_reading",
+      "courses": [
+        376,
+        377,
+        378,
+        379
+      ]
+    },
+    {
+      "id": "junior_breadth_listen",
+      "courses": [
+        380,
+        381,
+        382,
+        383
+      ]
+    },
+    {
+      "id": "junior_breadth_listenReading",
+      "courses": [
+        384,
+        385,
+        386,
+        387
+      ]
+    },
+    {
+      "id": "junior_breadth_junior_clausePatterns",
+      "courses": [
+        388,
+        389
+      ]
+    },
+    {
+      "id": "junior_breadth_junior_tenseMeaning",
+      "courses": [
+        392,
+        393
+      ]
+    },
+    {
+      "id": "junior_breadth_junior_comparisonMeaning",
+      "courses": [
+        396,
+        397
+      ]
+    },
+    {
+      "id": "junior_breadth_junior_punctuation",
+      "courses": [
+        400,
+        401
+      ]
+    },
+    {
+      "id": "junior_breadth_junior_referenceGrammar",
+      "courses": [
+        404,
+        405
+      ]
+    },
+    {
+      "id": "junior_breadth_junior_intentionResponse",
+      "courses": [
+        408,
+        409
+      ]
+    },
+    {
+      "id": "junior_breadth_junior_contextMeaning",
+      "courses": [
+        412,
+        413
+      ]
+    },
+    {
+      "id": "junior_soundPatterns",
+      "courses": [
+        416,
+        417,
+        418,
+        419
+      ]
+    },
+    {
+      "id": "junior_soundPatternsReading",
+      "courses": [
+        420,
+        421,
+        422,
+        423
+      ]
+    },
+    {
+      "id": "junior_prosodyKnowledge",
+      "courses": [
+        424,
+        425,
+        426
+      ]
+    },
+    {
+      "id": "junior_spellingPatterns",
+      "courses": [
+        428,
+        429,
+        430,
+        431
+      ]
+    },
+    {
+      "id": "compare",
+      "courses": [
+        2
+      ]
+    },
+    {
+      "id": "mathHundreds",
+      "courses": [
+        56,
+        57
+      ]
+    },
+    {
+      "id": "katakana",
+      "courses": [
+        20
+      ]
+    },
+    {
+      "id": "kanji",
+      "courses": [
+        22
+      ]
+    },
+    {
+      "id": "readingKanji",
+      "courses": [
+        30
+      ]
+    }
+  ]
+}
