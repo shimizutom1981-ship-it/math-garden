@@ -242,10 +242,36 @@ document.head.appendChild(feedingStyle);
 function shopAction(id){let item=SHOP.find(x=>x.id===id);if(!item)return;let g=game(),pet=friendState();if(g.owned.includes(id)){if(pet.equipped[item.slot]===id)delete pet.equipped[item.slot];else pet.equipped[item.slot]=id;save();petRoom('きせかえ したよ！');return}if(g.coins<item.cost)return;g.coins-=item.cost;g.owned.push(id);pet.equipped[item.slot]=id;save();petRoom(item.name+'を てにいれた！')}
 
 const EN_WORDS=[
- [['cat','🐱','ねこ'],['dog','🐶','いぬ'],['rabbit','🐰','うさぎ'],['bear','🐻','くま'],['elephant','🐘','ぞう'],['fish','🐟','さかな'],['bird','🐦','とり'],['frog','🐸','かえる']],
- [['apple','🍎','りんご'],['banana','🍌','ばなな'],['grapes','🍇','ぶどう'],['strawberry','🍓','いちご'],['bread','🍞','ぱん'],['rice ball','🍙','おにぎり'],['cake','🍰','けーき'],['egg','🥚','たまご']],
- [['car','🚗','くるま'],['train','🚃','でんしゃ'],['airplane','✈️','ひこうき'],['bicycle','🚲','じてんしゃ'],['book','📖','ほん'],['umbrella','☂️','かさ'],['hat','👒','ぼうし'],['ball','⚽','ぼーる']]
+ // Familiar picture nouns only. Add breadth inside the existing stages, not
+ // sentences, spelling tasks, more answer buttons, or extra course IDs.
+ [['cat','🐱','ねこ'],['dog','🐶','いぬ'],['rabbit','🐰','うさぎ'],['bear','🐻','くま'],['elephant','🐘','ぞう'],['fish','🐟','さかな'],['bird','🐦','とり'],['frog','🐸','かえる'],
+  ['lion','🦁','らいおん'],['tiger','🐯','とら'],['monkey','🐵','さる'],['panda','🐼','ぱんだ'],['giraffe','🦒','きりん'],['zebra','🦓','しまうま'],['horse','🐴','うま'],['cow','🐮','うし'],
+  ['pig','🐷','ぶた'],['sheep','🐑','ひつじ'],['mouse','🐭','ねずみ'],['turtle','🐢','かめ'],['whale','🐳','くじら'],['dolphin','🐬','いるか'],['fox','🦊','きつね'],['koala','🐨','こあら']],
+ [['apple','🍎','りんご'],['banana','🍌','ばなな'],['grapes','🍇','ぶどう'],['strawberry','🍓','いちご'],['bread','🍞','ぱん'],['rice ball','🍙','おにぎり'],['cake','🍰','けーき'],['egg','🥚','たまご'],
+  ['orange','🍊','おれんじ'],['peach','🍑','もも'],['pear','🍐','ようなし'],['melon','🍈','めろん'],['watermelon','🍉','すいか'],['lemon','🍋','れもん'],['pineapple','🍍','ぱいなっぷる'],['cherry','🍒','さくらんぼ'],
+  ['carrot','🥕','にんじん'],['tomato','🍅','とまと'],['potato','🥔','じゃがいも'],['corn','🌽','とうもろこし'],['cucumber','🥒','きゅうり'],['cheese','🧀','ちーず'],['cookie','🍪','くっきー'],['milk','🥛','ぎゅうにゅう']],
+ [['car','🚗','くるま'],['train','🚃','でんしゃ'],['airplane','✈️','ひこうき'],['bicycle','🚲','じてんしゃ'],['book','📖','ほん'],['umbrella','☂️','かさ'],['hat','👒','ぼうし'],['ball','⚽','ぼーる'],
+  ['bus','🚌','ばす'],['boat','⛵','ふね'],['rocket','🚀','ろけっと'],['truck','🚚','とらっく'],['pencil','✏️','えんぴつ'],['key','🔑','かぎ'],['bed','🛏️','べっど'],['chair','🪑','いす'],
+  ['door','🚪','どあ'],['clock','🕒','とけい'],['phone','📱','でんわ'],['bag','🎒','かばん'],['guitar','🎸','ぎたー'],['spoon','🥄','すぷーん'],['drum','🥁','たいこ'],['kite','🪁','たこ']]
 ];
+// Page-local, per-child rotation across five-question sets. It is deliberately
+// separate from saved progress/mastery and resets on reload or profile restore.
+const englishPictureHistory=new WeakMap();
+// Avoid broader/narrower meanings and the Japanese hint "くるま", which can
+// also describe a bus or truck. Keep picture choices unambiguous after a hint.
+const englishPictureConflicts=[['bear','panda'],['melon','watermelon'],['car','bus','truck']];
+function englishPictureDistractor(target,other){
+ return target[0]!==other[0]&&target[1]!==other[1]&&target[2]!==other[2]&&!englishPictureConflicts.some(group=>group.includes(target[0])&&group.includes(other[0]));
+}
+function pickEnglishPicture(e,bank){
+ const p=person();let history=englishPictureHistory.get(p);
+ if(!history){history=new Map();englishPictureHistory.set(p,history)}
+ let used=history.get(bank);if(!used){used=new Set();history.set(bank,used)}
+ let pool=bank.filter(w=>!used.has(w[0])&&!e.seen.includes(w[0]));
+ if(!pool.length){used.clear();pool=bank.filter(w=>!e.seen.includes(w[0]))}
+ if(!pool.length)pool=bank;
+ const word=pool[rand(0,pool.length-1)];used.add(word[0]);return word;
+}
 let englishSession=null;
 function englishProgress(){
  const p=person();if(!p.english||typeof p.english!=='object')p.english={};
@@ -275,8 +301,8 @@ function englishNext(){
  if(typeof buildCurriculumEnglish==='function'&&buildCurriculumEnglish(e,item))return;
  const bank=EN_WORDS[Math.floor(e.level/4)];
  let pool=bank.filter(w=>!e.seen.includes(w[0]));if(!pool.length)pool=bank;
- e.word=pool[rand(0,pool.length-1)];e.seen.push(e.word[0]);
- const others=bank.filter(w=>w!==e.word).map(w=>({w,r:Math.random()})).sort((a,b)=>a.r-b.r).slice(0,e.count-1).map(x=>x.w);
+ e.word=e.level<12?pickEnglishPicture(e,bank):pool[rand(0,pool.length-1)];e.seen.push(e.word[0]);
+ const others=bank.filter(w=>e.level<12?englishPictureDistractor(e.word,w):w!==e.word).map(w=>({w,r:Math.random()})).sort((a,b)=>a.r-b.r).slice(0,e.count-1).map(x=>x.w);
  e.choices=[e.word,...others].map(w=>({w,r:Math.random()})).sort((a,b)=>a.r-b.r).map(x=>x.w);
  const reading=data.noListening===true||!data.sound||!('speechSynthesis'in window);
  e.readingAlternative=reading;
