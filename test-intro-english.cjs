@@ -36,10 +36,23 @@ test('all 12 stages keep their 2/3 choices and expose every word in listening an
    assert.equal(e.choices.filter(w=>w[0]===e.word[0]).length,1);
    for(const choice of e.choices){assert.ok(app.innerHTML.includes('aria-label="'+choice[2]+'"'));assert.ok(app.innerHTML.includes(choice[1]));}
    if(quiet){assert.ok(app.innerHTML.includes('<p class="english-context">'+e.word[0]+'</p>'));assert.ok(!app.innerHTML.includes('onclick="englishSay'));}
-   else {assert.equal(spoken.at(-1),e.word[0]);assert.equal(utterances.at(-1).lang,'en-US');assert.equal(utterances.at(-1).rate,.75);assert.equal(utterances.at(-1).voice,englishVoice);assert.ok(!app.innerHTML.includes('<p class="english-context">'));}
+   else {assert.equal(spoken.at(-1),e.word[0]);assert.equal(utterances.at(-1).lang,'en-US');assert.equal(utterances.at(-1).rate,.75);assert.equal(utterances.at(-1).voice,englishVoice);assert.ok(app.innerHTML.includes('<p class="english-context" lang="en">'+e.word[0]+'</p>'));assert.ok(app.innerHTML.indexOf('lang="en"')<app.innerHTML.indexOf('class="choices"'));assert.equal(e.done,false);}
   }
   assert.equal(seen.size,bankSize);assert.equal(spoken.length-beforeSpeech,quiet?0:bankSize);
  }
+});
+test('visible spelling keeps audio replay, first-answer recording and quiet-mode behavior',()=>{
+ fresh();run('data.noListening=false;data.sound=true');at(0);const e=next();
+ assert.equal(e.wordPractice.mode,'listening');assert.equal(e.readingAlternative,false);
+ assert.ok(app.innerHTML.includes('<p class="english-context" lang="en">'+e.word[0]+'</p>'));
+ const before=run('JSON.stringify([data,englishSession.n,englishSession.word,englishSession.choices])'),speechCount=spoken.length;
+ run('englishSay(englishSession.word[0]);englishSay(englishSession.word[0])');
+ assert.equal(run('JSON.stringify([data,englishSession.n,englishSession.word,englishSession.choices])'),before);assert.equal(spoken.length,speechCount+2);
+ run("practiceClock.start-=2000;englishAnswer(englishSession.choices.findIndex(w=>w[0]===englishSession.word[0]),document.createElement('button'))");
+ assert.equal(run("person().englishWordPractice.banks['animals:listening'].words[englishSession.word[0]].correct"),1);
+ assert.equal(run('practiceItem.form'),'listening');
+ run('englishAdvance();setNoListening(true)');assert.equal(run('englishSession.n'),1);assert.equal(run('englishSession.readingAlternative'),true);
+ assert.ok(app.innerHTML.includes('<p class="english-context">'+run('englishSession.word[0]')+'</p>'));assert.ok(!app.innerHTML.includes('onclick="englishSay'));
 });
 test('a bank is used before repeating across five-question sets; no duplicate in each set',()=>{
  fresh();run('data.noListening=true;data.sound=false');at(0);let cycle=[];
@@ -103,15 +116,16 @@ test('every added word has a complete kana hint and correct-answer feedback',()=
   }finally{document.querySelector=previousQuery;}
  }
 });
-test('rotation is per child and bank, not saved as progress or mastery',()=>{
+test('picture scheduling persists per child and bank without inventing answer evidence',()=>{
  fresh();at(0);run('englishNext()');
- assert.equal(run('englishPictureHistory.get(person()).get(EN_WORDS[0]).size'),1);
- assert.equal(run('englishPictureHistory.has(data.profiles[1])'),false);
- const before=run('JSON.stringify(data)');run('pickEnglishPicture({seen:[]},EN_WORDS[0]);pickEnglishPicture({seen:[]},EN_WORDS[1])');assert.equal(run('JSON.stringify(data)'),before);
- assert.equal(run('englishPictureHistory.get(person()).get(EN_WORDS[0]).size'),2);assert.equal(run('englishPictureHistory.get(person()).get(EN_WORDS[1]).size'),1);
- run('data.current=1');run('pickEnglishPicture({seen:[]},EN_WORDS[0])');assert.equal(run('englishPictureHistory.get(person()).get(EN_WORDS[0]).size'),1);
- run('data.current=0');assert.equal(run('englishPictureHistory.get(person()).get(EN_WORDS[0]).size'),2);
- run('data.profiles[0]=JSON.parse(JSON.stringify(data.profiles[0]))');assert.equal(run('englishPictureHistory.has(person())'),false);
+ assert.equal(run("person().englishWordPractice.banks['animals:reading'].turn"),1);
+ assert.equal(run('data.profiles[1].englishWordPractice'),undefined);
+ run('pickEnglishPicture({seen:[]},EN_WORDS[0]);pickEnglishPicture({seen:[]},EN_WORDS[1])');
+ assert.equal(run("person().englishWordPractice.banks['animals:reading'].turn"),2);assert.equal(run("person().englishWordPractice.banks['food:reading'].turn"),1);
+ assert.equal(run("Object.values(person().englishWordPractice.banks['animals:reading'].words).reduce((n,w)=>n+w.total,0)"),0);
+ run('data.current=1');run('pickEnglishPicture({seen:[]},EN_WORDS[0])');assert.equal(run("person().englishWordPractice.banks['animals:reading'].turn"),1);
+ run('data.current=0');assert.equal(run("person().englishWordPractice.banks['animals:reading'].turn"),2);
+ run('data.profiles[0]=JSON.parse(JSON.stringify(data.profiles[0]))');assert.equal(run("person().englishWordPractice.banks['animals:reading'].turn"),2);
 });
 test('speech-off and speech-unavailable modes show readable questions with no speech',()=>{
  for(const unavailable of [false,true]){
@@ -130,15 +144,15 @@ test('first-attempt, hint and double-click scoring remain unchanged for new word
 });
 test('youngest cap permits all 48 animals through real five-question sessions without promotion',()=>{
  fresh();run("data.noListening=true;data.sound=false;PracticePresets.apply(person(),'preschool-younger',Practice);PracticePresets.applyLimit(person(),'preschool-younger',Practice)");
- const first48=[];
- for(let set=0;set<10;set++){
+ const exposed=new Set();
+ for(let set=0;set<25;set++){
   run('home();startEnglish()');const within=new Set();
   for(let n=0;n<5;n++){
-   const e=run('englishSession');assert.equal(run('practiceItem.index'),0);assert.equal(e.choices.length,2);assert.ok(!within.has(e.word[0]));within.add(e.word[0]);if(first48.length<bankSize)first48.push(e.word[0]);correct();
+   const e=run('englishSession');assert.equal(run('practiceItem.index'),0);assert.equal(e.choices.length,2);assert.ok(!within.has(e.word[0]));within.add(e.word[0]);exposed.add(e.word[0]);correct();
   }
   assert.equal(run('view'),'result');
  }
- assert.equal(new Set(first48).size,bankSize);assert.equal(P.skill(run('person()'),def()).level,0);assert.equal(P.absoluteLimit(run('person()'),def()),0);assert.equal(run('person().flowers'),10);assert.equal(run('game().coins'),37);
+ assert.equal(exposed.size,bankSize);assert.equal(P.skill(run('person()'),def()).level,0);assert.equal(P.absoluteLimit(run('person()'),def()),0);assert.equal(run('person().flowers'),25);assert.equal(run('game().coins'),82);
  const coins=run('game().coins');run('englishFinish()');assert.equal(run('game().coins'),coins);
 });
 test('explicit elementary lower bound and upper bound still select the correct picture bank',()=>{
