@@ -65,7 +65,7 @@
  }
  function advancement(p,d,P){
   const a=P.state(p),rows=build(P)[d.id],cap=P.limit(p,d);
-  if(!a.autoAdvance||!rows||cap<0||!P.allowed(p,d)||!Array.from({length:cap+1},(_,i)=>i).every(i=>stableStage(p,d,i,P)))return {ready:false};
+  if(!a.autoAdvance||!rows||cap<0||!P.allowed(p,d)||!Array.from({length:cap-P.floor(p,d)+1},(_,i)=>i+P.floor(p,d)).every(i=>stableStage(p,d,i,P)))return {ready:false};
   const rank=rows[cap].rank,next=rows.findIndex(r=>r.rank===rank+1);
   if(next<0)return {ready:true,reason:'この分野の次の学年帯は未実装です。現在の範囲を復習できます。'};
   let nextCap=next;while(rows[nextCap+1]?.rank===rank+1)nextCap++;
@@ -81,9 +81,9 @@
  }
  function range(p,subject,P){
   const a=P.state(p),recent=Array.isArray(a.recentItems[subject])?a.recentItems[subject]:[];
-  let defs=[...new Set(recent.map(x=>x.skill))].map(id=>P.defs.find(d=>d.id===id&&d.subject===subject)).filter(d=>d&&P.allowed(p,d));
+  let defs=[...new Set(recent.map(x=>x.skill))].map(id=>P.defs.find(d=>d.id===id&&d.subject===subject)).filter(d=>d&&P.available(p,subject).includes(d));
   if(!defs.length)defs=[P.focus(p,subject)];
-  const stages=defs.map(d=>({id:d.id,index:Math.min(P.skill(p,d).level,P.ceiling(p,d)),atLimit:P.skill(p,d).level>=P.limit(p,d)}));
+  const stages=defs.map(d=>({id:d.id,index:Math.max(P.floor(p,d),Math.min(P.skill(p,d).level,P.ceiling(p,d))),atLimit:P.skill(p,d).level>=P.limit(p,d)}));
   const table=build(P),rows=stages.map(s=>table[s.id]?.[s.index]),unknown=rows.some(x=>!x||x.rank<0);
   const labels=['年少','年中','年長','小学1年','小学2年','小学3年','小学4年','小学5年','小学6年','中学1〜3年'];
   const lo=unknown?0:Math.min(...rows.map(x=>x.low)),hi=unknown?0:Math.max(...rows.map(x=>x.high));
@@ -154,4 +154,5 @@ if(typeof document!=='undefined'){
  setPracticeLimit=function(id,value){presetLimit(id,value);if(view==='parent'){refreshPresetSummary('この子の詳細設定を保存しました。');refreshPracticeLimitSelection()}};
  document.head.insertAdjacentHTML('beforeend','<style>.preset-label{display:block;font-weight:700;margin:14px 0 8px}.practice-settings select{display:block;width:100%;max-width:100%;min-width:0;min-height:48px;padding:10px;font-size:16px;border:1px solid #c8d5c8;border-radius:12px;background:white;color:#234638}.practice-bulk-limit{margin:16px 0 24px;padding:16px;border:1px solid #c8d5c8;border-radius:14px;background:#f2f7ef}.practice-bulk-limit h3{margin-top:0}.practice-settings #practiceBulkLimitStatus:empty{display:none}.practice-details{padding:4px}.practice-advanced{border-top:1px solid #dce3d6;padding-top:8px}.practice-settings #practicePresetStatus:empty{display:none}</style>');
 }
+
 

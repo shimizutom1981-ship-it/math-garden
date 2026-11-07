@@ -22,7 +22,7 @@
    if(previous)p.practice.previous=previous; // Keep all old estimates as history, not proof of new concepts.
   }
   const a=p.practice;
-  for(const k of ['skills','turns','rotations','sessions','limits','settings','recentItems','rangeLimits'])if(!object(a[k]))a[k]={};
+  for(const k of ['skills','turns','rotations','sessions','limits','settings','recentItems','rangeLimits','lowerPresets'])if(!object(a[k]))a[k]={};
   return a;
  }
  function skill(p,d){
@@ -36,8 +36,8 @@
  function configure(p,age,easy){
   const a=state(p);a.configured=true;a.seed=0; // Age never proves a prerequisite.
   if(easy){
-   a.estimateHistory??=[];a.estimateHistory.push({skills:a.skills,sessions:a.sessions,rotations:a.rotations});
-   a.skills={};a.sessions={};a.rotations={};a.recentItems={};a.settings.kanji=false;a.settings.carry=false;
+   a.estimateHistory??=[];a.estimateHistory.push({skills:a.skills,sessions:a.sessions,rotations:a.rotations,lowerPresets:a.lowerPresets});
+   a.skills={};a.sessions={};a.rotations={};a.recentItems={};a.lowerPresets={};a.settings.kanji=false;a.settings.carry=false;
   }
  }
  function absoluteLimit(p,d){const v=state(p).limits[d.id];return Number.isInteger(v)?Math.max(d.prerequisite?-1:0,Math.min(d.courses.length-1,v)):d.courses.length-1}
@@ -60,24 +60,27 @@
   const a=state(p);if(d.kanji&&!a.settings.kanji||d.carry&&!a.settings.carry)return false;
   seen.add(d.id);
   const requirements=d.requires||(d.prerequisite?[d.prerequisite]:[]);
-  return requirements.every(id=>{const pre=defs.find(x=>x.id===id);return pre&&allowed(p,pre,new Set(seen))&&mastered(p,pre)});
+  return requirements.every(id=>{const pre=defs.find(x=>x.id===id);return pre&&((api.placementReady&&api.placementReady(p,pre))||allowed(p,pre,new Set(seen))&&mastered(p,pre))});
  }
  // Selection filters never change prerequisite evidence or saved difficulty limits.
  function selectable(p,d){return allowed(p,d)&&(!api.canSelect||api.canSelect(p,d))}
- function available(p,subject){return defs.filter(d=>d.subject===subject&&selectable(p,d))}
+ function baseAvailable(p,subject){return defs.filter(d=>d.subject===subject&&selectable(p,d))}
+ function available(p,subject){const ds=baseAvailable(p,subject);return api.filterAvailable?api.filterAvailable(p,subject,ds):ds}
+ function floor(p,d,ds){return api.minimum?api.minimum(p,d,ds):0}
  function ceiling(p,d){
   let cap=limit(p,d);
-  for(let i=1;i<=cap;i++)if(!(d.stageRequires?.[i]||[]).every(id=>{const pre=defs.find(x=>x.id===id);return pre&&allowed(p,pre)&&mastered(p,pre)})){cap=i-1;break}
+  for(let i=1;i<=cap;i++)if(!(d.stageRequires?.[i]||[]).every(id=>{const pre=defs.find(x=>x.id===id);return pre&&((api.placementReady&&api.placementReady(p,pre))||allowed(p,pre)&&mastered(p,pre))})){cap=i-1;break}
   return cap;
  }
  function focus(p,subject){const ds=available(p,subject);return ds[bounded(state(p).rotations[subject],1e9)%ds.length]}
  function pick(p,subject,focusId){
   const a=state(p),requested=defs.find(x=>x.id===focusId&&x.subject===subject);
-  const d=requested&&selectable(p,requested)?requested:focus(p,subject),s=skill(p,d);
+  const ds=requested&&selectable(p,requested)&&(!api.hasLower||!api.hasLower(p,subject))?[requested]:available(p,subject),d=requested&&ds.includes(requested)?requested:ds[bounded(a.rotations[subject],1e9)%ds.length],s=skill(p,d);
   const turn=bounded(a.turns[subject],1e9),mode=mix[turn%10];
+  const minimum=floor(p,d,ds);if(s.level<minimum)s.level=minimum;
   let index=Math.min(s.level,ceiling(p,d)),kind=s.support?'prerequisite':mode;
   // Challenge means a different example of the current concept, never a new concept.
-  if(!s.support&&mode==='review')index=Math.max(0,index-1);
+  if(!s.support&&mode==='review')index=Math.max(minimum,index-1);
   return {focus:d.id,skill:d.id,index,course:d.courses[index],kind,turn};
  }
  function record(p,item,clean,ms){
@@ -96,8 +99,8 @@
    // A repeated miss/hint on the same form counts even if a different form was correct between them.
    const sameForm=stage.recent.filter(x=>x.variant===evidence.variant).slice(-2);
    if(s.misses>=2||sameForm.length===2&&sameForm.every(x=>!x.ok)){
-    for(const [key,value] of Object.entries(s.stages))if(+key>=Math.max(0,s.level-1)){value.mastered=false;value.recent=[]}
-    s.level=Math.max(0,s.level-1);s.support=1;s.misses=0;
+    for(const [key,value] of Object.entries(s.stages))if(+key>=Math.max(floor(p,d),s.level-1)){value.mastered=false;value.recent=[]}
+    s.level=Math.max(floor(p,d),s.level-1);s.support=1;s.misses=0;
    }
    return;
   }
@@ -109,7 +112,8 @@
   if(stable&&varied&&repeated){stage.mastered=true;s.support=0;s.level=Math.min(s.level+1,ceiling(p,d),d.courses.length-1);if(api.onMastered)api.onMastered(p,d)}
  }
  function complete(p,subject){const a=state(p);a.rotations[subject]=bounded(a.rotations[subject],1e9)+1;a.sessions[subject]=bounded(a.sessions[subject],1e9)+1}
- const api={defs,mix,state,configure,skill,focus,pick,record,complete,available,allowed,mastered,limit,absoluteLimit,ceiling,setLimit,setRange};
+ const api={defs,mix,state,configure,skill,focus,pick,record,complete,available,baseAvailable,floor,allowed,mastered,limit,absoluteLimit,ceiling,setLimit,setRange};
  if(typeof module==='object')module.exports=api;else root.Practice=api;
 })(typeof globalThis==='object'?globalThis:this);
+
 
