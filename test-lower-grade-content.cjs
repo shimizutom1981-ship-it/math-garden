@@ -4,7 +4,7 @@ new Function('require',setup+String.raw`
 let count=0;const test=(name,fn)=>{fn();count++;console.log('PASS '+name)};
 const contents=run('LowerGradeContent.jp'),def=id=>P.defs.find(d=>d.id===id);
 const changed=[];for(const [id,stages] of Object.entries(contents))for(const stage of Object.keys(stages))changed.push({id,index:Number(stage),course:def(id).courses[stage]});
-const expected={words:[20,18],sentence:[20,18,18],jp_punctuation:[18,18],letters:[18,20,20],katakana:[20],jp_gradeKanji:[24,24,24,12,12,12],kanji:[20]};
+const expected={words:[32,32],sentence:[32,18,32],jp_punctuation:[32,32],letters:[18,32,32],katakana:[32],jp_gradeKanji:[24,24,24,12,12,12],kanji:[20]};
 test('165 text/diagram items and twelve picture targets fill fifteen Japanese banks',()=>{
  assert.equal(Object.values(contents).flatMap(Object.values).flat().length,165);assert.equal(changed.length,14);
  for(const [id,counts] of Object.entries(expected))for(let stage=0;stage<counts.length;stage++){

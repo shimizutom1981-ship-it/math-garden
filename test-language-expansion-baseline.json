@@ -1,0 +1,65 @@
+[
+  {
+    "skill": "letters",
+    "stage": 1,
+    "course": 18,
+    "n": 20,
+    "hash": "7d12f097b1af2e0b94ff5070ea273038fcd8275c30a8a82903f6ee4fe3122fd8"
+  },
+  {
+    "skill": "letters",
+    "stage": 2,
+    "course": 19,
+    "n": 20,
+    "hash": "2127059cac85113ac84454156a544ceb90dcfb5b04ef6cbbdf2aee7dad61b7f9"
+  },
+  {
+    "skill": "words",
+    "stage": 0,
+    "course": 21,
+    "n": 20,
+    "hash": "36bfc3d7c626225ec0462619307f20aafcd655dfd3b6102164ff060b72e163ba"
+  },
+  {
+    "skill": "words",
+    "stage": 1,
+    "course": 27,
+    "n": 18,
+    "hash": "9636a45f5e7744248bf3ea4222a303cbafa802d7f30354b64029d138874bc605"
+  },
+  {
+    "skill": "sentence",
+    "stage": 0,
+    "course": 23,
+    "n": 20,
+    "hash": "98d6fa13f913e710bde00a4d2c26f9ad4ac516da77388af62126d04e411b2f2b"
+  },
+  {
+    "skill": "sentence",
+    "stage": 2,
+    "course": 28,
+    "n": 18,
+    "hash": "4756d308a73797e4f426cedcb8dfa3701999f7edfcf452aefd82eb957ace3837"
+  },
+  {
+    "skill": "jp_punctuation",
+    "stage": 0,
+    "course": 104,
+    "n": 18,
+    "hash": "f57937cc5f0ecbe6c5bec81f8c344f8f4803247db1c25ee16137f649ec86be80"
+  },
+  {
+    "skill": "jp_punctuation",
+    "stage": 1,
+    "course": 105,
+    "n": 18,
+    "hash": "f5fd57f53044c5e53ef793a50b8093b1a0f69bb67d28664b0358a81833adcd49"
+  },
+  {
+    "skill": "katakana",
+    "stage": 0,
+    "course": 20,
+    "n": 20,
+    "hash": "c2227b9b64317b693602d7d6b32fb012222900e88cbc773a89b09fb1f3443963"
+  }
+]
