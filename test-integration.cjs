@@ -180,14 +180,14 @@ for(const course of readingCourses){
   run('speakQuestion()');assert.equal(spoken.at(-1),`正解は、${pronounced}です。`);readingChecks++;
  }
 }
-assert.equal(readingChecks,34);assert.equal(previousLeakCases,26);
+assert.equal(readingChecks,58);assert.equal(previousLeakCases,38);
 for(const id of ['kanji','jp_kanjiContext']){
  run(`Object.assign(Practice.skill(person(),Practice.defs.find(d=>d.id==='${id}')),{level:${id==='kanji'?0:2},support:0,retry:null});Practice.state(person()).turns.jp=0;session={i:22,auto:true,practiceFocus:'${id}',seen:{},n:0};subject='jp';view='quiz';nextQuestion()`);
  assert.equal(spoken.at(-1),run('speechText(q.instructionSpeech)'));
 }
 run("subject='jp';session={i:24,auto:false,seen:{},n:0};view='quiz';nextQuestion()");assert.equal(spoken.at(-1),run('speechText(q.text)'));
 run("subject='math';session={i:12,auto:false,seen:{},n:0};view='quiz';nextQuestion()");assert.equal(spoken.at(-1),run('speechText(q.text)'));
-console.log('PASS all 26 kanji +8 kana reading items: neutral automatic/replay audio, pronunciation only after correct answer, adaptive routes and other speech unchanged');
+console.log('PASS all 38 kanji +20 kana reading items: neutral automatic/replay audio, pronunciation only after correct answer, adaptive routes and other speech unchanged');
 
 // Cosmetic milestones migrate old saves without touching purchases or learning.
 run("data.current=0;data.sound=false;game().growth=147;game().friends={momo:{growth:27,equipped:{}},sora:{growth:12,equipped:{}},hoshi:{growth:5,equipped:{}}};game().activeFriend='main';delete game().friendKeepsakes;home()");
