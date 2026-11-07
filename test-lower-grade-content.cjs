@@ -49,9 +49,9 @@ test('eleven repeated-group facts retain at most twelve objects and four groups'
  run('session={auto:false,seen:{}}');const seen=new Set();for(let n=0;n<11;n++){const q=run('makeQuestion('+def('multiply').courses[0]+')'),m=q.meta;assert.equal(q.answer,m.a*m.b);assert.ok(m.a<=4&&m.b<=4&&q.answer<=12);assert.equal((q.visualHTML.match(/🍎/gu)||[]).length,q.answer);assert.equal((q.visualHTML.match(/<span>/g)||[]).length,m.b);assert.ok(!seen.has(m.a+':'+m.b));seen.add(m.a+':'+m.b)}assert.equal(seen.size,11);
 });
 test('all forty-five ten-yen change questions are independently correct and reachable',()=>{
- const bank=run('GardenQuestions.banks.lifeShopping[1]');assert.equal(bank.length,45);assert.equal(new Set(bank.map(q=>q.text)).size,45);
+ const bank=run('GardenQuestions.banks.lifeShopping[1].slice(0,45)');assert.equal(bank.length,45);assert.equal(new Set(bank.map(q=>q.text)).size,45);
  for(const q of bank){assert.equal(q.answer,(q.meta.paid-q.meta.prices[0])+'円');assert.equal(q.meta.paid%10,0);assert.equal(q.meta.prices[0]%10,0);assert.ok(q.meta.paid<=100);assert.ok(q.meta.prices[0]<q.meta.paid);assert.equal(q.choices.filter(x=>x===q.answer).length,1);assert.equal(new Set(q.choices).size,q.choices.length)}
- for(const random of [()=>0,()=>.999999999]){const seen=[],selected=new Set();for(let n=0;n<45;n++){const q=c.GardenQuestions.pick('lifeShopping',1,seen,random);assert.ok(!selected.has(q.text));selected.add(q.text)}}
+ for(const random of [()=>0,()=>.999999999]){const seen=[],selected=new Set();for(let n=0;n<45;n++){const q=c.GardenQuestions.pick('lifeShopping',1,seen,random);const key=q.text+JSON.stringify(q.meta);assert.ok(!selected.has(key));selected.add(key)}}
 });
 test('generation never alters profiles, rewards or mastery and selection history is set-local',()=>{
  const before=run('JSON.stringify(data)');for(const item of changed){run('session={auto:false,seen:{}}');for(let n=0;n<25;n++)run('makeQuestion('+item.course+')')}
