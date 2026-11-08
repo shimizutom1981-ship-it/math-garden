@@ -4,7 +4,7 @@ new Function('require',setup+String.raw`
 let count=0;const test=(name,fn)=>{fn();count++;console.log('PASS '+name)};
 const contents=run('LowerGradeContent.jp'),def=id=>P.defs.find(d=>d.id===id);
 const changed=[];for(const [id,stages] of Object.entries(contents))for(const stage of Object.keys(stages))changed.push({id,index:Number(stage),course:def(id).courses[stage]});
-const expected={words:[32,32],sentence:[32,18,32],jp_punctuation:[32,32],letters:[18,32,32],katakana:[32],jp_gradeKanji:[40,40,40,12,12,12],kanji:[20]};
+const expected={words:[32,32],sentence:[32,36,32],jp_punctuation:[32,32],letters:[32,32,32],katakana:[32],jp_gradeKanji:[40,40,40,12,12,12],kanji:[20]};
 test('165 text/diagram items and twelve picture targets fill fifteen Japanese banks',()=>{
  assert.equal(Object.values(contents).flatMap(Object.values).flat().length,165);assert.equal(changed.length,14);
  for(const [id,counts] of Object.entries(expected))for(let stage=0;stage<counts.length;stage++){
@@ -34,8 +34,8 @@ test('all text rows are reachable through the real generator without repetition'
   }assert.equal(seen.size,size);
  }
 });
-test('picture matching exhausts eighteen two-choice targets at both RNG boundaries',()=>{
- const original=Math.random;try{for(const random of [0,.999999999]){Math.random=()=>random;run('session={auto:false,seen:{}}');const seen=new Set();for(let n=0;n<18;n++){const q=run('makeQuestion('+def('letters').courses[0]+')');assert.equal(q.answer,q.visual);assert.equal(q.choices.length,2);assert.equal(new Set(q.choices).size,2);assert.ok(!seen.has(q.answer));seen.add(q.answer)}}}finally{Math.random=original}
+test('picture matching exhausts thirty-two two-choice targets at both RNG boundaries',()=>{
+ const original=Math.random;try{for(const random of [0,.999999999]){Math.random=()=>random;run('session={auto:false,seen:{}}');const seen=new Set();for(let n=0;n<32;n++){const q=run('makeQuestion('+def('letters').courses[0]+')');assert.equal(q.answer,q.visual);assert.equal(q.choices.length,2);assert.equal(new Set(q.choices).size,2);assert.ok(!seen.has(q.answer));seen.add(q.answer)}}}finally{Math.random=original}
 });
 test('tiny numeric stages exhaust their original facts without widening number ranges',()=>{
  const original=Math.random;try{for(const random of [0,.999999999]){Math.random=()=>random;
@@ -72,3 +72,4 @@ test('adaptive routes keep actual skill and stage within the unchanged grade bou
 });
 console.log(count+' lower-grade content tests passed');
 `)(require);
+

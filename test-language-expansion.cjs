@@ -18,9 +18,9 @@ test('all added text is kana-only and retains kana answer formats',()=>{
 test('all 32 items per bank are reachable without repeat in a set at both RNG boundaries',()=>{
  const old=Math.random;try{for(const rng of [()=>0,()=>.999999999]){Math.random=rng;for(const x of baseline){run('session={auto:false,seen:{}}');const seen=new Set();for(let n=0;n<32;n++){const q=run('makeQuestion('+x.course+')');assert.equal(q.i,x.course);assert.equal(q.choices.filter(v=>v===q.answer).length,1);assert.equal(new Set(q.choices).size,q.choices.length);const key=q.text+'|'+q.answer+'|'+q.visual;assert.ok(!seen.has(key),x.skill+':'+x.stage);seen.add(key)}assert.equal(seen.size,32)}}}finally{Math.random=old}
 });
-test('registration is idempotent and unchanged picture/position content is not inflated',()=>{
+test('registration is idempotent and preserves the separately expanded picture/position content',()=>{
  vm.runInContext(fs.readFileSync('dist/language-expansion.js','utf8'),c);for(const x of baseline)assert.equal(run('JP_BANK['+x.course+'-JP_START].length'),32);
- assert.equal(run('LowerGradeContent.pictures.length'),18);const pos=P.defs.find(d=>d.id==='sentence').courses[1];assert.equal(run('JP_BANK['+pos+'-JP_START].length'),18);
+ assert.equal(run('LowerGradeContent.pictures.length'),32);const pos=P.defs.find(d=>d.id==='sentence').courses[1];assert.equal(run('JP_BANK['+pos+'-JP_START].length'),36);
 });
 test('stage eligibility remains below grade-three cap with no curriculum changes',()=>{
  const map=run('PracticePresets.build(Practice)');for(const x of baseline)assert.ok(map[x.skill][x.stage].rank<=5);
@@ -34,3 +34,4 @@ test('every new prompt is readable silently and speech is suppressed in no-liste
 });
 console.log(passed+' language expansion tests passed');
 `)(require);
+
