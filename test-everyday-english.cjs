@@ -5,7 +5,7 @@ const E=require('./dist/everyday-english.js'),W=require('./dist/english-word-pra
 const banks=run('EN_WORDS.slice(0,3)'),bank=JSON.parse(JSON.stringify(banks[2]));
 let passed=0;const test=(name,fn)=>{fn();passed++;console.log('PASS '+name)};
 test('39 words append to things only, retaining all 144 original rows and every course',()=>{
- assert.equal(E.items.length,39);assert.deepEqual(Array.from(banks,b=>b.length),[48,48,87]);for(let i=0;i<3;i++)assert.equal(JSON.stringify(banks[i].slice(0,48)),JSON.stringify(base.banks[i]));assert.equal(JSON.stringify(P.defs.map(d=>({id:d.id,courses:d.courses}))),JSON.stringify(base.defs));
+ assert.equal(E.items.length,39);assert.deepEqual(Array.from(banks,b=>b.length),[48,48,87]);for(let i=0;i<3;i++)assert.equal(JSON.stringify(banks[i].slice(0,48)),JSON.stringify(base.banks[i]));assert.equal(JSON.stringify(P.defs.filter(d=>base.defs.some(old=>old.id===d.id)).map(d=>({id:d.id,courses:d.courses}))),JSON.stringify(base.defs));
  assert.equal(new Set(banks.flat().map(w=>w[0])).size,183);assert.deepEqual(E.items.reduce((o,x)=>(o[x.category]=(o[x.category]||0)+1,o),{}),{body:8,clothes:3,school:7,home:13,action:8});
 });
 test('safe pictures, kana hints, spelling, and unambiguous alternatives',()=>{
@@ -31,3 +31,4 @@ test('familiar-word suppression and error recovery still use the existing rule',
 });
 console.log(passed+' everyday-English tests passed');
 `)(require);
+

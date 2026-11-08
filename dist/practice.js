@@ -40,8 +40,8 @@
    a.skills={};a.sessions={};a.rotations={};a.recentItems={};a.lowerPresets={};a.settings.kanji=false;a.settings.carry=false;
   }
  }
- function absoluteLimit(p,d){const v=state(p).limits[d.id];return Number.isInteger(v)?Math.max(d.prerequisite?-1:0,Math.min(d.courses.length-1,v)):d.courses.length-1}
- function limit(p,d){const v=state(p).rangeLimits[d.id];return Math.min(absoluteLimit(p,d),Number.isInteger(v)?Math.max(d.prerequisite?-1:0,Math.min(d.courses.length-1,v)):d.courses.length-1)}
+ function absoluteLimit(p,d){const v=state(p).limits[d.id];return Number.isInteger(v)?Math.max(d.prerequisite?-1:0,Math.min(d.courses.length-1,v)):(Number.isInteger(d.defaultLimit)?d.defaultLimit:d.courses.length-1)}
+ function limit(p,d){const v=state(p).rangeLimits[d.id];return Math.min(absoluteLimit(p,d),Number.isInteger(v)?Math.max(d.prerequisite?-1:0,Math.min(d.courses.length-1,v)):(Number.isInteger(d.defaultRange)?d.defaultRange:d.courses.length-1))}
  function constrain(p,d,cap){
   const s=skill(p,d);if(s.level>Math.max(0,cap)){s.level=Math.max(0,cap);s.misses=0;s.support=0;
    for(const [index,stage] of Object.entries(s.stages))if(+index>=s.level){stage.mastered=false;stage.recent=[]}
@@ -115,5 +115,6 @@
  const api={defs,mix,state,configure,skill,focus,pick,record,complete,available,baseAvailable,floor,allowed,mastered,limit,absoluteLimit,ceiling,setLimit,setRange};
  if(typeof module==='object')module.exports=api;else root.Practice=api;
 })(typeof globalThis==='object'?globalThis:this);
+
 
 

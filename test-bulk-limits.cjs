@@ -34,7 +34,7 @@ test('bulk cap prevents automatic advancement and remains after starting preset 
  R.apply(p,'junior-range',P);assert.equal(P.absoluteLimit(p,def('number')),0);assert.equal(P.limit(p,def('number')),0);
 });
 test('selected cap reflects actual per-skill limits and per-subject differences',()=>{
- const p=fresh();assert.equal(R.selectedLimit(p,P),'unlimited');R.applyLimit(p,'elementary-one',P);assert.equal(R.selectedLimit(p,P),'elementary-one');
+ const p=fresh();assert.equal(R.selectedLimit(p,P),'custom');R.applyLimit(p,'elementary-one',P);assert.equal(R.selectedLimit(p,P),'elementary-one');
  P.setLimit(p,'addition',0);assert.equal(R.selectedLimit(p,P),'custom');assert.equal(R.selectedLimit(p,P,'jp'),'elementary-one');R.applyLimit(p,'unlimited',P,'math');assert.equal(R.selectedLimit(p,P,'math'),'unlimited');assert.equal(R.selectedLimit(p,P),'custom');
 });
 test('new unknown dependent skills remain disabled by grades, but all stages opens their cap',()=>{
@@ -62,3 +62,4 @@ test('UI retains the existing detailed controls and separates caps from starting
 });
 console.log(count+' bulk-limit tests passed');
 `)(require);
+

@@ -11,8 +11,8 @@ test('all original bank rows, course IDs, prerequisites and grade bounds are unc
   const current=run('JP_BANK['+i+']');if(b===null){assert.equal(current,undefined);continue;}assert.equal(hash(current.slice(0,b.length)),b.hash,'bank '+i);
   assert.equal(current.length,b.length+(i===course-run('JP_START')?18:0),'bank length '+i);
  }
- assert.equal(run('JSON.stringify(Practice.defs)'),baseline.defs);
- assert.equal(run('JSON.stringify(PracticePresets.build(Practice))'),baseline.grades);
+ assert.equal(JSON.stringify(P.defs.filter(d=>JSON.parse(baseline.defs).some(old=>old.id===d.id))),baseline.defs);
+ assert.equal(JSON.stringify(Object.fromEntries(Object.entries(run('PracticePresets.build(Practice)')).filter(([id])=>Object.hasOwn(JSON.parse(baseline.grades),id)))),baseline.grades);
  assert.equal(run('JSON.stringify(LowerGradeContent.pictures.slice(0,18))'),baseline.pictures);
 });
 test('14 distinct picture targets and 18 balanced reverse questions preserve simple vocabulary',()=>{

@@ -15,7 +15,7 @@ for(const m of html.matchAll(/<script(?:\s+src="([^"]+)")?[^>]*>([\s\S]*?)<\/scr
 }
 const run=s=>vm.runInContext(s,c);
 // Rendering/reward suite uses a fully learned synthetic profile. Foundation gates have their own regression suite.
-run("for(const p of data.profiles){const a=Practice.state(p);a.settings={kanji:true,carry:true};for(const d of Practice.defs){const s=Practice.skill(p,d);s.level=d.courses.length-1;d.courses.forEach((_,i)=>s.stages[i]={mastered:true,attempts:20,firstCorrect:20,recent:[]})}}");
+run("for(const p of data.profiles){const a=Practice.state(p);a.settings={kanji:true,carry:true};for(const d of Practice.defs){Practice.setLimit(p,d.id,d.courses.length-1);Practice.setRange(p,d.id,d.courses.length-1);const s=Practice.skill(p,d);s.level=d.courses.length-1;d.courses.forEach((_,i)=>s.stages[i]={mastered:true,attempts:20,firstCorrect:20,recent:[]})}}");
 assert.equal(run('freeSubjectChoice()'),false);assert.equal(run('practiceFlow().next'),'math');
 run("data.profiles.forEach(p=>p.practiceFlow={freeChoice:true,next:'math'})");
 run("Practice.configure(person(),44,false);data.sound=false;data.music=false;");
@@ -330,3 +330,4 @@ try{
  }
 }finally{Math.random=naturalRandom}
 console.log('PASS content registration does not change saves or previous course IDs; new mental forms route through all existing decomposition stages without repetition');
+

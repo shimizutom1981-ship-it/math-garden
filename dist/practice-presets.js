@@ -8,7 +8,7 @@
   {id:'elementary-two',label:'小学2年相当・基礎の一部',description:'2けたのたし算・ひき算、同じ数のまとまりから九九へ、時計と長さ、短いお話。',kanji:true,carry:true,limits:{number:2,compare:0,addition:3,subtraction:1,mathDecompose:1,mathCarry:3,mathBorrow:2,mathHundreds:1,multiply:2,lifeShopping:2,lifeClock:2,lifeLength:2,letters:2,words:1,katakana:0,kanji:0,sentence:2,reading:3,readingKanji:3,enWords:11}}
  ];
  presets.forEach((p,i)=>p.rank=i);
- const mathGrades={mental:[2,2,2,2,2],divide:[3],fraction:[3],mathCarry:[1,1,2,3],mathBorrow:[1,2,3],multiply:[2,2,2],mathProduct:[2,3,3],mathQuotient:[3,3,4],mathOrder:[4,4,4],mathRational:[3,4,5,5],mathDecimal:[3,3,4],mathPercent:[5,5,5],mathHundreds:[2,2],lifeClock:[1,1,2],lifeLength:[2,2,3],lifeShopping:[1,2,2]};
+ const mathGrades={shapeFamily:[1],shapeEdges:[2],circleParts:[3],mental:[2,2,2,2,2],divide:[3],fraction:[3],mathCarry:[1,1,2,3],mathBorrow:[1,2,3],multiply:[2,2,2],mathProduct:[2,3,3],mathQuotient:[3,3,4],mathOrder:[4,4,4],mathRational:[3,4,5,5],mathDecimal:[3,3,4],mathPercent:[5,5,5],mathHundreds:[2,2],lifeClock:[1,1,2],lifeLength:[2,2,3],lifeShopping:[1,2,2]};
  const japaneseBands={jp_kanjiContext:[3,6],jp_vocabularyContext:[3,6],jp_structure:[3,6],jp_readingAdvanced:[3,6],jp_wordRelations:[3,6],jp_proverbs:[3,6],jp_idioms:[3,6],jp_fourCharacters:[3,6],jp_radicalDictionary:[3,6],jp_polite:[3,6],jp_punctuation:[1,2],jp_passageEvidence:[3,6]};
  const englishPrimary=['enDescribe','enSentence','enReply','enListening','enListeningReading','enSpelling','enSpellingReading','enSocialDialog','enInformationDialog','enConversationDepth','enConversationDepthReading'];
  let catalog=null;
@@ -154,5 +154,6 @@ if(typeof document!=='undefined'){
  setPracticeLimit=function(id,value){presetLimit(id,value);if(view==='parent'){refreshPresetSummary('この子の詳細設定を保存しました。');refreshPracticeLimitSelection()}};
  document.head.insertAdjacentHTML('beforeend','<style>.preset-label{display:block;font-weight:700;margin:14px 0 8px}.practice-settings select{display:block;width:100%;max-width:100%;min-width:0;min-height:48px;padding:10px;font-size:16px;border:1px solid #c8d5c8;border-radius:12px;background:white;color:#234638}.practice-bulk-limit{margin:16px 0 24px;padding:16px;border:1px solid #c8d5c8;border-radius:14px;background:#f2f7ef}.practice-bulk-limit h3{margin-top:0}.practice-settings #practiceBulkLimitStatus:empty{display:none}.practice-details{padding:4px}.practice-advanced{border-top:1px solid #dce3d6;padding-top:8px}.practice-settings #practicePresetStatus:empty{display:none}</style>');
 }
+
 
 

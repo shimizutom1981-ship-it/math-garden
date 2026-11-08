@@ -1,0 +1,6640 @@
+{
+  "defs": [
+    {
+      "id": "number",
+      "subject": "math",
+      "courses": [
+        109,
+        0,
+        1
+      ],
+      "prerequisite": null,
+      "exampleCount": 3
+    },
+    {
+      "id": "addition",
+      "subject": "math",
+      "courses": [
+        110,
+        3,
+        111,
+        112
+      ],
+      "prerequisite": "number",
+      "exampleCount": 3,
+      "variantCount": 2
+    },
+    {
+      "id": "subtraction",
+      "subject": "math",
+      "courses": [
+        4,
+        113
+      ],
+      "prerequisite": "number"
+    },
+    {
+      "id": "mental",
+      "subject": "math",
+      "courses": [
+        9,
+        13,
+        14,
+        15,
+        17
+      ],
+      "prerequisite": "mathBorrow",
+      "requires": [
+        "mathCarry",
+        "mathBorrow",
+        "mathHundreds"
+      ],
+      "carry": true
+    },
+    {
+      "id": "multiply",
+      "subject": "math",
+      "courses": [
+        117,
+        118,
+        10
+      ],
+      "prerequisite": "addition"
+    },
+    {
+      "id": "divide",
+      "subject": "math",
+      "courses": [
+        11
+      ],
+      "prerequisite": "multiply"
+    },
+    {
+      "id": "fraction",
+      "subject": "math",
+      "courses": [
+        12
+      ],
+      "prerequisite": "divide"
+    },
+    {
+      "id": "letters",
+      "subject": "jp",
+      "courses": [
+        119,
+        18,
+        19
+      ],
+      "prerequisite": null
+    },
+    {
+      "id": "words",
+      "subject": "jp",
+      "courses": [
+        21,
+        27
+      ],
+      "prerequisite": "letters"
+    },
+    {
+      "id": "sentence",
+      "subject": "jp",
+      "courses": [
+        23,
+        26,
+        28
+      ],
+      "prerequisite": "words"
+    },
+    {
+      "id": "reading",
+      "subject": "jp",
+      "courses": [
+        24,
+        25,
+        29
+      ],
+      "prerequisite": "sentence"
+    },
+    {
+      "id": "enWords",
+      "subject": "en",
+      "courses": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "prerequisite": null
+    },
+    {
+      "id": "enDescribe",
+      "subject": "en",
+      "courses": [
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "prerequisite": "enWords"
+    },
+    {
+      "id": "enSentence",
+      "subject": "en",
+      "courses": [
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27
+      ],
+      "prerequisite": "enDescribe"
+    },
+    {
+      "id": "enReply",
+      "subject": "en",
+      "courses": [
+        28,
+        29,
+        30,
+        31
+      ],
+      "prerequisite": "enSentence"
+    },
+    {
+      "id": "jp_kanjiContext",
+      "subject": "jp",
+      "courses": [
+        31,
+        32,
+        33
+      ],
+      "prerequisite": "reading",
+      "kanji": true,
+      "requires": [
+        "reading",
+        "kanji"
+      ]
+    },
+    {
+      "id": "jp_vocabularyContext",
+      "subject": "jp",
+      "courses": [
+        34,
+        35,
+        36
+      ],
+      "prerequisite": "reading",
+      "kanji": true,
+      "requires": [
+        "reading",
+        "kanji"
+      ]
+    },
+    {
+      "id": "jp_structure",
+      "subject": "jp",
+      "courses": [
+        37,
+        38,
+        39
+      ],
+      "prerequisite": "reading",
+      "kanji": true,
+      "requires": [
+        "reading",
+        "kanji"
+      ]
+    },
+    {
+      "id": "jp_readingAdvanced",
+      "subject": "jp",
+      "courses": [
+        40,
+        41,
+        42
+      ],
+      "prerequisite": "reading",
+      "kanji": true,
+      "requires": [
+        "reading",
+        "kanji"
+      ]
+    },
+    {
+      "id": "jp_wordRelations",
+      "subject": "jp",
+      "courses": [
+        43,
+        44,
+        45
+      ],
+      "prerequisite": "reading",
+      "kanji": true,
+      "requires": [
+        "reading",
+        "kanji"
+      ]
+    },
+    {
+      "id": "jp_proverbs",
+      "subject": "jp",
+      "courses": [
+        46,
+        47,
+        48
+      ],
+      "prerequisite": "sentence",
+      "kanji": true,
+      "requires": [
+        "sentence",
+        "kanji"
+      ]
+    },
+    {
+      "id": "jp_idioms",
+      "subject": "jp",
+      "courses": [
+        49,
+        50,
+        51
+      ],
+      "prerequisite": "sentence",
+      "kanji": true,
+      "requires": [
+        "sentence",
+        "kanji"
+      ]
+    },
+    {
+      "id": "jp_fourCharacters",
+      "subject": "jp",
+      "courses": [
+        52,
+        53,
+        54
+      ],
+      "prerequisite": "sentence",
+      "kanji": true,
+      "requires": [
+        "sentence",
+        "kanji"
+      ]
+    },
+    {
+      "id": "vocab_family",
+      "subject": "en",
+      "courses": [
+        32,
+        33,
+        34,
+        35
+      ],
+      "prerequisite": "enReply"
+    },
+    {
+      "id": "vocab_body",
+      "subject": "en",
+      "courses": [
+        36,
+        37,
+        38,
+        39
+      ],
+      "prerequisite": "vocab_family"
+    },
+    {
+      "id": "vocab_feelings",
+      "subject": "en",
+      "courses": [
+        40,
+        41,
+        42,
+        43
+      ],
+      "prerequisite": "vocab_body"
+    },
+    {
+      "id": "vocab_animals",
+      "subject": "en",
+      "courses": [
+        44,
+        45,
+        46,
+        47
+      ],
+      "prerequisite": "vocab_feelings"
+    },
+    {
+      "id": "vocab_nature",
+      "subject": "en",
+      "courses": [
+        48,
+        49,
+        50,
+        51
+      ],
+      "prerequisite": "vocab_animals"
+    },
+    {
+      "id": "vocab_produce",
+      "subject": "en",
+      "courses": [
+        52,
+        53,
+        54,
+        55
+      ],
+      "prerequisite": "vocab_nature"
+    },
+    {
+      "id": "vocab_food",
+      "subject": "en",
+      "courses": [
+        56,
+        57,
+        58,
+        59
+      ],
+      "prerequisite": "vocab_produce"
+    },
+    {
+      "id": "vocab_home",
+      "subject": "en",
+      "courses": [
+        60,
+        61,
+        62,
+        63
+      ],
+      "prerequisite": "vocab_food"
+    },
+    {
+      "id": "vocab_school",
+      "subject": "en",
+      "courses": [
+        64,
+        65,
+        66,
+        67
+      ],
+      "prerequisite": "vocab_home"
+    },
+    {
+      "id": "vocab_clothes",
+      "subject": "en",
+      "courses": [
+        68,
+        69,
+        70,
+        71
+      ],
+      "prerequisite": "vocab_school"
+    },
+    {
+      "id": "vocab_colors",
+      "subject": "en",
+      "courses": [
+        72,
+        73,
+        74,
+        75
+      ],
+      "prerequisite": "vocab_clothes"
+    },
+    {
+      "id": "vocab_numbers",
+      "subject": "en",
+      "courses": [
+        76,
+        77,
+        78,
+        79
+      ],
+      "prerequisite": "vocab_colors"
+    },
+    {
+      "id": "vocab_time",
+      "subject": "en",
+      "courses": [
+        80,
+        81,
+        82,
+        83
+      ],
+      "prerequisite": "vocab_numbers"
+    },
+    {
+      "id": "vocab_calendar",
+      "subject": "en",
+      "courses": [
+        84,
+        85,
+        86,
+        87
+      ],
+      "prerequisite": "vocab_time"
+    },
+    {
+      "id": "vocab_places",
+      "subject": "en",
+      "courses": [
+        88,
+        89,
+        90,
+        91
+      ],
+      "prerequisite": "vocab_calendar"
+    },
+    {
+      "id": "vocab_travel",
+      "subject": "en",
+      "courses": [
+        92,
+        93,
+        94,
+        95
+      ],
+      "prerequisite": "vocab_places"
+    },
+    {
+      "id": "vocab_basicverbs",
+      "subject": "en",
+      "courses": [
+        96,
+        97,
+        98,
+        99
+      ],
+      "prerequisite": "vocab_travel"
+    },
+    {
+      "id": "vocab_daily",
+      "subject": "en",
+      "courses": [
+        100,
+        101,
+        102,
+        103
+      ],
+      "prerequisite": "vocab_basicverbs"
+    },
+    {
+      "id": "vocab_motion",
+      "subject": "en",
+      "courses": [
+        104,
+        105,
+        106,
+        107
+      ],
+      "prerequisite": "vocab_daily"
+    },
+    {
+      "id": "vocab_communication",
+      "subject": "en",
+      "courses": [
+        108,
+        109,
+        110,
+        111
+      ],
+      "prerequisite": "vocab_motion"
+    },
+    {
+      "id": "vocab_sports",
+      "subject": "en",
+      "courses": [
+        112,
+        113,
+        114,
+        115
+      ],
+      "prerequisite": "vocab_communication"
+    },
+    {
+      "id": "vocab_qualities",
+      "subject": "en",
+      "courses": [
+        116,
+        117,
+        118,
+        119
+      ],
+      "prerequisite": "vocab_sports"
+    },
+    {
+      "id": "vocab_relations",
+      "subject": "en",
+      "courses": [
+        120,
+        121,
+        122,
+        123
+      ],
+      "prerequisite": "vocab_qualities"
+    },
+    {
+      "id": "vocab_grammar",
+      "subject": "en",
+      "courses": [
+        124,
+        125,
+        126,
+        127
+      ],
+      "prerequisite": "vocab_relations"
+    },
+    {
+      "id": "vocab_world",
+      "subject": "en",
+      "courses": [
+        128,
+        129,
+        130,
+        131
+      ],
+      "prerequisite": "vocab_grammar"
+    },
+    {
+      "id": "vocab_jobs",
+      "subject": "en",
+      "courses": [
+        132,
+        133,
+        134,
+        135
+      ],
+      "prerequisite": "vocab_world"
+    },
+    {
+      "id": "vocab_events",
+      "subject": "en",
+      "courses": [
+        136,
+        137,
+        138,
+        139
+      ],
+      "prerequisite": "vocab_jobs"
+    },
+    {
+      "id": "vocab_weather",
+      "subject": "en",
+      "courses": [
+        140,
+        141,
+        142,
+        143
+      ],
+      "prerequisite": "vocab_events"
+    },
+    {
+      "id": "vocab_conversation",
+      "subject": "en",
+      "courses": [
+        144,
+        145,
+        146,
+        147
+      ],
+      "prerequisite": "vocab_weather"
+    },
+    {
+      "id": "vocab_useful",
+      "subject": "en",
+      "courses": [
+        148,
+        149,
+        150,
+        151
+      ],
+      "prerequisite": "vocab_conversation"
+    },
+    {
+      "id": "mathDecompose",
+      "subject": "math",
+      "courses": [
+        114,
+        115
+      ],
+      "prerequisite": "addition",
+      "variantCount": 2
+    },
+    {
+      "id": "mathCarry",
+      "subject": "math",
+      "courses": [
+        116,
+        58,
+        59,
+        60
+      ],
+      "prerequisite": "mathDecompose",
+      "requires": [
+        "addition",
+        "mathDecompose"
+      ],
+      "carry": true,
+      "variantCount": 2
+    },
+    {
+      "id": "mathBorrow",
+      "subject": "math",
+      "courses": [
+        61,
+        62,
+        63
+      ],
+      "prerequisite": "mathDecompose",
+      "requires": [
+        "subtraction",
+        "mathDecompose"
+      ],
+      "carry": true,
+      "variantCount": 2
+    },
+    {
+      "id": "mathProduct",
+      "subject": "math",
+      "courses": [
+        64,
+        65,
+        66
+      ],
+      "prerequisite": "number",
+      "requires": [
+        "multiply",
+        "mathCarry"
+      ],
+      "carry": true
+    },
+    {
+      "id": "mathQuotient",
+      "subject": "math",
+      "courses": [
+        67,
+        68,
+        69
+      ],
+      "prerequisite": "mathProduct"
+    },
+    {
+      "id": "mathOrder",
+      "subject": "math",
+      "courses": [
+        70,
+        71,
+        72
+      ],
+      "prerequisite": "mathProduct"
+    },
+    {
+      "id": "mathRational",
+      "subject": "math",
+      "courses": [
+        73,
+        74,
+        75,
+        76
+      ],
+      "prerequisite": "fraction"
+    },
+    {
+      "id": "mathDecimal",
+      "subject": "math",
+      "courses": [
+        77,
+        78,
+        79
+      ],
+      "prerequisite": "mathRational"
+    },
+    {
+      "id": "mathPercent",
+      "subject": "math",
+      "courses": [
+        80,
+        81,
+        82
+      ],
+      "prerequisite": "mathRational",
+      "requires": [
+        "mathRational",
+        "mathDecimal"
+      ]
+    },
+    {
+      "id": "enListening",
+      "subject": "en",
+      "courses": [
+        152,
+        153,
+        154
+      ],
+      "prerequisite": "enWords"
+    },
+    {
+      "id": "enListeningReading",
+      "subject": "en",
+      "courses": [
+        156,
+        157,
+        158
+      ],
+      "prerequisite": "enWords"
+    },
+    {
+      "id": "enSpelling",
+      "subject": "en",
+      "courses": [
+        160,
+        161,
+        162
+      ],
+      "prerequisite": "enWords"
+    },
+    {
+      "id": "enSpellingReading",
+      "subject": "en",
+      "courses": [
+        164,
+        165,
+        166
+      ],
+      "prerequisite": "enWords"
+    },
+    {
+      "id": "enSocialDialog",
+      "subject": "en",
+      "courses": [
+        168,
+        169,
+        170
+      ],
+      "prerequisite": "enWords"
+    },
+    {
+      "id": "enInformationDialog",
+      "subject": "en",
+      "courses": [
+        172,
+        173,
+        174
+      ],
+      "prerequisite": "enWords"
+    },
+    {
+      "id": "lifeShopping",
+      "subject": "math",
+      "courses": [
+        83,
+        84,
+        85
+      ],
+      "prerequisite": "subtraction",
+      "stageRequires": {
+        "1": [
+          "mathBorrow"
+        ],
+        "2": [
+          "mathCarry"
+        ]
+      }
+    },
+    {
+      "id": "lifeClock",
+      "subject": "math",
+      "courses": [
+        86,
+        87,
+        88
+      ],
+      "prerequisite": "number",
+      "stageRequires": {
+        "2": [
+          "mathCarry"
+        ]
+      }
+    },
+    {
+      "id": "lifeLength",
+      "subject": "math",
+      "courses": [
+        89,
+        90,
+        91
+      ],
+      "prerequisite": "compare",
+      "stageRequires": {
+        "1": [
+          "subtraction"
+        ],
+        "2": [
+          "mathHundreds"
+        ]
+      }
+    },
+    {
+      "id": "jp_gradeKanji",
+      "subject": "jp",
+      "courses": [
+        92,
+        93,
+        94,
+        95,
+        96,
+        97
+      ],
+      "prerequisite": "reading",
+      "kanji": true,
+      "requires": [
+        "reading",
+        "kanji"
+      ]
+    },
+    {
+      "id": "jp_radicalDictionary",
+      "subject": "jp",
+      "courses": [
+        98,
+        99,
+        100,
+        101
+      ],
+      "prerequisite": "reading",
+      "kanji": true,
+      "requires": [
+        "reading",
+        "kanji"
+      ]
+    },
+    {
+      "id": "jp_polite",
+      "subject": "jp",
+      "courses": [
+        102,
+        103
+      ],
+      "prerequisite": "reading",
+      "kanji": true,
+      "requires": [
+        "reading",
+        "kanji"
+      ]
+    },
+    {
+      "id": "jp_punctuation",
+      "subject": "jp",
+      "courses": [
+        104,
+        105
+      ],
+      "prerequisite": "reading",
+      "kanji": true,
+      "requires": [
+        "reading",
+        "kanji"
+      ]
+    },
+    {
+      "id": "jp_passageEvidence",
+      "subject": "jp",
+      "courses": [
+        106,
+        107,
+        108
+      ],
+      "prerequisite": "reading",
+      "kanji": true,
+      "requires": [
+        "reading",
+        "kanji"
+      ]
+    },
+    {
+      "id": "enConversationDepth",
+      "subject": "en",
+      "courses": [
+        176,
+        177,
+        178,
+        179
+      ],
+      "prerequisite": "enWords"
+    },
+    {
+      "id": "enConversationDepthReading",
+      "subject": "en",
+      "courses": [
+        180,
+        181,
+        182,
+        183
+      ],
+      "prerequisite": "enWords"
+    },
+    {
+      "id": "junior_be",
+      "subject": "en",
+      "courses": [
+        184,
+        185
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_present",
+      "subject": "en",
+      "courses": [
+        188,
+        189
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_past",
+      "subject": "en",
+      "courses": [
+        192,
+        193
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_future",
+      "subject": "en",
+      "courses": [
+        196,
+        197
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_progressive",
+      "subject": "en",
+      "courses": [
+        200,
+        201
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_question",
+      "subject": "en",
+      "courses": [
+        204,
+        205
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_negative",
+      "subject": "en",
+      "courses": [
+        208,
+        209
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_modal",
+      "subject": "en",
+      "courses": [
+        212,
+        213
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_comparison",
+      "subject": "en",
+      "courses": [
+        216,
+        217
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_infinitive",
+      "subject": "en",
+      "courses": [
+        220,
+        221
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_gerund",
+      "subject": "en",
+      "courses": [
+        224,
+        225
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_passive",
+      "subject": "en",
+      "courses": [
+        228,
+        229
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_perfect",
+      "subject": "en",
+      "courses": [
+        232,
+        233
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_perfectProgressive",
+      "subject": "en",
+      "courses": [
+        236,
+        237
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_relative",
+      "subject": "en",
+      "courses": [
+        240,
+        241
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_participle",
+      "subject": "en",
+      "courses": [
+        244,
+        245
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_hypothetical",
+      "subject": "en",
+      "courses": [
+        248,
+        249
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_indirect",
+      "subject": "en",
+      "courses": [
+        252,
+        253
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_conjunction",
+      "subject": "en",
+      "courses": [
+        256,
+        257
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_pronoun",
+      "subject": "en",
+      "courses": [
+        260,
+        261
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_quantity",
+      "subject": "en",
+      "courses": [
+        264,
+        265
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_preposition",
+      "subject": "en",
+      "courses": [
+        268,
+        269
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_there",
+      "subject": "en",
+      "courses": [
+        272,
+        273
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_svoo",
+      "subject": "en",
+      "courses": [
+        276,
+        277
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_svoc",
+      "subject": "en",
+      "courses": [
+        280,
+        281
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_complement",
+      "subject": "en",
+      "courses": [
+        284,
+        285
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_imperative",
+      "subject": "en",
+      "courses": [
+        288,
+        289
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_lexicon0",
+      "subject": "en",
+      "courses": [
+        292
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_lexicon1",
+      "subject": "en",
+      "courses": [
+        296
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_lexicon2",
+      "subject": "en",
+      "courses": [
+        300
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_lexicon3",
+      "subject": "en",
+      "courses": [
+        304
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_lexicon4",
+      "subject": "en",
+      "courses": [
+        308
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_lexicon5",
+      "subject": "en",
+      "courses": [
+        312
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_lexicon6",
+      "subject": "en",
+      "courses": [
+        316
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_lexicon7",
+      "subject": "en",
+      "courses": [
+        320
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_lexicon8",
+      "subject": "en",
+      "courses": [
+        324
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_lexicon9",
+      "subject": "en",
+      "courses": [
+        328
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_lexicon10",
+      "subject": "en",
+      "courses": [
+        332
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_lexicon11",
+      "subject": "en",
+      "courses": [
+        336
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_reading",
+      "subject": "en",
+      "courses": [
+        340,
+        341,
+        342,
+        343
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_listening",
+      "subject": "en",
+      "courses": [
+        344,
+        345,
+        346,
+        347
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_listeningReading",
+      "subject": "en",
+      "courses": [
+        348,
+        349,
+        350,
+        351
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_response",
+      "subject": "en",
+      "courses": [
+        352,
+        353,
+        354,
+        355
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_breadth_actions",
+      "subject": "en",
+      "courses": [
+        356,
+        357,
+        358,
+        359
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_breadth_daily",
+      "subject": "en",
+      "courses": [
+        360,
+        361,
+        362,
+        363
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_breadth_world",
+      "subject": "en",
+      "courses": [
+        364,
+        365,
+        366,
+        367
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_breadth_qualities",
+      "subject": "en",
+      "courses": [
+        368,
+        369,
+        370,
+        371
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_breadth_phrases",
+      "subject": "en",
+      "courses": [
+        372,
+        373,
+        374,
+        375
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_breadth_reading",
+      "subject": "en",
+      "courses": [
+        376,
+        377,
+        378,
+        379
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_breadth_listen",
+      "subject": "en",
+      "courses": [
+        380,
+        381,
+        382,
+        383
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_breadth_listenReading",
+      "subject": "en",
+      "courses": [
+        384,
+        385,
+        386,
+        387
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_breadth_junior_clausePatterns",
+      "subject": "en",
+      "courses": [
+        388,
+        389
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_breadth_junior_tenseMeaning",
+      "subject": "en",
+      "courses": [
+        392,
+        393
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_breadth_junior_comparisonMeaning",
+      "subject": "en",
+      "courses": [
+        396,
+        397
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_breadth_junior_punctuation",
+      "subject": "en",
+      "courses": [
+        400,
+        401
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_breadth_junior_referenceGrammar",
+      "subject": "en",
+      "courses": [
+        404,
+        405
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_breadth_junior_intentionResponse",
+      "subject": "en",
+      "courses": [
+        408,
+        409
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_breadth_junior_contextMeaning",
+      "subject": "en",
+      "courses": [
+        412,
+        413
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_soundPatterns",
+      "subject": "en",
+      "courses": [
+        416,
+        417,
+        418,
+        419
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_soundPatternsReading",
+      "subject": "en",
+      "courses": [
+        420,
+        421,
+        422,
+        423
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_prosodyKnowledge",
+      "subject": "en",
+      "courses": [
+        424,
+        425,
+        426
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "junior_spellingPatterns",
+      "subject": "en",
+      "courses": [
+        428,
+        429,
+        430,
+        431
+      ],
+      "prerequisite": "enReply",
+      "upperEnglish": true
+    },
+    {
+      "id": "compare",
+      "subject": "math",
+      "courses": [
+        2
+      ],
+      "prerequisite": "number"
+    },
+    {
+      "id": "mathHundreds",
+      "subject": "math",
+      "courses": [
+        56,
+        57
+      ],
+      "prerequisite": "mathCarry"
+    },
+    {
+      "id": "katakana",
+      "subject": "jp",
+      "courses": [
+        20
+      ],
+      "prerequisite": "letters"
+    },
+    {
+      "id": "kanji",
+      "subject": "jp",
+      "courses": [
+        22
+      ],
+      "prerequisite": "letters",
+      "kanji": true
+    },
+    {
+      "id": "readingKanji",
+      "subject": "jp",
+      "courses": [
+        30
+      ],
+      "prerequisite": "reading",
+      "kanji": true,
+      "requires": [
+        "reading",
+        "kanji"
+      ]
+    }
+  ],
+  "topics": [
+    [
+      "🌱",
+      "かずを かぞえる",
+      "1〜5この かず",
+      "count",
+      5
+    ],
+    [
+      "🌷",
+      "10までの かず",
+      "6〜10こも やってみよう",
+      "count",
+      10
+    ],
+    [
+      "🐣",
+      "どちらが おおい？",
+      "かずを くらべよう",
+      "compare",
+      10
+    ],
+    [
+      "🧩",
+      "あわせて いくつ？",
+      "5までの たしざん",
+      "add",
+      5
+    ],
+    [
+      "🍎",
+      "のこりは いくつ？",
+      "5までの ひきざん",
+      "sub",
+      5
+    ],
+    [
+      "🌼",
+      "10までの たしざん",
+      "あわせて 10まで",
+      "add",
+      10
+    ],
+    [
+      "🍃",
+      "10までの ひきざん",
+      "へらすと いくつ？",
+      "sub",
+      10
+    ],
+    [
+      "🌈",
+      "20までの たしざん",
+      "10を こえる かず",
+      "add",
+      20
+    ],
+    [
+      "🦋",
+      "20までの ひきざん",
+      "10を またいで ひこう",
+      "sub",
+      20
+    ],
+    [
+      "🌳",
+      "100までの けいさん",
+      "2けたの たしざん・ひきざん",
+      "mixed",
+      100
+    ],
+    [
+      "🍒",
+      "かけざん",
+      "おなじ かずを あつめよう",
+      "mul",
+      9
+    ],
+    [
+      "🧺",
+      "わりざん",
+      "おなじ かずずつ わけよう",
+      "div",
+      9
+    ],
+    [
+      "🍰",
+      "ぶんすう",
+      "おなじ おおきさに わけよう",
+      "fraction",
+      6
+    ],
+    [
+      "🧱",
+      "かずを わける・おぎなう",
+      "10・100のまとまり",
+      "mental",
+      0
+    ],
+    [
+      "🌉",
+      "10・100を けいゆする",
+      "まとまりを またぐ 暗算",
+      "mental",
+      1
+    ],
+    [
+      "🧮",
+      "かずを まとめる",
+      "じゅんばんを くふう",
+      "mental",
+      2
+    ],
+    [
+      "🚀",
+      "九九を ひろげる",
+      "大きな数の かけ算・わり算",
+      "mental",
+      3
+    ],
+    [
+      "🛒",
+      "くらしの 暗算",
+      "合計と おつり",
+      "mental",
+      4
+    ],
+    [
+      "🐱",
+      "ひらがなを よもう",
+      "えに あう ことば",
+      "jp",
+      0
+    ],
+    [
+      "✏️",
+      "ことばを つくろう",
+      "ぬけた もじを えらぼう",
+      "jp",
+      1
+    ],
+    [
+      "🚌",
+      "カタカナを よもう",
+      "おなじ ことばを みつけよう",
+      "jp",
+      2
+    ],
+    [
+      "🔄",
+      "はんたいの ことば",
+      "いみを かんがえよう",
+      "jp",
+      3
+    ],
+    [
+      "🌞",
+      "かんじを よもう",
+      "みぢかな かんじ",
+      "jp",
+      4
+    ],
+    [
+      "💬",
+      "てにをは",
+      "ぶんに あう ことば",
+      "jp",
+      5
+    ],
+    [
+      "📖",
+      "みじかい おはなし",
+      "よんで こたえよう",
+      "jp",
+      6
+    ],
+    [
+      "🌟",
+      "おはなしの なぜ？",
+      "じゅんばん・りゆうを よもう",
+      "jp",
+      7
+    ],
+    [
+      "📖",
+      "ぶんと え",
+      "意味を考えて選ぶ",
+      "jp",
+      8
+    ],
+    [
+      "📖",
+      "ことばの つかいかた",
+      "意味を考えて選ぶ",
+      "jp",
+      9
+    ],
+    [
+      "📖",
+      "だれが なにを",
+      "意味を考えて選ぶ",
+      "jp",
+      10
+    ],
+    [
+      "📖",
+      "きもちを よもう",
+      "意味を考えて選ぶ",
+      "jp",
+      11
+    ],
+    [
+      "📖",
+      "だいめいを えらぼう",
+      "意味を考えて選ぶ",
+      "jp",
+      12
+    ],
+    [
+      "📖",
+      "漢字と文脈 1",
+      "ことば・文脈から考える",
+      "jp",
+      13
+    ],
+    [
+      "📖",
+      "漢字と文脈 2",
+      "ことば・文脈から考える",
+      "jp",
+      14
+    ],
+    [
+      "📖",
+      "漢字と文脈 3",
+      "ことば・文脈から考える",
+      "jp",
+      15
+    ],
+    [
+      "📖",
+      "語彙と表現 1",
+      "ことば・文脈から考える",
+      "jp",
+      16
+    ],
+    [
+      "📖",
+      "語彙と表現 2",
+      "ことば・文脈から考える",
+      "jp",
+      17
+    ],
+    [
+      "📖",
+      "語彙と表現 3",
+      "ことば・文脈から考える",
+      "jp",
+      18
+    ],
+    [
+      "📖",
+      "文のつながり 1",
+      "ことば・文脈から考える",
+      "jp",
+      19
+    ],
+    [
+      "📖",
+      "文のつながり 2",
+      "ことば・文脈から考える",
+      "jp",
+      20
+    ],
+    [
+      "📖",
+      "文のつながり 3",
+      "ことば・文脈から考える",
+      "jp",
+      21
+    ],
+    [
+      "📖",
+      "読解・根拠・要旨 1",
+      "ことば・文脈から考える",
+      "jp",
+      22
+    ],
+    [
+      "📖",
+      "読解・根拠・要旨 2",
+      "ことば・文脈から考える",
+      "jp",
+      23
+    ],
+    [
+      "📖",
+      "読解・根拠・要旨 3",
+      "ことば・文脈から考える",
+      "jp",
+      24
+    ],
+    [
+      "📖",
+      "同音語・似た意味・反対の意味 1",
+      "ことば・文脈から考える",
+      "jp",
+      25
+    ],
+    [
+      "📖",
+      "同音語・似た意味・反対の意味 2",
+      "ことば・文脈から考える",
+      "jp",
+      26
+    ],
+    [
+      "📖",
+      "同音語・似た意味・反対の意味 3",
+      "ことば・文脈から考える",
+      "jp",
+      27
+    ],
+    [
+      "📖",
+      "ことわざ 1",
+      "ことば・文脈から考える",
+      "jp",
+      28
+    ],
+    [
+      "📖",
+      "ことわざ 2",
+      "ことば・文脈から考える",
+      "jp",
+      29
+    ],
+    [
+      "📖",
+      "ことわざ 3",
+      "ことば・文脈から考える",
+      "jp",
+      30
+    ],
+    [
+      "📖",
+      "慣用句 1",
+      "ことば・文脈から考える",
+      "jp",
+      31
+    ],
+    [
+      "📖",
+      "慣用句 2",
+      "ことば・文脈から考える",
+      "jp",
+      32
+    ],
+    [
+      "📖",
+      "慣用句 3",
+      "ことば・文脈から考える",
+      "jp",
+      33
+    ],
+    [
+      "📖",
+      "四字熟語 1",
+      "ことば・文脈から考える",
+      "jp",
+      34
+    ],
+    [
+      "📖",
+      "四字熟語 2",
+      "ことば・文脈から考える",
+      "jp",
+      35
+    ],
+    [
+      "📖",
+      "四字熟語 3",
+      "ことば・文脈から考える",
+      "jp",
+      36
+    ],
+    [
+      "🔢",
+      "10をつくる",
+      "考えてえらぼう",
+      "math"
+    ],
+    [
+      "🔢",
+      "100をつくる",
+      "考えてえらぼう",
+      "math"
+    ],
+    [
+      "🔢",
+      "まとめて暗算",
+      "考えてえらぼう",
+      "math"
+    ],
+    [
+      "🔢",
+      "一の位のくり上がり",
+      "考えてえらぼう",
+      "math"
+    ],
+    [
+      "🔢",
+      "2けたのたし算",
+      "考えてえらぼう",
+      "math"
+    ],
+    [
+      "🔢",
+      "3けたのたし算",
+      "考えてえらぼう",
+      "math"
+    ],
+    [
+      "🔢",
+      "十からくり下げる",
+      "考えてえらぼう",
+      "math"
+    ],
+    [
+      "🔢",
+      "2けたのひき算",
+      "考えてえらぼう",
+      "math"
+    ],
+    [
+      "🔢",
+      "3けたのひき算",
+      "考えてえらぼう",
+      "math"
+    ],
+    [
+      "🔢",
+      "九九",
+      "考えてえらぼう",
+      "math"
+    ],
+    [
+      "🔢",
+      "2けた × 1けた",
+      "考えてえらぼう",
+      "math"
+    ],
+    [
+      "🔢",
+      "2けた × 2けた",
+      "考えてえらぼう",
+      "math"
+    ],
+    [
+      "🔢",
+      "わり切れるわり算",
+      "考えてえらぼう",
+      "math"
+    ],
+    [
+      "🔢",
+      "あまりのあるわり算",
+      "考えてえらぼう",
+      "math"
+    ],
+    [
+      "🔢",
+      "2けたでわる",
+      "考えてえらぼう",
+      "math"
+    ],
+    [
+      "🔢",
+      "かけ算を先に",
+      "考えてえらぼう",
+      "math"
+    ],
+    [
+      "🔢",
+      "かっこの中を先に",
+      "考えてえらぼう",
+      "math"
+    ],
+    [
+      "🔢",
+      "かっことわり算",
+      "考えてえらぼう",
+      "math"
+    ],
+    [
+      "🔢",
+      "図と分数",
+      "考えてえらぼう",
+      "math"
+    ],
+    [
+      "🔢",
+      "分数の大小",
+      "考えてえらぼう",
+      "math"
+    ],
+    [
+      "🔢",
+      "等しい分数",
+      "考えてえらぼう",
+      "math"
+    ],
+    [
+      "🔢",
+      "分数のたし算",
+      "考えてえらぼう",
+      "math"
+    ],
+    [
+      "🔢",
+      "小数の大小",
+      "考えてえらぼう",
+      "math"
+    ],
+    [
+      "🔢",
+      "小数のたし算・ひき算",
+      "考えてえらぼう",
+      "math"
+    ],
+    [
+      "🔢",
+      "小数のかけ算・わり算",
+      "考えてえらぼう",
+      "math"
+    ],
+    [
+      "🔢",
+      "図と百分率",
+      "考えてえらぼう",
+      "math"
+    ],
+    [
+      "🔢",
+      "割合を比べる",
+      "考えてえらぼう",
+      "math"
+    ],
+    [
+      "🔢",
+      "割合を使う",
+      "考えてえらぼう",
+      "math"
+    ],
+    [
+      "🧺",
+      "1えんで おかいもの",
+      "えを みて かんがえよう",
+      "math"
+    ],
+    [
+      "🧺",
+      "10えんの おかいもの",
+      "えを みて かんがえよう",
+      "math"
+    ],
+    [
+      "🧺",
+      "2つ かって おつり",
+      "えを みて かんがえよう",
+      "math"
+    ],
+    [
+      "🧺",
+      "なんじかな",
+      "えを みて かんがえよう",
+      "math"
+    ],
+    [
+      "🧺",
+      "なんじ はんかな",
+      "えを みて かんがえよう",
+      "math"
+    ],
+    [
+      "🧺",
+      "何分あとかな",
+      "えを みて かんがえよう",
+      "math"
+    ],
+    [
+      "🧺",
+      "めもりで ながさ",
+      "えを みて かんがえよう",
+      "math"
+    ],
+    [
+      "🧺",
+      "ながさの ちがい",
+      "えを みて かんがえよう",
+      "math"
+    ],
+    [
+      "🧺",
+      "メートルと センチ",
+      "えを みて かんがえよう",
+      "math"
+    ],
+    [
+      "📖",
+      "1年の漢字読み（一部）",
+      "ことば・文脈から考える",
+      "jp",
+      74
+    ],
+    [
+      "📖",
+      "2年の漢字読み（一部）",
+      "ことば・文脈から考える",
+      "jp",
+      75
+    ],
+    [
+      "📖",
+      "3年の漢字読み（一部）",
+      "ことば・文脈から考える",
+      "jp",
+      76
+    ],
+    [
+      "📖",
+      "4年の漢字読み（一部）",
+      "ことば・文脈から考える",
+      "jp",
+      77
+    ],
+    [
+      "📖",
+      "5年の漢字読み（一部）",
+      "ことば・文脈から考える",
+      "jp",
+      78
+    ],
+    [
+      "📖",
+      "6年の漢字読み（一部）",
+      "ことば・文脈から考える",
+      "jp",
+      79
+    ],
+    [
+      "📖",
+      "部首と辞書 1",
+      "ことば・文脈から考える",
+      "jp",
+      80
+    ],
+    [
+      "📖",
+      "部首と辞書 2",
+      "ことば・文脈から考える",
+      "jp",
+      81
+    ],
+    [
+      "📖",
+      "部首と辞書 3",
+      "ことば・文脈から考える",
+      "jp",
+      82
+    ],
+    [
+      "📖",
+      "部首と辞書 4",
+      "ことば・文脈から考える",
+      "jp",
+      83
+    ],
+    [
+      "📖",
+      "ていねいな言葉と敬語 1",
+      "ことば・文脈から考える",
+      "jp",
+      84
+    ],
+    [
+      "📖",
+      "ていねいな言葉と敬語 2",
+      "ことば・文脈から考える",
+      "jp",
+      85
+    ],
+    [
+      "📖",
+      "句読点と文の区切り 1",
+      "ことば・文脈から考える",
+      "jp",
+      86
+    ],
+    [
+      "📖",
+      "句読点と文の区切り 2",
+      "ことば・文脈から考える",
+      "jp",
+      87
+    ],
+    [
+      "📖",
+      "お話の要約と根拠 1",
+      "ことば・文脈から考える",
+      "jp",
+      88
+    ],
+    [
+      "📖",
+      "お話の要約と根拠 2",
+      "ことば・文脈から考える",
+      "jp",
+      89
+    ],
+    [
+      "📖",
+      "お話の要約と根拠 3",
+      "ことば・文脈から考える",
+      "jp",
+      90
+    ],
+    [
+      "🌱",
+      "3まで かぞえる",
+      "ゆっくり れんしゅう",
+      "math"
+    ],
+    [
+      "🌱",
+      "3まで あわせる",
+      "ゆっくり れんしゅう",
+      "math"
+    ],
+    [
+      "🌱",
+      "9まで あわせる",
+      "ゆっくり れんしゅう",
+      "math"
+    ],
+    [
+      "🌱",
+      "20まで・くりあがりなし",
+      "ゆっくり れんしゅう",
+      "math"
+    ],
+    [
+      "🌱",
+      "9まで・くりさがりなし",
+      "ゆっくり れんしゅう",
+      "math"
+    ],
+    [
+      "🌱",
+      "5を つくる",
+      "ゆっくり れんしゅう",
+      "math"
+    ],
+    [
+      "🌱",
+      "10を つくる",
+      "ゆっくり れんしゅう",
+      "math"
+    ],
+    [
+      "🌱",
+      "10を こえる・こたえは13まで",
+      "ゆっくり れんしゅう",
+      "math"
+    ],
+    [
+      "🌱",
+      "おなじ かずを あつめる",
+      "ゆっくり れんしゅう",
+      "math"
+    ],
+    [
+      "🌱",
+      "2と5の だん",
+      "ゆっくり れんしゅう",
+      "math"
+    ],
+    [
+      "🌱",
+      "おなじ えを えらぶ",
+      "ゆっくり れんしゅう",
+      "jp"
+    ]
+  ],
+  "grades": {
+    "number": [
+      {
+        "course": 109,
+        "index": 0,
+        "rank": 0,
+        "low": 0,
+        "high": 0,
+        "label": "年少相当",
+        "basis": "独自の開始目安（学力判定ではない）"
+      },
+      {
+        "course": 0,
+        "index": 1,
+        "rank": 1,
+        "low": 1,
+        "high": 1,
+        "label": "年中相当",
+        "basis": "独自の開始目安（学力判定ではない）"
+      },
+      {
+        "course": 1,
+        "index": 2,
+        "rank": 1,
+        "low": 1,
+        "high": 1,
+        "label": "年中相当",
+        "basis": "独自の開始目安（学力判定ではない）"
+      }
+    ],
+    "addition": [
+      {
+        "course": 110,
+        "index": 0,
+        "rank": 1,
+        "low": 1,
+        "high": 1,
+        "label": "年中相当",
+        "basis": "独自の開始目安（学力判定ではない）"
+      },
+      {
+        "course": 3,
+        "index": 1,
+        "rank": 1,
+        "low": 1,
+        "high": 1,
+        "label": "年中相当",
+        "basis": "独自の開始目安（学力判定ではない）"
+      },
+      {
+        "course": 111,
+        "index": 2,
+        "rank": 2,
+        "low": 2,
+        "high": 2,
+        "label": "年長相当",
+        "basis": "独自の開始目安（学力判定ではない）"
+      },
+      {
+        "course": 112,
+        "index": 3,
+        "rank": 2,
+        "low": 2,
+        "high": 2,
+        "label": "年長相当",
+        "basis": "独自の開始目安（学力判定ではない）"
+      }
+    ],
+    "subtraction": [
+      {
+        "course": 4,
+        "index": 0,
+        "rank": 2,
+        "low": 2,
+        "high": 2,
+        "label": "年長相当",
+        "basis": "独自の開始目安（学力判定ではない）"
+      },
+      {
+        "course": 113,
+        "index": 1,
+        "rank": 2,
+        "low": 2,
+        "high": 2,
+        "label": "年長相当",
+        "basis": "独自の開始目安（学力判定ではない）"
+      }
+    ],
+    "mental": [
+      {
+        "course": 9,
+        "index": 0,
+        "rank": 4,
+        "low": 4,
+        "high": 4,
+        "label": "小学2年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 13,
+        "index": 1,
+        "rank": 4,
+        "low": 4,
+        "high": 4,
+        "label": "小学2年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 14,
+        "index": 2,
+        "rank": 4,
+        "low": 4,
+        "high": 4,
+        "label": "小学2年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 15,
+        "index": 3,
+        "rank": 4,
+        "low": 4,
+        "high": 4,
+        "label": "小学2年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 17,
+        "index": 4,
+        "rank": 4,
+        "low": 4,
+        "high": 4,
+        "label": "小学2年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      }
+    ],
+    "multiply": [
+      {
+        "course": 117,
+        "index": 0,
+        "rank": 4,
+        "low": 4,
+        "high": 4,
+        "label": "小学2年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 118,
+        "index": 1,
+        "rank": 4,
+        "low": 4,
+        "high": 4,
+        "label": "小学2年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 10,
+        "index": 2,
+        "rank": 4,
+        "low": 4,
+        "high": 4,
+        "label": "小学2年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      }
+    ],
+    "divide": [
+      {
+        "course": 11,
+        "index": 0,
+        "rank": 5,
+        "low": 5,
+        "high": 5,
+        "label": "小学3年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      }
+    ],
+    "fraction": [
+      {
+        "course": 12,
+        "index": 0,
+        "rank": 5,
+        "low": 5,
+        "high": 5,
+        "label": "小学3年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      }
+    ],
+    "letters": [
+      {
+        "course": 119,
+        "index": 0,
+        "rank": 0,
+        "low": 0,
+        "high": 0,
+        "label": "年少相当",
+        "basis": "独自の開始目安（学力判定ではない）"
+      },
+      {
+        "course": 18,
+        "index": 1,
+        "rank": 1,
+        "low": 1,
+        "high": 1,
+        "label": "年中相当",
+        "basis": "独自の開始目安（学力判定ではない）"
+      },
+      {
+        "course": 19,
+        "index": 2,
+        "rank": 2,
+        "low": 2,
+        "high": 2,
+        "label": "年長相当",
+        "basis": "独自の開始目安（学力判定ではない）"
+      }
+    ],
+    "words": [
+      {
+        "course": 21,
+        "index": 0,
+        "rank": 2,
+        "low": 2,
+        "high": 2,
+        "label": "年長相当",
+        "basis": "独自の開始目安（学力判定ではない）"
+      },
+      {
+        "course": 27,
+        "index": 1,
+        "rank": 2,
+        "low": 2,
+        "high": 2,
+        "label": "年長相当",
+        "basis": "独自の開始目安（学力判定ではない）"
+      }
+    ],
+    "sentence": [
+      {
+        "course": 23,
+        "index": 0,
+        "rank": 2,
+        "low": 2,
+        "high": 2,
+        "label": "年長相当",
+        "basis": "独自の開始目安（学力判定ではない）"
+      },
+      {
+        "course": 26,
+        "index": 1,
+        "rank": 3,
+        "low": 3,
+        "high": 3,
+        "label": "小学1年相当",
+        "basis": "独自の開始目安（学力判定ではない）"
+      },
+      {
+        "course": 28,
+        "index": 2,
+        "rank": 3,
+        "low": 3,
+        "high": 3,
+        "label": "小学1年相当",
+        "basis": "独自の開始目安（学力判定ではない）"
+      }
+    ],
+    "reading": [
+      {
+        "course": 24,
+        "index": 0,
+        "rank": 3,
+        "low": 3,
+        "high": 3,
+        "label": "小学1年相当",
+        "basis": "独自の開始目安（学力判定ではない）"
+      },
+      {
+        "course": 25,
+        "index": 1,
+        "rank": 3,
+        "low": 3,
+        "high": 3,
+        "label": "小学1年相当",
+        "basis": "独自の開始目安（学力判定ではない）"
+      },
+      {
+        "course": 29,
+        "index": 2,
+        "rank": 3,
+        "low": 3,
+        "high": 3,
+        "label": "小学1年相当",
+        "basis": "独自の開始目安（学力判定ではない）"
+      }
+    ],
+    "enWords": [
+      {
+        "course": 0,
+        "index": 0,
+        "rank": 0,
+        "low": 0,
+        "high": 0,
+        "label": "英語入門（独自目安）",
+        "basis": "独自の開始目安（学力判定ではない）"
+      },
+      {
+        "course": 1,
+        "index": 1,
+        "rank": 1,
+        "low": 1,
+        "high": 1,
+        "label": "英語入門（独自目安）",
+        "basis": "独自の開始目安（学力判定ではない）"
+      },
+      {
+        "course": 2,
+        "index": 2,
+        "rank": 2,
+        "low": 2,
+        "high": 2,
+        "label": "英語入門（独自目安）",
+        "basis": "独自の開始目安（学力判定ではない）"
+      },
+      {
+        "course": 3,
+        "index": 3,
+        "rank": 2,
+        "low": 2,
+        "high": 2,
+        "label": "英語入門（独自目安）",
+        "basis": "独自の開始目安（学力判定ではない）"
+      },
+      {
+        "course": 4,
+        "index": 4,
+        "rank": 3,
+        "low": 3,
+        "high": 3,
+        "label": "英語入門（独自目安）",
+        "basis": "独自の開始目安（学力判定ではない）"
+      },
+      {
+        "course": 5,
+        "index": 5,
+        "rank": 3,
+        "low": 3,
+        "high": 3,
+        "label": "英語入門（独自目安）",
+        "basis": "独自の開始目安（学力判定ではない）"
+      },
+      {
+        "course": 6,
+        "index": 6,
+        "rank": 3,
+        "low": 3,
+        "high": 3,
+        "label": "英語入門（独自目安）",
+        "basis": "独自の開始目安（学力判定ではない）"
+      },
+      {
+        "course": 7,
+        "index": 7,
+        "rank": 3,
+        "low": 3,
+        "high": 3,
+        "label": "英語入門（独自目安）",
+        "basis": "独自の開始目安（学力判定ではない）"
+      },
+      {
+        "course": 8,
+        "index": 8,
+        "rank": 4,
+        "low": 4,
+        "high": 4,
+        "label": "英語入門（独自目安）",
+        "basis": "独自の開始目安（学力判定ではない）"
+      },
+      {
+        "course": 9,
+        "index": 9,
+        "rank": 4,
+        "low": 4,
+        "high": 4,
+        "label": "英語入門（独自目安）",
+        "basis": "独自の開始目安（学力判定ではない）"
+      },
+      {
+        "course": 10,
+        "index": 10,
+        "rank": 4,
+        "low": 4,
+        "high": 4,
+        "label": "英語入門（独自目安）",
+        "basis": "独自の開始目安（学力判定ではない）"
+      },
+      {
+        "course": 11,
+        "index": 11,
+        "rank": 4,
+        "low": 4,
+        "high": 4,
+        "label": "英語入門（独自目安）",
+        "basis": "独自の開始目安（学力判定ではない）"
+      }
+    ],
+    "enDescribe": [
+      {
+        "course": 12,
+        "index": 0,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 13,
+        "index": 1,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 14,
+        "index": 2,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 15,
+        "index": 3,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 16,
+        "index": 4,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 17,
+        "index": 5,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 18,
+        "index": 6,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 19,
+        "index": 7,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      }
+    ],
+    "enSentence": [
+      {
+        "course": 20,
+        "index": 0,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 21,
+        "index": 1,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 22,
+        "index": 2,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 23,
+        "index": 3,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 24,
+        "index": 4,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 25,
+        "index": 5,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 26,
+        "index": 6,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 27,
+        "index": 7,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      }
+    ],
+    "enReply": [
+      {
+        "course": 28,
+        "index": 0,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 29,
+        "index": 1,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 30,
+        "index": 2,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 31,
+        "index": 3,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      }
+    ],
+    "jp_kanjiContext": [
+      {
+        "course": 31,
+        "index": 0,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      },
+      {
+        "course": 32,
+        "index": 1,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      },
+      {
+        "course": 33,
+        "index": 2,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      }
+    ],
+    "jp_vocabularyContext": [
+      {
+        "course": 34,
+        "index": 0,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      },
+      {
+        "course": 35,
+        "index": 1,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      },
+      {
+        "course": 36,
+        "index": 2,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      }
+    ],
+    "jp_structure": [
+      {
+        "course": 37,
+        "index": 0,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      },
+      {
+        "course": 38,
+        "index": 1,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      },
+      {
+        "course": 39,
+        "index": 2,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      }
+    ],
+    "jp_readingAdvanced": [
+      {
+        "course": 40,
+        "index": 0,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      },
+      {
+        "course": 41,
+        "index": 1,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      },
+      {
+        "course": 42,
+        "index": 2,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      }
+    ],
+    "jp_wordRelations": [
+      {
+        "course": 43,
+        "index": 0,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      },
+      {
+        "course": 44,
+        "index": 1,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      },
+      {
+        "course": 45,
+        "index": 2,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      }
+    ],
+    "jp_proverbs": [
+      {
+        "course": 46,
+        "index": 0,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      },
+      {
+        "course": 47,
+        "index": 1,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      },
+      {
+        "course": 48,
+        "index": 2,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      }
+    ],
+    "jp_idioms": [
+      {
+        "course": 49,
+        "index": 0,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      },
+      {
+        "course": 50,
+        "index": 1,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      },
+      {
+        "course": 51,
+        "index": 2,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      }
+    ],
+    "jp_fourCharacters": [
+      {
+        "course": 52,
+        "index": 0,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      },
+      {
+        "course": 53,
+        "index": 1,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      },
+      {
+        "course": 54,
+        "index": 2,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      }
+    ],
+    "vocab_family": [
+      {
+        "course": 32,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 33,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 34,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 35,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "vocab_body": [
+      {
+        "course": 36,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 37,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 38,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 39,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "vocab_feelings": [
+      {
+        "course": 40,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 41,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 42,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 43,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "vocab_animals": [
+      {
+        "course": 44,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 45,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 46,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 47,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "vocab_nature": [
+      {
+        "course": 48,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 49,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 50,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 51,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "vocab_produce": [
+      {
+        "course": 52,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 53,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 54,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 55,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "vocab_food": [
+      {
+        "course": 56,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 57,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 58,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 59,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "vocab_home": [
+      {
+        "course": 60,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 61,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 62,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 63,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "vocab_school": [
+      {
+        "course": 64,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 65,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 66,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 67,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "vocab_clothes": [
+      {
+        "course": 68,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 69,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 70,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 71,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "vocab_colors": [
+      {
+        "course": 72,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 73,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 74,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 75,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "vocab_numbers": [
+      {
+        "course": 76,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 77,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 78,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 79,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "vocab_time": [
+      {
+        "course": 80,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 81,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 82,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 83,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "vocab_calendar": [
+      {
+        "course": 84,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 85,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 86,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 87,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "vocab_places": [
+      {
+        "course": 88,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 89,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 90,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 91,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "vocab_travel": [
+      {
+        "course": 92,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 93,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 94,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 95,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "vocab_basicverbs": [
+      {
+        "course": 96,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 97,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 98,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 99,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "vocab_daily": [
+      {
+        "course": 100,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 101,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 102,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 103,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "vocab_motion": [
+      {
+        "course": 104,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 105,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 106,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 107,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "vocab_communication": [
+      {
+        "course": 108,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 109,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 110,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 111,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "vocab_sports": [
+      {
+        "course": 112,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 113,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 114,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 115,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "vocab_qualities": [
+      {
+        "course": 116,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 117,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 118,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 119,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "vocab_relations": [
+      {
+        "course": 120,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 121,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 122,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 123,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "vocab_grammar": [
+      {
+        "course": 124,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 125,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 126,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 127,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "vocab_world": [
+      {
+        "course": 128,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 129,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 130,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 131,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "vocab_jobs": [
+      {
+        "course": 132,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 133,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 134,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 135,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "vocab_events": [
+      {
+        "course": 136,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 137,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 138,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 139,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "vocab_weather": [
+      {
+        "course": 140,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 141,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 142,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 143,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "vocab_conversation": [
+      {
+        "course": 144,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 145,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 146,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 147,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "vocab_useful": [
+      {
+        "course": 148,
+        "index": 0,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 149,
+        "index": 1,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 150,
+        "index": 2,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      },
+      {
+        "course": 151,
+        "index": 3,
+        "rank": 9,
+        "low": 7,
+        "high": 9,
+        "label": "小学5年〜中学1〜3年相当",
+        "basis": "単語ごとの公的な配当学年は設けず、小学校高学年〜中学の補助語彙という独自目安"
+      }
+    ],
+    "mathDecompose": [
+      {
+        "course": 114,
+        "index": 0,
+        "rank": 2,
+        "low": 2,
+        "high": 2,
+        "label": "年長相当",
+        "basis": "独自の開始目安（学力判定ではない）"
+      },
+      {
+        "course": 115,
+        "index": 1,
+        "rank": 2,
+        "low": 2,
+        "high": 2,
+        "label": "年長相当",
+        "basis": "独自の開始目安（学力判定ではない）"
+      }
+    ],
+    "mathCarry": [
+      {
+        "course": 116,
+        "index": 0,
+        "rank": 3,
+        "low": 3,
+        "high": 3,
+        "label": "小学1年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 58,
+        "index": 1,
+        "rank": 3,
+        "low": 3,
+        "high": 3,
+        "label": "小学1年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 59,
+        "index": 2,
+        "rank": 4,
+        "low": 4,
+        "high": 4,
+        "label": "小学2年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 60,
+        "index": 3,
+        "rank": 5,
+        "low": 5,
+        "high": 5,
+        "label": "小学3年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      }
+    ],
+    "mathBorrow": [
+      {
+        "course": 61,
+        "index": 0,
+        "rank": 3,
+        "low": 3,
+        "high": 3,
+        "label": "小学1年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 62,
+        "index": 1,
+        "rank": 4,
+        "low": 4,
+        "high": 4,
+        "label": "小学2年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 63,
+        "index": 2,
+        "rank": 5,
+        "low": 5,
+        "high": 5,
+        "label": "小学3年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      }
+    ],
+    "mathProduct": [
+      {
+        "course": 64,
+        "index": 0,
+        "rank": 4,
+        "low": 4,
+        "high": 4,
+        "label": "小学2年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 65,
+        "index": 1,
+        "rank": 5,
+        "low": 5,
+        "high": 5,
+        "label": "小学3年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 66,
+        "index": 2,
+        "rank": 5,
+        "low": 5,
+        "high": 5,
+        "label": "小学3年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      }
+    ],
+    "mathQuotient": [
+      {
+        "course": 67,
+        "index": 0,
+        "rank": 5,
+        "low": 5,
+        "high": 5,
+        "label": "小学3年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 68,
+        "index": 1,
+        "rank": 5,
+        "low": 5,
+        "high": 5,
+        "label": "小学3年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 69,
+        "index": 2,
+        "rank": 6,
+        "low": 6,
+        "high": 6,
+        "label": "小学4年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      }
+    ],
+    "mathOrder": [
+      {
+        "course": 70,
+        "index": 0,
+        "rank": 6,
+        "low": 6,
+        "high": 6,
+        "label": "小学4年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 71,
+        "index": 1,
+        "rank": 6,
+        "low": 6,
+        "high": 6,
+        "label": "小学4年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 72,
+        "index": 2,
+        "rank": 6,
+        "low": 6,
+        "high": 6,
+        "label": "小学4年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      }
+    ],
+    "mathRational": [
+      {
+        "course": 73,
+        "index": 0,
+        "rank": 5,
+        "low": 5,
+        "high": 5,
+        "label": "小学3年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 74,
+        "index": 1,
+        "rank": 6,
+        "low": 6,
+        "high": 6,
+        "label": "小学4年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 75,
+        "index": 2,
+        "rank": 7,
+        "low": 7,
+        "high": 7,
+        "label": "小学5年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 76,
+        "index": 3,
+        "rank": 7,
+        "low": 7,
+        "high": 7,
+        "label": "小学5年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      }
+    ],
+    "mathDecimal": [
+      {
+        "course": 77,
+        "index": 0,
+        "rank": 5,
+        "low": 5,
+        "high": 5,
+        "label": "小学3年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 78,
+        "index": 1,
+        "rank": 5,
+        "low": 5,
+        "high": 5,
+        "label": "小学3年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 79,
+        "index": 2,
+        "rank": 6,
+        "low": 6,
+        "high": 6,
+        "label": "小学4年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      }
+    ],
+    "mathPercent": [
+      {
+        "course": 80,
+        "index": 0,
+        "rank": 7,
+        "low": 7,
+        "high": 7,
+        "label": "小学5年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 81,
+        "index": 1,
+        "rank": 7,
+        "low": 7,
+        "high": 7,
+        "label": "小学5年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 82,
+        "index": 2,
+        "rank": 7,
+        "low": 7,
+        "high": 7,
+        "label": "小学5年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      }
+    ],
+    "enListening": [
+      {
+        "course": 152,
+        "index": 0,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 153,
+        "index": 1,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 154,
+        "index": 2,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      }
+    ],
+    "enListeningReading": [
+      {
+        "course": 156,
+        "index": 0,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 157,
+        "index": 1,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 158,
+        "index": 2,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      }
+    ],
+    "enSpelling": [
+      {
+        "course": 160,
+        "index": 0,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 161,
+        "index": 1,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 162,
+        "index": 2,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      }
+    ],
+    "enSpellingReading": [
+      {
+        "course": 164,
+        "index": 0,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 165,
+        "index": 1,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 166,
+        "index": 2,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      }
+    ],
+    "enSocialDialog": [
+      {
+        "course": 168,
+        "index": 0,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 169,
+        "index": 1,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 170,
+        "index": 2,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      }
+    ],
+    "enInformationDialog": [
+      {
+        "course": 172,
+        "index": 0,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 173,
+        "index": 1,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 174,
+        "index": 2,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      }
+    ],
+    "lifeShopping": [
+      {
+        "course": 83,
+        "index": 0,
+        "rank": 3,
+        "low": 3,
+        "high": 3,
+        "label": "小学1年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 84,
+        "index": 1,
+        "rank": 4,
+        "low": 4,
+        "high": 4,
+        "label": "小学2年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 85,
+        "index": 2,
+        "rank": 4,
+        "low": 4,
+        "high": 4,
+        "label": "小学2年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      }
+    ],
+    "lifeClock": [
+      {
+        "course": 86,
+        "index": 0,
+        "rank": 3,
+        "low": 3,
+        "high": 3,
+        "label": "小学1年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 87,
+        "index": 1,
+        "rank": 3,
+        "low": 3,
+        "high": 3,
+        "label": "小学1年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 88,
+        "index": 2,
+        "rank": 4,
+        "low": 4,
+        "high": 4,
+        "label": "小学2年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      }
+    ],
+    "lifeLength": [
+      {
+        "course": 89,
+        "index": 0,
+        "rank": 4,
+        "low": 4,
+        "high": 4,
+        "label": "小学2年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 90,
+        "index": 1,
+        "rank": 4,
+        "low": 4,
+        "high": 4,
+        "label": "小学2年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 91,
+        "index": 2,
+        "rank": 5,
+        "low": 5,
+        "high": 5,
+        "label": "小学3年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      }
+    ],
+    "jp_gradeKanji": [
+      {
+        "course": 92,
+        "index": 0,
+        "rank": 3,
+        "low": 3,
+        "high": 3,
+        "label": "小学1年相当",
+        "basis": "既存の学年別漢字教材（各学年の一部）・学年別配当表を参照"
+      },
+      {
+        "course": 93,
+        "index": 1,
+        "rank": 4,
+        "low": 4,
+        "high": 4,
+        "label": "小学2年相当",
+        "basis": "既存の学年別漢字教材（各学年の一部）・学年別配当表を参照"
+      },
+      {
+        "course": 94,
+        "index": 2,
+        "rank": 5,
+        "low": 5,
+        "high": 5,
+        "label": "小学3年相当",
+        "basis": "既存の学年別漢字教材（各学年の一部）・学年別配当表を参照"
+      },
+      {
+        "course": 95,
+        "index": 3,
+        "rank": 6,
+        "low": 6,
+        "high": 6,
+        "label": "小学4年相当",
+        "basis": "既存の学年別漢字教材（各学年の一部）・学年別配当表を参照"
+      },
+      {
+        "course": 96,
+        "index": 4,
+        "rank": 7,
+        "low": 7,
+        "high": 7,
+        "label": "小学5年相当",
+        "basis": "既存の学年別漢字教材（各学年の一部）・学年別配当表を参照"
+      },
+      {
+        "course": 97,
+        "index": 5,
+        "rank": 8,
+        "low": 8,
+        "high": 8,
+        "label": "小学6年相当",
+        "basis": "既存の学年別漢字教材（各学年の一部）・学年別配当表を参照"
+      }
+    ],
+    "jp_radicalDictionary": [
+      {
+        "course": 98,
+        "index": 0,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      },
+      {
+        "course": 99,
+        "index": 1,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      },
+      {
+        "course": 100,
+        "index": 2,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      },
+      {
+        "course": 101,
+        "index": 3,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      }
+    ],
+    "jp_polite": [
+      {
+        "course": 102,
+        "index": 0,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      },
+      {
+        "course": 103,
+        "index": 1,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      }
+    ],
+    "jp_punctuation": [
+      {
+        "course": 104,
+        "index": 0,
+        "rank": 4,
+        "low": 3,
+        "high": 4,
+        "label": "小学1年〜小学2年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      },
+      {
+        "course": 105,
+        "index": 1,
+        "rank": 4,
+        "low": 3,
+        "high": 4,
+        "label": "小学1年〜小学2年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      }
+    ],
+    "jp_passageEvidence": [
+      {
+        "course": 106,
+        "index": 0,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      },
+      {
+        "course": 107,
+        "index": 1,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      },
+      {
+        "course": 108,
+        "index": 2,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない"
+      }
+    ],
+    "enConversationDepth": [
+      {
+        "course": 176,
+        "index": 0,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 177,
+        "index": 1,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 178,
+        "index": 2,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 179,
+        "index": 3,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      }
+    ],
+    "enConversationDepthReading": [
+      {
+        "course": 180,
+        "index": 0,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 181,
+        "index": 1,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 182,
+        "index": 2,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      },
+      {
+        "course": 183,
+        "index": 3,
+        "rank": 8,
+        "low": 5,
+        "high": 8,
+        "label": "小学3年〜小学6年相当",
+        "basis": "小学校外国語活動・外国語の範囲を参照した独自の補助練習。学年網羅ではない"
+      }
+    ],
+    "junior_be": [
+      {
+        "course": 184,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 185,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_present": [
+      {
+        "course": 188,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 189,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_past": [
+      {
+        "course": 192,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 193,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_future": [
+      {
+        "course": 196,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 197,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_progressive": [
+      {
+        "course": 200,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 201,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_question": [
+      {
+        "course": 204,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 205,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_negative": [
+      {
+        "course": 208,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 209,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_modal": [
+      {
+        "course": 212,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 213,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_comparison": [
+      {
+        "course": 216,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 217,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_infinitive": [
+      {
+        "course": 220,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 221,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_gerund": [
+      {
+        "course": 224,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 225,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_passive": [
+      {
+        "course": 228,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 229,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_perfect": [
+      {
+        "course": 232,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 233,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_perfectProgressive": [
+      {
+        "course": 236,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 237,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_relative": [
+      {
+        "course": 240,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 241,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_participle": [
+      {
+        "course": 244,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 245,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_hypothetical": [
+      {
+        "course": 248,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 249,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_indirect": [
+      {
+        "course": 252,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 253,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_conjunction": [
+      {
+        "course": 256,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 257,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_pronoun": [
+      {
+        "course": 260,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 261,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_quantity": [
+      {
+        "course": 264,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 265,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_preposition": [
+      {
+        "course": 268,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 269,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_there": [
+      {
+        "course": 272,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 273,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_svoo": [
+      {
+        "course": 276,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 277,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_svoc": [
+      {
+        "course": 280,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 281,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_complement": [
+      {
+        "course": 284,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 285,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_imperative": [
+      {
+        "course": 288,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 289,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_lexicon0": [
+      {
+        "course": 292,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_lexicon1": [
+      {
+        "course": 296,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_lexicon2": [
+      {
+        "course": 300,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_lexicon3": [
+      {
+        "course": 304,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_lexicon4": [
+      {
+        "course": 308,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_lexicon5": [
+      {
+        "course": 312,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_lexicon6": [
+      {
+        "course": 316,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_lexicon7": [
+      {
+        "course": 320,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_lexicon8": [
+      {
+        "course": 324,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_lexicon9": [
+      {
+        "course": 328,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_lexicon10": [
+      {
+        "course": 332,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_lexicon11": [
+      {
+        "course": 336,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_reading": [
+      {
+        "course": 340,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 341,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 342,
+        "index": 2,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 343,
+        "index": 3,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_listening": [
+      {
+        "course": 344,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 345,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 346,
+        "index": 2,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 347,
+        "index": 3,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_listeningReading": [
+      {
+        "course": 348,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 349,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 350,
+        "index": 2,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 351,
+        "index": 3,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_response": [
+      {
+        "course": 352,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 353,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 354,
+        "index": 2,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 355,
+        "index": 3,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_breadth_actions": [
+      {
+        "course": 356,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 357,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 358,
+        "index": 2,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 359,
+        "index": 3,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_breadth_daily": [
+      {
+        "course": 360,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 361,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 362,
+        "index": 2,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 363,
+        "index": 3,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_breadth_world": [
+      {
+        "course": 364,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 365,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 366,
+        "index": 2,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 367,
+        "index": 3,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_breadth_qualities": [
+      {
+        "course": 368,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 369,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 370,
+        "index": 2,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 371,
+        "index": 3,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_breadth_phrases": [
+      {
+        "course": 372,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 373,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 374,
+        "index": 2,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 375,
+        "index": 3,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_breadth_reading": [
+      {
+        "course": 376,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 377,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 378,
+        "index": 2,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 379,
+        "index": 3,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_breadth_listen": [
+      {
+        "course": 380,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 381,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 382,
+        "index": 2,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 383,
+        "index": 3,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_breadth_listenReading": [
+      {
+        "course": 384,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 385,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 386,
+        "index": 2,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 387,
+        "index": 3,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_breadth_junior_clausePatterns": [
+      {
+        "course": 388,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 389,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_breadth_junior_tenseMeaning": [
+      {
+        "course": 392,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 393,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_breadth_junior_comparisonMeaning": [
+      {
+        "course": 396,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 397,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_breadth_junior_punctuation": [
+      {
+        "course": 400,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 401,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_breadth_junior_referenceGrammar": [
+      {
+        "course": 404,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 405,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_breadth_junior_intentionResponse": [
+      {
+        "course": 408,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 409,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_breadth_junior_contextMeaning": [
+      {
+        "course": 412,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 413,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_soundPatterns": [
+      {
+        "course": 416,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 417,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 418,
+        "index": 2,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 419,
+        "index": 3,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_soundPatternsReading": [
+      {
+        "course": 420,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 421,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 422,
+        "index": 2,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 423,
+        "index": 3,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_prosodyKnowledge": [
+      {
+        "course": 424,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 425,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 426,
+        "index": 2,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "junior_spellingPatterns": [
+      {
+        "course": 428,
+        "index": 0,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 429,
+        "index": 1,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 430,
+        "index": 2,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      },
+      {
+        "course": 431,
+        "index": 3,
+        "rank": 9,
+        "low": 9,
+        "high": 9,
+        "label": "中学1〜3年相当",
+        "basis": "中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化"
+      }
+    ],
+    "compare": [
+      {
+        "course": 2,
+        "index": 0,
+        "rank": 1,
+        "low": 1,
+        "high": 1,
+        "label": "年中相当",
+        "basis": "独自の開始目安（学力判定ではない）"
+      }
+    ],
+    "mathHundreds": [
+      {
+        "course": 56,
+        "index": 0,
+        "rank": 4,
+        "low": 4,
+        "high": 4,
+        "label": "小学2年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      },
+      {
+        "course": 57,
+        "index": 1,
+        "rank": 4,
+        "low": 4,
+        "high": 4,
+        "label": "小学2年相当",
+        "basis": "算数の学習指導要領の内容区分を参照した対応"
+      }
+    ],
+    "katakana": [
+      {
+        "course": 20,
+        "index": 0,
+        "rank": 2,
+        "low": 2,
+        "high": 2,
+        "label": "年長相当",
+        "basis": "独自の開始目安（学力判定ではない）"
+      }
+    ],
+    "kanji": [
+      {
+        "course": 22,
+        "index": 0,
+        "rank": 3,
+        "low": 3,
+        "high": 3,
+        "label": "小学1年相当",
+        "basis": "独自の開始目安（学力判定ではない）"
+      }
+    ],
+    "readingKanji": [
+      {
+        "course": 30,
+        "index": 0,
+        "rank": 4,
+        "low": 4,
+        "high": 4,
+        "label": "小学2年相当",
+        "basis": "独自の開始目安（学力判定ではない）"
+      }
+    ]
+  }
+}

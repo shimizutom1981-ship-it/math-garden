@@ -5,7 +5,7 @@ const crypto=require('node:crypto'),L=require('./dist/math-life-expansion.js'),F
 let passed=0;const test=(name,fn)=>{fn();passed++;console.log('PASS '+name)};
 const added=Object.entries(L.banks).flatMap(([id,stages])=>stages.flatMap((bank,stage)=>bank.map(q=>({id,stage,q}))));
 test('all existing courses and bank rows preserved byte-for-byte',()=>{
- assert.equal(JSON.stringify(P.defs.map(d=>({id:d.id,courses:d.courses}))),JSON.stringify(baseline.defs));
+ assert.equal(JSON.stringify(P.defs.filter(d=>baseline.defs.some(old=>old.id===d.id)).map(d=>({id:d.id,courses:d.courses}))),JSON.stringify(baseline.defs));
  for(const x of baseline.banks)x.stages.forEach((s,stage)=>{const b=c.GardenQuestions.banks[x.id][stage];assert.equal(b.length,s.n+(L.banks[x.id]?.[stage]?.length||0)+(x.id==='lifeLength'?c.LengthExpansion.banks[stage].length:0));assert.equal(crypto.createHash('sha256').update(JSON.stringify(b.slice(0,s.n))).digest('hex'),s.hash)});
 });
 test('new clock and shopping answers independently recomputed within existing bounds',()=>{
