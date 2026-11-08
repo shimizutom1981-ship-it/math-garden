@@ -6,7 +6,7 @@ let passed=0;const test=(name,fn)=>{fn();passed++;console.log('PASS '+name)};
 const added=Object.entries(L.banks).flatMap(([id,stages])=>stages.flatMap((bank,stage)=>bank.map(q=>({id,stage,q}))));
 test('all existing courses and bank rows preserved byte-for-byte',()=>{
  assert.equal(JSON.stringify(P.defs.map(d=>({id:d.id,courses:d.courses}))),JSON.stringify(baseline.defs));
- for(const x of baseline.banks)x.stages.forEach((s,stage)=>{const b=c.GardenQuestions.banks[x.id][stage];assert.equal(b.length,s.n+(L.banks[x.id]?.[stage]?.length||0));assert.equal(crypto.createHash('sha256').update(JSON.stringify(b.slice(0,s.n))).digest('hex'),s.hash)});
+ for(const x of baseline.banks)x.stages.forEach((s,stage)=>{const b=c.GardenQuestions.banks[x.id][stage];assert.equal(b.length,s.n+(L.banks[x.id]?.[stage]?.length||0)+(x.id==='lifeLength'?c.LengthExpansion.banks[stage].length:0));assert.equal(crypto.createHash('sha256').update(JSON.stringify(b.slice(0,s.n))).digest('hex'),s.hash)});
 });
 test('new clock and shopping answers independently recomputed within existing bounds',()=>{
  for(const {id,stage,q} of added){const m=q.meta;let answer;
@@ -38,3 +38,4 @@ test('all targeted questions are reachable silently and preserve learner state a
 });
 console.log(passed+' math variety tests passed; '+added.length+' life-math additions + '+F.items.length+' fraction representations');
 `)(require);
+

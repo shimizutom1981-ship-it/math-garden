@@ -1,0 +1,19 @@
+{
+  "commit": "27c613dc94404f893d6ba89a0ef46f06fa782f9d",
+  "banks": [
+    {
+      "n": 72,
+      "hash": "1f1776df680d368d3b04876ae402ed011bb03ee3836a9432565c82b6721bfe57"
+    },
+    {
+      "n": 36,
+      "hash": "4f566a16acb09992023b0e9ef99d085fe7f0aa27be40c50c3f536e7cd936e3bb"
+    },
+    {
+      "n": 171,
+      "hash": "d25e98b4f7ae857af9754f87c46cd26330577ed5a313e1b2cbec4d049e090ab2"
+    }
+  ],
+  "defs": "28a883d9c7387a4acfacc622c39f538cec74e8e4f4104f9fe4d4040f9bb11bcc",
+  "grades": "9667a5c36af26649640cfaf996f0c88498ccafb24c3eb7edb85d344a66aad564"
+}
