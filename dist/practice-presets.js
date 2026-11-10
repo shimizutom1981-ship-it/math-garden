@@ -8,7 +8,7 @@
   {id:'elementary-two',label:'小学2年相当・基礎の一部',description:'2けたのたし算・ひき算、同じ数のまとまりから九九へ、時計と長さ、短いお話。',kanji:true,carry:true,limits:{number:2,compare:0,addition:3,subtraction:1,mathDecompose:1,mathCarry:3,mathBorrow:2,mathHundreds:1,multiply:2,lifeShopping:2,lifeClock:2,lifeLength:2,letters:2,words:1,katakana:0,kanji:0,sentence:2,reading:3,readingKanji:3,enWords:11}}
  ];
  presets.forEach((p,i)=>p.rank=i);
- const mathGrades={shapeFamily:[1],shapeEdges:[2],circleParts:[3],mental:[2,2,2,2,2],divide:[3],fraction:[3],mathCarry:[1,1,2,3],mathBorrow:[1,2,3],multiply:[2,2,2],mathProduct:[2,3,3],mathQuotient:[3,3,4],mathOrder:[4,4,4],mathRational:[3,4,5,5],mathDecimal:[3,3,4],mathPercent:[5,5,5],mathHundreds:[2,2],lifeClock:[1,1,2],lifeLength:[2,2,3],lifeShopping:[1,2,2]};
+ const mathGrades={dataTable:[2,2],dataBars:[3,3],measureCapacity:[2,2],measureMass:[3,3],shapeFamily:[1],shapeEdges:[2],circleParts:[3],mental:[2,2,2,2,2],divide:[3],fraction:[3],mathCarry:[1,1,2,3],mathBorrow:[1,2,3],multiply:[2,2,2],mathProduct:[2,3,3],mathQuotient:[3,3,4],mathOrder:[4,4,4],mathRational:[3,4,5,5],mathDecimal:[3,3,4],mathPercent:[5,5,5],mathHundreds:[2,2],lifeClock:[1,1,2],lifeLength:[2,2,3],lifeShopping:[1,2,2]};
  const japaneseBands={jp_kanjiContext:[3,6],jp_vocabularyContext:[3,6],jp_structure:[3,6],jp_readingAdvanced:[3,6],jp_wordRelations:[3,6],jp_proverbs:[3,6],jp_idioms:[3,6],jp_fourCharacters:[3,6],jp_radicalDictionary:[3,6],jp_polite:[3,6],jp_punctuation:[1,2],jp_passageEvidence:[3,6]};
  const englishPrimary=['enDescribe','enSentence','enReply','enListening','enListeningReading','enSpelling','enSpellingReading','enSocialDialog','enInformationDialog','enConversationDepth','enConversationDepthReading'];
  let catalog=null;
@@ -18,6 +18,7 @@
   for(const d of P.defs)catalog[d.id]=d.courses.map((course,index)=>{
    let rank=presets.findIndex(x=>(x.limits[d.id]??-1)>=index),low=rank,high=rank,basis='独自の開始目安（学力判定ではない）';
    if(mathGrades[d.id]){low=high=rank=mathGrades[d.id][index]+2;basis='算数の学習指導要領の内容区分を参照した対応'}
+   else if(d.id==='readingConditions'){low=high=rank=index+3;basis='短い条件・お知らせ・複数条件という独自の段階目安'}
    else if(d.id==='jp_gradeKanji'){low=high=rank=index+3;basis='既存の学年別漢字教材（各学年の一部）・学年別配当表を参照'}
    else if(japaneseBands[d.id]){low=japaneseBands[d.id][0]+2;high=rank=japaneseBands[d.id][1]+2;basis='国語の学年帯を参照した独自の広い目安。個別問題の学年認定ではない'}
    else if(d.id.startsWith('junior_')){low=high=rank=9;basis='中学校外国語の内容範囲。学年内の順序は教科書で異なるため未細分化'}

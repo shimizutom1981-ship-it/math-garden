@@ -6,7 +6,7 @@ const hash=x=>crypto.createHash('sha256').update(JSON.stringify(x)).digest('hex'
 let passed=0;const test=(name,fn)=>{fn();passed++;console.log('PASS '+name)};
 const d=P.defs.find(x=>x.id==='lifeLength');
 test('original rows, courses, prerequisites, and grade settings remain identical',()=>{
- assert.equal(hash(P.defs.filter(d=>!c.ShapeExpansion.defs.some(s=>s.id===d.id))),baseline.defs);assert.equal(hash(Object.fromEntries(Object.entries(run('PracticePresets.build(Practice)')).filter(([id])=>!c.ShapeExpansion.defs.some(s=>s.id===id)))),baseline.grades);
+ assert.equal(hash(P.defs.filter(d=>![...c.ShapeExpansion.defs,...c.LearningExpansion.defs].some(s=>s.id===d.id))),baseline.defs);assert.equal(hash(Object.fromEntries(Object.entries(run('PracticePresets.build(Practice)')).filter(([id])=>![...c.ShapeExpansion.defs,...c.LearningExpansion.defs].some(s=>s.id===id)))),baseline.grades);
  assert.deepEqual(L.banks.map(b=>b.length),[9,36,171]);
  for(const [stage,b] of baseline.banks.entries()){const bank=c.GardenQuestions.banks.lifeLength[stage];assert.equal(hash(bank.slice(0,b.n)),b.hash);assert.equal(bank.length,b.n+L.banks[stage].length)}
 });
