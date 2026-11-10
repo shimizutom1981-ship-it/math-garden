@@ -9,7 +9,7 @@ test('all original bank rows, course IDs, prerequisites and grade bounds are unc
  assert.equal(run('JP_BANK.length'),baseline.banks.length);
  for(const [i,b] of baseline.banks.entries()){
   const current=run('JP_BANK['+i+']');if(b===null){assert.equal(current,undefined);continue;}assert.equal(hash(current.slice(0,b.length)),b.hash,'bank '+i);
-  assert.equal(current.length,b.length+(i===course-run('JP_START')?18:0),'bank length '+i);
+  assert.equal(current.length,b.length+(i===course-run('JP_START')?18:0)+(c.EarlyPractice.addedByCourse[i+run('JP_START')]||0),'bank length '+i);
  }
  assert.equal(JSON.stringify(P.defs.filter(d=>JSON.parse(baseline.defs).some(old=>old.id===d.id))),baseline.defs);
  assert.equal(JSON.stringify(Object.fromEntries(Object.entries(run('PracticePresets.build(Practice)')).filter(([id])=>Object.hasOwn(JSON.parse(baseline.grades),id)))),baseline.grades);

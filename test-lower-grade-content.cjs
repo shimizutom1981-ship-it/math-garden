@@ -8,7 +8,7 @@ const expected={words:[32,32],sentence:[32,36,32],jp_punctuation:[32,32],letters
 test('165 text/diagram items and twelve picture targets fill fifteen Japanese banks',()=>{
  assert.equal(Object.values(contents).flatMap(Object.values).flat().length,165);assert.equal(changed.length,14);
  for(const [id,counts] of Object.entries(expected))for(let stage=0;stage<counts.length;stage++){
-  const n=id==='letters'&&stage===0?run('LowerGradeContent.pictures.length'):run('JP_BANK['+def(id).courses[stage]+'-JP_START].length');assert.equal(n,counts[stage],id+':'+stage);
+  const n=id==='letters'&&stage===0?run('LowerGradeContent.pictures.length'):run('JP_BANK['+def(id).courses[stage]+'-JP_START].length');assert.equal(n,counts[stage]+(c.EarlyPractice.addedByCourse[def(id).courses[stage]]||0),id+':'+stage);
  }
 });
 test('every added row is unique within its bank and has one correct option',()=>{
