@@ -44,6 +44,7 @@
  function limit(p,d){const v=state(p).rangeLimits[d.id];return Math.min(absoluteLimit(p,d),Number.isInteger(v)?Math.max(d.prerequisite?-1:0,Math.min(d.courses.length-1,v)):(Number.isInteger(d.defaultRange)?d.defaultRange:d.courses.length-1))}
  function constrain(p,d,cap){
   const s=skill(p,d);if(s.level>Math.max(0,cap)){s.level=Math.max(0,cap);s.misses=0;s.support=0;
+   delete s.pendingGentle;delete s.gentleBridge;
    for(const [index,stage] of Object.entries(s.stages))if(+index>=s.level){stage.mastered=false;stage.recent=[]}
   }
  }
@@ -55,6 +56,32 @@
  }
  function setRange(p,id,value){const d=defs.find(x=>x.id===id);if(!d||!Number.isInteger(value))return;state(p).rangeLimits[id]=Math.max(d.prerequisite?-1:0,Math.min(d.courses.length-1,value));constrain(p,d,limit(p,d))}
  function mastered(p,d,index=d.courses.length-1){return !!skill(p,d).stages[index]?.mastered}
+ function gentle(p){return state(p).settings.pace==='gentle'}
+ function setGentle(p,on){
+  state(p).settings.pace=on?'gentle':'standard';
+  for(const s of Object.values(state(p).skills)){delete s.pendingGentle;delete s.gentleBridge}
+ }
+ function evidenceReady(p,d,index){
+  const slow=gentle(p),size=slow?15:10,recent=(skill(p,d).stages[index]?.recent||[]).slice(-size),correct=recent.filter(x=>x.ok);
+  const stable=recent.length===size&&Array.from({length:size/5},(_,i)=>recent.slice(i*5,i*5+5).filter(x=>x.ok).length).every(n=>n>=4)&&(!slow||correct.length>=14);
+  const varied=new Set(correct.map(x=>x.example)).size>=Math.min(4,d.exampleCount||4)&&new Set(correct.map(x=>x.variant)).size>=(d.variantCount||1);
+  return stable&&varied&&new Set(correct.map(x=>x.session)).size>=(slow?3:2);
+ }
+ function promote(p,d,index){
+  const s=skill(p,d),before=s.level;
+  s.stages[index].mastered=true;s.support=0;s.level=Math.min(s.level+1,ceiling(p,d),d.courses.length-1);
+  if(api.onMastered)api.onMastered(p,d);
+  if(gentle(p)&&s.level>before){
+   s.level=Math.min(s.level,before+1);
+   s.gentleBridge={level:s.level,sets:0,position:0,missed:false};
+  }
+ }
+ function beginSet(p,subject){
+  if(!gentle(p))return;
+  for(const d of defs.filter(d=>d.subject===subject)){
+   const b=state(p).skills[d.id]?.gentleBridge;if(b){b.position=0;b.missed=false}
+  }
+ }
  function allowed(p,d,seen=new Set()){
   if(!d||seen.has(d.id)||limit(p,d)<0)return false;
   const a=state(p);if(d.kanji&&!a.settings.kanji||d.carry&&!a.settings.carry)return false;
@@ -81,6 +108,11 @@
   let index=Math.min(s.level,ceiling(p,d)),kind=s.support?'prerequisite':mode;
   // Challenge means a different example of the current concept, never a new concept.
   if(!s.support&&mode==='review')index=Math.max(minimum,index-1);
+  const bridge=s.gentleBridge;
+  if(gentle(p)&&bridge?.level===s.level&&s.level>minimum&&s.level<=ceiling(p,d)){
+   index=bridge.position<4-Math.min(1,bridge.sets)?s.level-1:s.level;
+   kind=index<s.level?'review':'challenge';
+  }
   return {focus:d.id,skill:d.id,index,course:d.courses[index],kind,turn};
  }
  function record(p,item,clean,ms){
@@ -92,27 +124,39 @@
   stage.attempts++;if(ok)stage.firstCorrect++;
   if(ok&&Number.isFinite(ms)&&ms>=450&&ms<=120000)s.times=[...s.times,ms].slice(-20);
   const evidence={ok:ok?1:0,example:item.example||item.variant||'regular',variant:item.form||item.variant||'regular',session:bounded(a.sessions[d.subject],1e9)};
-  stage.recent=[...(stage.recent||[]),evidence].slice(-10);
+  stage.recent=[...(stage.recent||[]),evidence].slice(gentle(p)?-15:-10);
+  if(gentle(p)&&s.gentleBridge?.level===s.level){s.gentleBridge.position++;if(!ok)s.gentleBridge.missed=true}
   if(item.index!==s.level)return; // Review never promotes or demotes a different stage.
   if(!ok){
+   delete s.pendingGentle;
    s.misses=(s.misses||0)+1;
    // A repeated miss/hint on the same form counts even if a different form was correct between them.
    const sameForm=stage.recent.filter(x=>x.variant===evidence.variant).slice(-2);
    if(s.misses>=2||sameForm.length===2&&sameForm.every(x=>!x.ok)){
     for(const [key,value] of Object.entries(s.stages))if(+key>=Math.max(floor(p,d),s.level-1)){value.mastered=false;value.recent=[]}
     s.level=Math.max(floor(p,d),s.level-1);s.support=1;s.misses=0;
+    delete s.gentleBridge;
    }
    return;
   }
   s.misses=0;
-  const recent=stage.recent,correct=recent.filter(x=>x.ok);
-  const stable=recent.length===10&&recent.slice(0,5).reduce((n,x)=>n+x.ok,0)>=4&&recent.slice(5).reduce((n,x)=>n+x.ok,0)>=4;
-  const varied=new Set(correct.map(x=>x.example)).size>=Math.min(4,d.exampleCount||4)&&new Set(correct.map(x=>x.variant)).size>=(d.variantCount||1);
-  const repeated=new Set(correct.map(x=>x.session)).size>=2;
-  if(stable&&varied&&repeated){stage.mastered=true;s.support=0;s.level=Math.min(s.level+1,ceiling(p,d),d.courses.length-1);if(api.onMastered)api.onMastered(p,d)}
+  if(evidenceReady(p,d,item.index)){
+   if(gentle(p))s.pendingGentle={index:item.index,session:bounded(a.sessions[d.subject],1e9)};
+   else promote(p,d,item.index);
+  }
  }
- function complete(p,subject){const a=state(p);a.rotations[subject]=bounded(a.rotations[subject],1e9)+1;a.sessions[subject]=bounded(a.sessions[subject],1e9)+1}
- const api={defs,mix,state,configure,skill,focus,pick,record,complete,available,baseAvailable,floor,allowed,mastered,limit,absoluteLimit,ceiling,setLimit,setRange};
+ function complete(p,subject){
+  const a=state(p),completed=bounded(a.sessions[subject],1e9);a.rotations[subject]=bounded(a.rotations[subject],1e9)+1;a.sessions[subject]=completed+1;
+  if(!gentle(p))return;
+  for(const d of defs.filter(d=>d.subject===subject)){
+   const s=a.skills[d.id];if(!s)continue;
+   const b=s.gentleBridge;
+   if(b&&b.position>=5){if(!b.missed)b.sets++;b.position=0;b.missed=false;if(b.sets>=2)delete s.gentleBridge}
+   const pending=s.pendingGentle;delete s.pendingGentle;
+   if(pending?.session===completed&&pending.index===s.level&&allowed(p,d)&&s.level<=ceiling(p,d)&&evidenceReady(p,d,s.level))promote(p,d,s.level);
+  }
+ }
+ const api={defs,mix,state,configure,skill,focus,pick,record,complete,available,baseAvailable,floor,allowed,mastered,limit,absoluteLimit,ceiling,setLimit,setRange,gentle,setGentle,evidenceReady,beginSet};
  if(typeof module==='object')module.exports=api;else root.Practice=api;
 })(typeof globalThis==='object'?globalThis:this);
 

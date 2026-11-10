@@ -61,6 +61,7 @@
   return presets.find(preset=>defs.every(d=>P.absoluteLimit(p,d)===presetLimit(preset,d)))?.id||'custom';
  }
  function stableStage(p,d,index,P){
+  if(P.gentle(p))return !!P.skill(p,d).stages[index]?.mastered&&P.evidenceReady(p,d,index);
   const stage=P.skill(p,d).stages[index],recent=stage?.recent||[],correct=recent.filter(x=>x.ok);
   return !!stage?.mastered&&recent.length===10&&recent.slice(0,5).filter(x=>x.ok).length>=4&&recent.slice(5).filter(x=>x.ok).length>=4&&new Set(correct.map(x=>x.example)).size>=Math.min(4,d.exampleCount||4)&&new Set(correct.map(x=>x.variant)).size>=(d.variantCount||1)&&new Set(correct.map(x=>x.session)).size>=2;
  }
@@ -130,10 +131,30 @@ if(typeof document!=='undefined'){
   }).join('');
  }
  function practiceRangeMarkup(){return '<section class="practice-range"><h3>いまの練習の目安</h3>'+['math','jp','en'].map(subject=>{const r=PracticePresets.range(person(),subject,Practice);return '<p><strong>'+{math:'算数',jp:'国語',en:'英語'}[subject]+'：</strong>'+esc(r.label)+'を練習中'+(r.support.length?'（つまずいた単元を復習中）':'')+'</p>'}).join('')+'<p class="muted">最近練習した単元の現在の段階から表示します。学力診断ではありません。苦手な単元だけ戻り、他の単元の習得は保ちます。この分野の実装済み必須段階を、異なる問題で複数セット安定して解けたら、その分野だけ次の学年帯へ進みます。</p></section>'}
+ function gentlePracticeMarkup(){
+  const on=Practice.gentle(person());
+  return `<section class="practice-bulk-limit" aria-labelledby="gentlePracticeTitle"><h3 id="gentlePracticeTitle">むずかしくなるのが早いときに</h3><p><strong>ゆっくり練習：${on?'ON':'OFF'}</strong></p><p>3までの数・同じ絵・英語の最初の絵ことばから、じっくり練習します。同じ段階を3セット以上、直近15問のうち14問以上自力で解けてから進みます。</p><p>難しくするのは5問が終わったあとだけ。次の段階の問題は最初のセットで1問、次のセットで2問。残りはひとつ前の段階を復習します。つまずいたら、慣れるまで同じ配分を続けます。</p><button class="primary" id="gentlePracticeStart" onclick="startGentlePractice()">やさしい問題から、ゆっくり始める</button>${on?'<button class="sub" onclick="stopGentlePractice()">通常の進み方に戻す</button>':''}<p class="muted">選んでいる子の3教科を基礎から練習し直します。難易度の下限を解除し、漢字・くり上がりはOFFにします。過去の回答・コイン・育成・タイルの進み具合・上限設定は残ります。</p><p id="gentlePracticeStatus" role="status"></p></section>`;
+ }
+ function startGentlePractice(){
+  if(view!=='parent')return;
+  Practice.configure(person(),null,true);Practice.setGentle(person(),true);
+  curriculumRequestedFocus=null;practiceItem=null;practiceContinuation=null;save();parents();
+  document.querySelector('#gentlePracticeStatus').textContent=person().name+'さんを、やさしい問題からの「ゆっくり練習」にしました。';
+ }
+ function stopGentlePractice(){
+  if(view!=='parent')return;
+  Practice.setGentle(person(),false);save();parents();
+  document.querySelector('#gentlePracticeStatus').textContent='現在の練習段階を保って、通常の進み方に戻しました。';
+ }
+ const standardStageReport=learningStageReport;
+ learningStageReport=function(){
+  if(!Practice.gentle(person()))return standardStageReport();
+  return '<section class="panel"><h2>分野ごとの進み方</h2><p>ゆっくり練習では、同じ段階の直近15問中14問以上の自力正解と、異なる問題・3セット以上での安定を確認します。5問ずつの区間でも各4問以上が必要です。回数はアプリの設計上の目安です。</p><p>進級は5問を終えたあとだけです。新しい段階は最初のセットで1問、次に2問から慣らします。ヒントや誤答があれば配分を保ち、繰り返しつまずいたときは1段階戻ります。保護者が指定した上下限は守ります。ゆっくり考えることは不利になりません。</p></section>';
+ };
  practiceSettings=function(){
   const selected=PracticePresets.selected(person(),Practice),preset=PracticePresets.presets.find(x=>x.id===selected);
   const details=detailedPracticeSettings().replace('class="panel practice-settings"','class="practice-details"').replace('<h2>分野ごとの出題範囲</h2>','<h3>保護者が決める絶対上限</h3>');
-  return `<section class="panel practice-settings"><h2>まとめて むずかしさを調整</h2><p><strong>${esc(person().name)}さんだけの設定</strong>です。他の子の設定・記録・コインは変わりません。</p>${practiceBulkLimitMarkup()}<h3>開始範囲の設定</h3><label class="preset-label" for="practicePreset">何学年相当の範囲から始める？</label><select id="practicePreset" aria-describedby="practicePresetHelp" onchange="applyPracticePreset(this.value)"><option value="custom" ${selected==='custom'?'selected':''}>個別設定（現在の範囲）</option>${PracticePresets.presets.map(x=>`<option value="${x.id}" ${selected===x.id?'selected':''}>${esc(x.label)}</option>`).join('')}</select><p id="practicePresetSummary">${preset?esc(preset.description):'現在の設定を保っています。目安を選ぶと開始範囲をまとめて変更します。親が指定した絶対上限は残ります。'}</p><p id="practicePresetHelp" class="muted">実年齢・学力の判定ではなく、このアプリにある内容の目安です。学年の全範囲を網羅しません。英語入門は絵ことばの量の目安です。中学英語は学年を細分化しません。上げても、まだ習得していない前提は飛ばしません。</p><p id="practicePresetStatus" role="status"></p>${practiceRangeMarkup()}${practiceProgressMarkup()}<p class="muted">開始範囲は自動進級で広がります。詳細設定の絶対上限と漢字OFF・くり上がりOFFは、自動では解除しません。範囲クリア後に次の学年帯がない場合や上限に達した場合は、復習を続けられます。</p><details class="practice-advanced"><summary>必要なときだけ：分野ごとの絶対上限</summary>${details}</details></section>`;
+  return `<section class="panel practice-settings"><h2>まとめて むずかしさを調整</h2><p><strong>${esc(person().name)}さんだけの設定</strong>です。他の子の設定・記録・コインは変わりません。</p>${gentlePracticeMarkup()}${practiceBulkLimitMarkup()}<h3>開始範囲の設定</h3><label class="preset-label" for="practicePreset">何学年相当の範囲から始める？</label><select id="practicePreset" aria-describedby="practicePresetHelp" onchange="applyPracticePreset(this.value)"><option value="custom" ${selected==='custom'?'selected':''}>個別設定（現在の範囲）</option>${PracticePresets.presets.map(x=>`<option value="${x.id}" ${selected===x.id?'selected':''}>${esc(x.label)}</option>`).join('')}</select><p id="practicePresetSummary">${preset?esc(preset.description):'現在の設定を保っています。目安を選ぶと開始範囲をまとめて変更します。親が指定した絶対上限は残ります。'}</p><p id="practicePresetHelp" class="muted">実年齢・学力の判定ではなく、このアプリにある内容の目安です。学年の全範囲を網羅しません。英語入門は絵ことばの量の目安です。中学英語は学年を細分化しません。上げても、まだ習得していない前提は飛ばしません。</p><p id="practicePresetStatus" role="status"></p>${practiceRangeMarkup()}${practiceProgressMarkup()}<p class="muted">開始範囲は自動進級で広がります。詳細設定の絶対上限と漢字OFF・くり上がりOFFは、自動では解除しません。範囲クリア後に次の学年帯がない場合や上限に達した場合は、復習を続けられます。</p><details class="practice-advanced"><summary>必要なときだけ：分野ごとの絶対上限</summary>${details}</details></section>`;
  };
  function refreshPresetSummary(message){
   const selected=PracticePresets.selected(person(),Practice),preset=PracticePresets.presets.find(x=>x.id===selected);
