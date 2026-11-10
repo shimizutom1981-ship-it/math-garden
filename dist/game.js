@@ -87,7 +87,7 @@ home=function(){
 const originalStart=start;
 start=function(i,auto){subject=subjectForCourse(i);let level=auto?adaptiveState().level:i;enterQuizScreen();originalStart(level,auto);session.stageStart=auto?'auto-'+subject:i;session.rewarded=false};
 const originalFinish=finish;
-finish=function(){if(!session||session.rewarded)return;session.rewarded=true;leaveQuizScreen();let g=game(),d=dailyRecord(),id=String(session.stageStart??session.i),reward=d[id]?3:10;d[id]=(Number.isSafeInteger(d[id])?d[id]:0)+1;g.coins+=reward;let keys=Object.keys(g.days).sort();for(let k of keys.slice(0,-90))delete g.days[k];save();originalFinish();let box=document.createElement('div');box.className='reward';box.innerHTML=`<strong>🪙 ${reward} コイン もらった！</strong><p>いま ${g.coins} コイン。にわっちに あいに いこう。</p><button class="primary" onclick="petRoom()">🌱 にわっちに あう</button>`;app.querySelector('.panel').appendChild(box)};
+finish=function(){if(!session||session.rewarded)return;session.rewarded=true;leaveQuizScreen();let g=game(),d=dailyRecord(),id=String(session.stageStart??session.i),reward=d[id]?3:10;d[id]=(Number.isSafeInteger(d[id])?d[id]:0)+1;g.coins+=reward;let keys=Object.keys(g.days).sort();for(let k of keys.slice(0,-90))delete g.days[k];save();originalFinish();let box=document.createElement('div');box.className='reward';box.innerHTML=`<strong>🪙 ${reward} コイン もらった！</strong><p>いま ${g.coins} コイン。にわっちに あいに いこう。</p><button class="sub result-secondary" onclick="petRoom()">🌱 にわっちに あう</button>`;app.querySelector('.panel').appendChild(box)};
 
 
 function petCompany(){
@@ -353,7 +353,7 @@ function englishFinish(){
  const g=game(),d=dailyRecord(),reward=d['auto-en']?3:10;
  d['auto-en']=(Number.isSafeInteger(d['auto-en'])?d['auto-en']:0)+1;g.coins+=reward;person().flowers++;save();
  leaveQuizScreen();view='result';
- app.innerHTML=`<section class="panel center"><div class="big">🌷</div><h1>えいごで あそべたね！</h1><p>おはなが ひとつ さいたよ。</p><div class="reward"><strong>🪙 ${reward} コイン もらった！</strong></div><div class="actions"><button class="primary" onclick="petRoom()">🌱 にわっちに あう</button><button class="sub" onclick="home()">にわに もどる</button></div></section>`;
+ app.innerHTML=`<section class="panel center result-panel"><div class="big">🌷</div><h1>えいごで あそべたね！</h1><p>おはなが ひとつ さいたよ。</p><div class="reward"><strong>🪙 ${reward} コイン もらった！</strong></div><div class="actions"><button class="sub result-secondary" onclick="petRoom()">🌱 にわっちに あう</button><button class="sub result-secondary" onclick="home()">にわに もどる</button></div></section>`;
  speak('よく がんばったね。おはなが ひとつ さいたよ');
 }
 

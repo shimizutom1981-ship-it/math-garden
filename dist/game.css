@@ -23,3 +23,6 @@ body.quiz-mode .actions{margin:0;gap:12px}
 body.quiz-mode .hint{margin:0;padding:8px 12px;font-size:15px}
 body.quiz-mode .eyebrow{font-size:11px}
 @media(orientation:landscape) and (max-height:650px){body.quiz-mode .wrap{padding:6px 14px}body.quiz-mode .board{padding:8px 14px;gap:5px}body.quiz-mode .choices{grid-template-columns:repeat(4,1fr);max-width:950px}body.quiz-mode .question{font-size:22px}body.quiz-mode .choice{font-size:22px;min-height:50px}body.quiz-mode .jp-choice{font-size:17px}body.quiz-mode .word-visual.picture{font-size:48px}body.quiz-mode .actions button{min-height:44px;padding:8px 16px}}
+
+/* Results: the next subject (or earned tile stage) is the sole green action. */
+button.result-secondary,.result-panel button:not(.primary){background:#efefed;color:#636761;border:1px solid #d7d9d3;box-shadow:none}
