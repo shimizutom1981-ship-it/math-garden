@@ -67,17 +67,26 @@ for(const d of Practice.defs.filter(d=>d.subject==='jp'&&!['letters','kanji','ka
 }
 const foundationMake=makeQuestion;
 makeQuestion=function(i){
- if(!session?.auto&&foundationMakers[i]){practiceItem=null;return foundationMakers[i]()}
- if(session?.auto){
-  const item=practiceSelection(subject);
-  if(foundationMakers[item.course]){const result=foundationMakers[item.course]();practiceBegin({...item,variant:result.variant||result.type,example:result.text+'|'+result.answer+'|'+(result.visual||'')});result.practice={skill:item.skill,stage:item.index,course:item.course,variant:result.variant||result.type};return result}
+ const selected=session?.auto?practiceSelection(subject):null;
+ const course=selected?selected.course:i;
+ const activity=typeof GardenActivities==='undefined'?null:GardenActivities.early(course);
+ if(activity||foundationMakers[course]){
+  const result=activity||foundationMakers[course]();
+  if(selected){
+   const variant=result.variant||result.type;
+   practiceBegin({...selected,variant,example:result.text+'|'+result.answer+'|'+(result.visual||'')});
+   result.practice={skill:selected.skill,stage:selected.index,course,variant};
+  }else practiceItem=null;
+  return result;
  }
  return foundationMake(i);
 };
 const foundationAttempt=practiceAttempt;
 practiceAttempt=function(clean){
  if(practiceItem){const english=practiceItem.skill&&Practice.defs.find(d=>d.id===practiceItem.skill)?.subject==='en';
-  practiceItem.example=english?(englishSession.extensionQuestion?.id||englishSession.word?.[0]):(q.learningExpansion?q.id:q.text+'|'+q.answer+'|'+(q.visual||''));
+  if(english)practiceItem.example=englishSession.extensionQuestion?.id||englishSession.word?.[0];
+  else if(q.id&&(q.learningExpansion||q.activity))practiceItem.example=q.id;
+  else practiceItem.example=q.text+'|'+q.answer+'|'+(q.chainWord||q.visual||'');
   if(!practiceItem.variant)practiceItem.variant=english?'select':q.type;
   if(!english){const ar=q.arithmetic||q.meta||{},a=ar.a??q.a,b=ar.b??q.b;
    if(practiceItem.skill==='addition')practiceItem.form=b===1?'one-more':'combine';

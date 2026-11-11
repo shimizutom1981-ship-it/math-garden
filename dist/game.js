@@ -442,6 +442,7 @@ let autoNextTimer=null;
 function cancelAutoNext(){clearTimeout(autoNextTimer);autoNextTimer=null}
 function scheduleAutoNext(english){
  cancelAutoNext();
+ if(!english && q?.waitForNext)return;
  const active=english?englishSession:session,questionNumber=active.n;
  const button=document.querySelector(english?'#englishNext':'#next');if(button)button.classList.add('hidden');
  autoNextTimer=setTimeout(()=>{
@@ -460,7 +461,7 @@ document.addEventListener('visibilitychange',()=>{
 });
 
 const duoAnswer=answer;
-answer=function(i,el){const was=session?.done;duoAnswer(i,el);if(!was&&session?.done){celebrateAnswer('#feedback');scheduleAutoNext(false)}};
+answer=function(i,el){const was=session?.done;duoAnswer(i,el);if(!was&&session?.done){celebrateAnswer('#feedback');if(q.activity)GardenActivities.showReview(q);scheduleAutoNext(false)}};
 const duoEnglishAnswer=englishAnswer;
 englishAnswer=function(i,el){const was=englishSession?.done;duoEnglishAnswer(i,el);if(!was&&englishSession?.done){celebrateAnswer('#englishFeedback');scheduleAutoNext(true)}};
 const storyFinish=finish;

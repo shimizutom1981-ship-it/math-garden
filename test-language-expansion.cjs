@@ -24,7 +24,7 @@ test('registration is idempotent and preserves the separately expanded picture/p
 });
 test('stage eligibility remains below grade-three cap with no curriculum changes',()=>{
  const map=run('PracticePresets.build(Practice)');for(const x of baseline)assert.ok(map[x.skill][x.stage].rank<=5);
- assert.equal(P.defs.filter(d=>![...c.ShapeExpansion.defs,...c.LearningExpansion.defs].some(x=>x.id===d.id)).reduce((n,d)=>n+d.courses.length,0),435);
+ assert.equal(P.defs.filter(d=>![...c.ShapeExpansion.defs,...c.LearningExpansion.defs,...run('GardenActivities.lessons')].some(x=>x.id===d.id)).reduce((n,d)=>n+d.courses.length,0),435);
 });
 test('generation preserves both child profiles, limits, rewards and English word histories',()=>{
  const before=run('JSON.stringify(data)');for(const x of baseline){run('session={auto:false,seen:{}}');for(let n=0;n<64;n++)run('q=makeQuestion('+x.course+')')};assert.equal(run('JSON.stringify(data)'),before);
