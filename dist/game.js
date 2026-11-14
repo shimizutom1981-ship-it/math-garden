@@ -442,7 +442,7 @@ let autoNextTimer=null;
 function cancelAutoNext(){clearTimeout(autoNextTimer);autoNextTimer=null}
 function scheduleAutoNext(english){
  cancelAutoNext();
- if(!english && q?.waitForNext)return;
+ if(!english && q?.waitForNext || english && englishSession?.thinking)return;
  const active=english?englishSession:session,questionNumber=active.n;
  const button=document.querySelector(english?'#englishNext':'#next');if(button)button.classList.add('hidden');
  autoNextTimer=setTimeout(()=>{

@@ -1,7 +1,7 @@
 const fs=require('node:fs');
 const setup=fs.readFileSync('test-foundations.cjs','utf8').split("if(process.argv.includes('--inspect'))")[0];
 new Function('require',setup+String.raw`
-const L=require('./dist/learning-expansion.js'),ids=L.defs.map(d=>d.id),old=d=>!ids.includes(d.id)&&!run('GardenActivities.lessons').some(x=>x.id===d.id),all=Object.values(L.banks).flat(2);
+const L=require('./dist/learning-expansion.js'),ids=L.defs.map(d=>d.id),old=d=>!ids.includes(d.id)&&![...run('GardenActivities.lessons'),...c.ThinkingContent.defs].some(x=>x.id===d.id),all=Object.values(L.banks).flat(2);
 let count=0;function test(name,fn){fn();count++;console.log('PASS '+name)}
 const plain=x=>JSON.parse(JSON.stringify(x));
 function ready(){run("for(const d of Practice.defs){Practice.setLimit(person(),d.id,d.courses.length-1);Practice.setRange(person(),d.id,d.courses.length-1);const s=Practice.skill(person(),d);s.level=d.courses.length-1;d.courses.forEach((_,i)=>s.stages[i]={mastered:true,attempts:20,firstCorrect:20,recent:[]})}Practice.state(person()).settings={kanji:true,carry:true};delete person().practice.lowerPresets.math;delete person().practice.lowerPresets.jp;delete person().tileCycle;person().practiceFlow={freeChoice:true,next:'math'};")}
@@ -42,7 +42,7 @@ test('all reading evidence exists literally in the displayed source, and highlig
 test('registration preserves old definitions and IDs; repeat loading is inert',()=>{
  const base=require('./test-shapes-baseline.json');
  assert.deepEqual(plain(P.defs.filter(d=>old(d)&&!c.ShapeExpansion.defs.some(s=>s.id===d.id))),base.defs);
- assert.equal(P.defs.length,base.defs.length+3+5+3);assert.equal(P.defs.reduce((n,d)=>n+d.courses.length,0),452);
+ assert.equal(P.defs.length,base.defs.length+3+5+3+c.ThinkingContent.defs.length);assert.equal(P.defs.filter(d=>!c.ThinkingContent.defs.some(x=>x.id===d.id)).reduce((n,d)=>n+d.courses.length,0),452);
  const before=run('JSON.stringify({data,defs:Practice.defs,topics:TOPICS})');vm.runInContext(fs.readFileSync('dist/learning-expansion.js','utf8'),c);assert.equal(run('JSON.stringify({data,defs:Practice.defs,topics:TOPICS})'),before);
 });
 test('grade bounds are explicit and default off; no child reaches unseen content on loading',()=>{

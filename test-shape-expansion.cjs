@@ -1,13 +1,13 @@
 const fs=require('node:fs');
 const setup=fs.readFileSync('test-foundations.cjs','utf8').split("if(process.argv.includes('--inspect'))")[0];
 new Function('require',setup+String.raw`
-const S=require('./dist/shape-expansion.js'),base=require('./test-shapes-baseline.json'),ids=S.defs.map(x=>x.id),newSkill=d=>ids.includes(d.id)||[...c.LearningExpansion.defs,...run('GardenActivities.lessons')].some(x=>x.id===d.id);
+const S=require('./dist/shape-expansion.js'),base=require('./test-shapes-baseline.json'),ids=S.defs.map(x=>x.id),newSkill=d=>ids.includes(d.id)||[...c.LearningExpansion.defs,...run('GardenActivities.lessons'),...c.ThinkingContent.defs].some(x=>x.id===d.id);
 let passed=0;function test(name,fn){fn();passed++;console.log('PASS '+name)}
 test('append-only registration preserves all previous skills, topics, and grade mapping',()=>{
  assert.equal(JSON.stringify(P.defs.filter(d=>!newSkill(d))),JSON.stringify(base.defs));
  assert.equal(run('JSON.stringify(TOPICS.slice(0,'+base.topics.length+'))'),JSON.stringify(base.topics));
  const grades=run('PracticePresets.build(Practice)');for(const [id,rows] of Object.entries(base.grades))assert.equal(JSON.stringify(grades[id]),JSON.stringify(rows));
- assert.equal(P.defs.length,base.defs.length+3+c.LearningExpansion.defs.length+3);assert.equal(run('TOPICS.length'),base.topics.length+3+2+c.LearningExpansion.defs.reduce((n,d)=>n+d.stages.length,0));
+ assert.equal(P.defs.length,base.defs.length+3+c.LearningExpansion.defs.length+3+c.ThinkingContent.defs.length);assert.equal(run('TOPICS.length'),base.topics.length+3+2+c.LearningExpansion.defs.reduce((n,d)=>n+d.stages.length,0)+c.ThinkingContent.defs.filter(d=>d.subject!=="en").reduce((n,d)=>n+d.stages.length,0));
 });
 test('33 meaningful variants have unique IDs, unique answer choices and valid diagrams',()=>{
  assert.deepEqual(Object.values(S.banks).map(b=>b.length),[12,12,9]);const all=Object.values(S.banks).flat();assert.equal(new Set(all.map(q=>q.id)).size,33);

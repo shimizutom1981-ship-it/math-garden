@@ -18,6 +18,7 @@
   for(const d of P.defs)catalog[d.id]=d.courses.map((course,index)=>{
    let rank=presets.findIndex(x=>(x.limits[d.id]??-1)>=index),low=rank,high=rank,basis='独自の開始目安（学力判定ではない）';
    if(['storyEquation','paperPuzzle','englishPictureSentence'].includes(d.id)){low=high=rank=5;basis='小3向けの文章・図・英語を結ぶ独自の練習'}
+   else if(typeof ThinkingContent!=='undefined'&&ThinkingContent.defs.some(x=>x.id===d.id)){low=high=rank=ThinkingContent.defs.find(x=>x.id===d.id).grades[index]+2;basis='絵・ことば・理由を結ぶ独自の練習目安'}
    else if(mathGrades[d.id]){low=high=rank=mathGrades[d.id][index]+2;basis='算数の学習指導要領の内容区分を参照した対応'}
    else if(d.id==='readingConditions'){low=high=rank=index+3;basis='短い条件・お知らせ・複数条件という独自の段階目安'}
    else if(d.id==='jp_gradeKanji'){low=high=rank=index+3;basis='既存の学年別漢字教材（各学年の一部）・学年別配当表を参照'}

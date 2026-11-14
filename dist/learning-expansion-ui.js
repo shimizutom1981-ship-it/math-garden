@@ -3,15 +3,15 @@
  'use strict';
  const L=LearningExpansion;
  const previousSettings=practiceSettings;
- practiceSettings=function(){return previousSettings().replace('<h2>まとめて むずかしさを調整</h2>','<h2>まとめて むずかしさを調整</h2>'+`<section class="lesson-settings"><h2>あたらしい 問題を追加</h2><p>表・グラフ、かさ・重さ、条件やお知らせの読解に加え、小3向けに「おはなしに あう しき」「かみを きって くみあわせよう」「えいぶんに あう え」が選べます。選んだ子の新しい分野だけを設定します。</p><label for="lessonGrade">新しい問題をどこまで出す？</label><select id="lessonGrade"><option value="">範囲を選んでください</option value="1">小学1年相当まで（条件を読む国語）</option><option value="2">小学2年相当まで（表・かさ・お知らせ）</option><option value="3">小学3年相当まで（グラフ・重さ・文章と式・紙の図形・英語の絵など）</option></select><button class="primary" onclick="enableGardenLessons()">新しい問題の範囲を適用</button><p class="muted">既存分野の上下限・漢字の許可・記録は変わりません。新しい分野の上限と開始範囲を設定し、前提の練習が済んだ分野から出題します。下限の設定も守ります。</p><p id="lessonSetupStatus" role="status"></p></section>`);};
+ practiceSettings=function(){return previousSettings().replace('<h2>まとめて むずかしさを調整</h2>','<h2>まとめて むずかしさを調整</h2>'+`<section class="lesson-settings"><h2>あたらしい 問題を追加</h2><p>もようの続き、計算の間違い探し、あまり、読解の手がかり、予定、色と物の英語、英文カードを追加しました。表・グラフなどの追加分野も、選んだ子だけに設定します。お手本と同じ数・かくれた果物・かなカードは、既存の数・ひき算・かなの練習に少しずつ混ざります。</p><label for="lessonGrade">新しい問題をどこまで出す？</label><select id="lessonGrade"><option value="">範囲を選んでください</option><option value="0">年長相当まで（もようの続き）</option><option value="1">小学1年相当まで（条件を読む国語）</option><option value="2">小学2年相当まで（表・かさ・お知らせ）</option><option value="3">小学3年相当まで（グラフ・重さ・文章と式・紙の図形・英語の絵など）</option></select><button class="primary" onclick="enableGardenLessons()">新しい問題の範囲を適用</button><p class="muted">既存分野の上下限・漢字の許可・記録は変わりません。新しい分野の上限と開始範囲を設定し、前提の練習が済んだ分野から出題します。下限の設定も守ります。</p><p id="lessonSetupStatus" role="status"></p></section>`);};
  window.enableGardenLessons=function(){
   if(view!=='parent')return;
   const value=document.querySelector('#lessonGrade')?.value,grade=Number(value);
-  if(!['1','2','3'].includes(value))return;
+  if(!['0','1','2','3'].includes(value))return;
   const p=person();
-  for(const def of [...L.defs,...GardenActivities.lessons]){const cap=def.grades.reduce((last,g,i)=>g<=grade?i:last,-1);Practice.setLimit(p,def.id,cap);Practice.setRange(p,def.id,cap);}
+  for(const def of [...L.defs,...GardenActivities.lessons,...ThinkingContent.defs]){const cap=def.grades.reduce((last,g,i)=>g<=grade?i:last,-1);Practice.setLimit(p,def.id,cap);Practice.setRange(p,def.id,cap);}
   curriculumRequestedFocus=null;practiceItem=null;practiceContinuation=null;save();parents();
-  const status=document.querySelector('#lessonSetupStatus');if(status)status.textContent=p.name+'さんの新しい問題を、小学'+grade+'年相当まで設定しました。';
+  const status=document.querySelector('#lessonSetupStatus');if(status)status.textContent=p.name+'さんの新しい問題を、'+(grade===0?'年長相当':'小学'+grade+'年相当')+'まで設定しました。';
  };
  const previousNext=nextQuestion;
  nextQuestion=function(){previousNext();if(view==='quiz'&&(q?.learningExpansion||q?.activity))document.querySelector('.board')?.classList.add('lesson-board');};
