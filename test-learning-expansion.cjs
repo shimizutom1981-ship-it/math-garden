@@ -45,14 +45,33 @@ test('registration preserves old definitions and IDs; repeat loading is inert',(
  assert.equal(P.defs.length,base.defs.length+3+5+3+c.ThinkingContent.defs.length);assert.equal(P.defs.filter(d=>!c.ThinkingContent.defs.some(x=>x.id===d.id)).reduce((n,d)=>n+d.courses.length,0),452);
  const before=run('JSON.stringify({data,defs:Practice.defs,topics:TOPICS})');vm.runInContext(fs.readFileSync('dist/learning-expansion.js','utf8'),c);assert.equal(run('JSON.stringify({data,defs:Practice.defs,topics:TOPICS})'),before);
 });
-test('grade bounds are explicit and default off; no child reaches unseen content on loading',()=>{
+test('new lessons default on, while prerequisites and explicit grade bounds still apply',()=>{
  const table=c.PracticePresets.build(P);
- for(const d of L.defs){const def=P.defs.find(x=>x.id===d.id);assert.equal(P.limit({},def),-1);assert.equal(P.allowed({},def),false);assert.deepEqual(plain(table[d.id].map(row=>row.rank)),d.grades.map(g=>g+2))}
+ for(const d of L.defs){const def=P.defs.find(x=>x.id===d.id);assert.equal(P.limit({},def),def.courses.length-1);assert.equal(P.allowed({},def),false);assert.deepEqual(plain(table[d.id].map(row=>row.rank)),d.grades.map(g=>g+2))}
  for(const [preset,grade] of [['preschool-older',0],['elementary-one',1],['elementary-two',2],['elementary-3',3]]){
   const p={};c.PracticePresets.apply(p,preset,P);c.PracticePresets.applyLimit(p,preset,P);
   for(const d of L.defs){const def=P.defs.find(x=>x.id===d.id),cap=d.grades.reduce((last,g,i)=>g<=grade?i:last,-1);assert.equal(P.limit(p,def),cap)}
  }
  const p={};c.PracticePresets.apply(p,'elementary-3',P);c.PracticePresets.applyLimit(p,'elementary-3',P);assert.equal(P.pick(p,'math','dataBars').skill,'number');assert.equal(P.pick(p,'jp','readingConditions').skill,'letters');
+});
+test('existing profiles reach all added fields in normal rotation without setup or rewritten history',()=>{
+ const additions=[...L.defs,...run('GardenActivities.lessons'),...c.ThinkingContent.defs];
+ for(const lesson of additions){
+  const d=P.defs.find(x=>x.id===lesson.id),p={flowers:12,game:{coins:100},stats:{},practice:{version:2,configured:true,settings:{kanji:true,carry:true},skills:{}}};
+  const completePrerequisites=def=>{for(const id of def.requires||(def.prerequisite?[def.prerequisite]:[])){const pre=P.defs.find(x=>x.id===id);completePrerequisites(pre);P.skill(p,pre).stages[pre.courses.length-1]={mastered:true}}};
+  assert.equal(P.allowed(p,d),false);completePrerequisites(d);
+  assert.ok(P.available(p,d.subject).includes(d),d.id);
+  P.state(p).rotations[d.subject]=P.available(p,d.subject).indexOf(d);
+  const before=JSON.stringify({stats:p.stats,flowers:p.flowers,game:p.game});
+  const item=P.pick(p,d.subject);assert.equal(item.skill,d.id);assert.equal(item.index,0);
+  assert.deepEqual(plain(P.state(p).limits),{});assert.deepEqual(plain(P.state(p).rangeLimits),{});
+  assert.equal(JSON.stringify({stats:p.stats,flowers:p.flowers,game:p.game}),before);
+  const restored=JSON.parse(JSON.stringify(p));assert.deepEqual(plain(P.pick(restored,d.subject)),plain(item));
+  P.setLimit(p,d.id,-1);assert.ok(!P.available(p,d.subject).includes(d));
+  assert.equal(P.limit(JSON.parse(JSON.stringify(p)),d),-1);
+  P.setLimit(p,d.id,d.courses.length-1);P.setRange(p,d.id,-1);assert.ok(!P.available(p,d.subject).includes(d));
+ }
+ const settings=run('practiceSettings()');assert.match(settings,/追加の操作は不要/);assert.match(settings,/追加分野の範囲を変更する（任意）/);assert.doesNotMatch(settings,/あたらしい 問題を追加/);
 });
 test('parent setup affects only new fields for the chosen child; invalid input does nothing',()=>{
  const originalQuery=document.querySelector,control={value:'3'};document.querySelector=s=>s==='#lessonGrade'?control:originalQuery(s);

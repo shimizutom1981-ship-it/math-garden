@@ -47,7 +47,7 @@ const ThinkingActivities=(()=>{
    if(def.subject!=='en')return foundationCourse(title,def.subject,()=>question(def.id,stage));
    const course=EN_WORDS.length*4;EN_WORDS.push([]);curriculumCourseMeta['en:'+course]={title,stage,subject:'en'};return course;
   });
-  foundationSkill(def.id,def.title,def.subject,courses,def.prerequisite,{defaultLimit:-1,defaultRange:-1,requires:def.requires,stageRequires:def.stageRequires||{},carry:!!def.carry});
+  foundationSkill(def.id,def.title,def.subject,courses,def.prerequisite,{requires:def.requires,stageRequires:def.stageRequires||{},carry:!!def.carry});
  }
  function cards(item,english=false){
   const selected=item.selectedTokens||[],method=english?'ThinkingActivities.englishToken':'ThinkingActivities.token';

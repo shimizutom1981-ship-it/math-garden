@@ -1,9 +1,9 @@
-/* Presentation, explicit parent setup and first-answer rotation for new lessons. */
+/* Presentation, optional parent range overrides and first-answer rotation for new lessons. */
 (function(){
  'use strict';
  const L=LearningExpansion;
  const previousSettings=practiceSettings;
- practiceSettings=function(){return previousSettings().replace('<h2>まとめて むずかしさを調整</h2>','<h2>まとめて むずかしさを調整</h2>'+`<section class="lesson-settings"><h2>あたらしい 問題を追加</h2><p>もようの続き、計算の間違い探し、あまり、読解の手がかり、予定、色と物の英語、英文カードを追加しました。表・グラフなどの追加分野も、選んだ子だけに設定します。お手本と同じ数・かくれた果物・かなカードは、既存の数・ひき算・かなの練習に少しずつ混ざります。</p><label for="lessonGrade">新しい問題をどこまで出す？</label><select id="lessonGrade"><option value="">範囲を選んでください</option><option value="0">年長相当まで（もようの続き）</option><option value="1">小学1年相当まで（条件を読む国語）</option><option value="2">小学2年相当まで（表・かさ・お知らせ）</option><option value="3">小学3年相当まで（グラフ・重さ・文章と式・紙の図形・英語の絵など）</option></select><button class="primary" onclick="enableGardenLessons()">新しい問題の範囲を適用</button><p class="muted">既存分野の上下限・漢字の許可・記録は変わりません。新しい分野の上限と開始範囲を設定し、前提の練習が済んだ分野から出題します。下限の設定も守ります。</p><p id="lessonSetupStatus" role="status"></p></section>`);};
+ practiceSettings=function(){return previousSettings().replace('<h2>まとめて むずかしさを調整</h2>','<h2>まとめて むずかしさを調整</h2>'+`<section class="lesson-settings"><h2>追加分野の出題</h2><p><strong>新しい問題も自動で出題します。追加の操作は不要です。</strong>設定済みの出題範囲と学習状況に合わせて、前提の練習を終えた分野から少しずつ出ます。「出さない」に設定した分野はそのままです。</p><p>もようの続き、計算の間違い探し、あまり、読解の手がかり、予定、色と物の英語、英文カードを追加しました。表・グラフなども通常の練習に含まれます。お手本と同じ数・かくれた果物・かなカードは、既存の数・ひき算・かなの練習に少しずつ混ざります。</p><details><summary>追加分野の範囲を変更する（任意）</summary><label for="lessonGrade">追加分野をどこまで出す？</label><select id="lessonGrade"><option value="">範囲を選んでください</option><option value="0">年長相当まで（もようの続き）</option><option value="1">小学1年相当まで（条件を読む国語）</option><option value="2">小学2年相当まで（表・かさ・お知らせ）</option><option value="3">小学3年相当まで（グラフ・重さ・文章と式・紙の図形・英語の絵など）</option></select><button class="primary" onclick="enableGardenLessons()">追加分野の範囲を変更</button><p class="muted">既存分野の上下限・漢字の許可・記録は変わりません。新しい分野の上限と開始範囲を設定し、前提の練習が済んだ分野から出題します。下限の設定も守ります。</p></details><p id="lessonSetupStatus" role="status"></p></section>`);};
  window.enableGardenLessons=function(){
   if(view!=='parent')return;
   const value=document.querySelector('#lessonGrade')?.value,grade=Number(value);

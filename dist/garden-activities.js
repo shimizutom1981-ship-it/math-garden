@@ -249,7 +249,7 @@ for(const lesson of GardenActivities.lessons){
   }else{
     course=foundationCourse(lesson.title,lesson.subject,()=>GardenActivities.schoolQuestion(lesson.id));
   }
-  foundationSkill(lesson.id,lesson.title,lesson.subject,[course],lesson.prerequisite,{defaultLimit:-1,defaultRange:-1});
+  foundationSkill(lesson.id,lesson.title,lesson.subject,[course],lesson.prerequisite);
 }
 const priorActivityEnglish=buildCurriculumEnglish;
 buildCurriculumEnglish=function(e,item){

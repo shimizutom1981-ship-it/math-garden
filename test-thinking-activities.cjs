@@ -33,7 +33,7 @@ const setup=fs.readFileSync('test-foundations.cjs','utf8').split("if(process.arg
 new Function('require',setup+String.raw`
 const T=run('ThinkingActivities'),C=run('ThinkingContent'),def=id=>P.defs.find(d=>d.id===id),btn=()=>document.createElement('button');
 for(const preset of c.PracticePresets.presets){const p={};c.PracticePresets.applyLimit(p,preset.id,P);c.PracticePresets.apply(p,preset.id,P);for(const d of C.defs){const expected=d.grades.reduce((cap,g,i)=>g+2<=preset.rank?i:cap,-1);assert.equal(P.limit(p,def(d.id)),expected)}}
-for(const d of C.defs)assert.equal(P.limit({},def(d.id)),-1);
+for(const d of C.defs){assert.equal(P.limit({},def(d.id)),def(d.id).courses.length-1);assert.equal(P.allowed({},def(d.id)),false)}
 const settings=run('practiceSettings()');
 assert.match(settings,/<option value="0">年長相当/);assert.match(settings,/<option value="1">小学1年相当/);
 assert.doesNotMatch(settings,/<\/option\s+value=/);

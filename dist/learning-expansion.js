@@ -185,6 +185,6 @@
    const history=person().lessonHistory?.[key];
    return pick(d.id,stage,Array.isArray(history)?history:[],seen[key]??=[]);
   }));
-  foundationSkill(d.id,d.title,d.subject,courses,d.prerequisite,{defaultLimit:-1,defaultRange:-1,stageRequires:d.stageRequires||{}});
+  foundationSkill(d.id,d.title,d.subject,courses,d.prerequisite,{stageRequires:d.stageRequires||{}});
  }
 })(typeof globalThis==='object'?globalThis:this);
