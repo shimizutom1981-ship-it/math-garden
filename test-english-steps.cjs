@@ -59,7 +59,7 @@ for(const sound of [false,true]){
  const total=run('Practice.skill(person(),foundationById("englishPictureSentence")).total');
  run('practiceClock.start-=2000;englishAnswer(englishSession.choices.findIndex(x=>x[0]!==englishSession.word[0]),document.createElement("button"))');
  run('englishAnswer(englishSession.choices.findIndex(x=>x[0]===englishSession.word[0]),document.createElement("button"));englishAnswer(0,document.createElement("button"))');
- assert.equal(run('Practice.skill(person(),foundationById("englishPictureSentence")).total'),total+1);assert.equal(run('englishSession.clean'),0);assert.equal(run('autoNextTimer'),null);assert.equal(run('englishSession.done'),true);
+ assert.equal(run('Practice.skill(person(),foundationById("englishPictureSentence")).total'),total+1);assert.equal(run('englishSession.clean'),0);assert.notEqual(run('autoNextTimer'),null);assert.equal(run('englishSession.done'),true);
  for(let n=1;n<5;n++){run('englishAdvance();practiceClock.start-=2000;englishAnswer(englishSession.choices.findIndex(x=>x[0]===englishSession.word[0]),document.createElement("button"))')}
  run('englishAdvance()');assert.equal(run('view'),'result');const coins=run('person().game.coins');run('englishFinish()');assert.equal(run('person().game.coins'),coins);
 }

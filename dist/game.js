@@ -551,16 +551,20 @@ function storyReward(){
  app.querySelector('.panel')?.appendChild(box);
 }
 
-let autoNextTimer=null;
-function cancelAutoNext(){clearTimeout(autoNextTimer);autoNextTimer=null}
+let autoNextTimer=null,autoNextEpoch=0;
+function cancelAutoNext(){clearTimeout(autoNextTimer);autoNextTimer=null;autoNextEpoch++}
 function scheduleAutoNext(english){
  cancelAutoNext();
- if(!english && q?.waitForNext || english && englishSession?.thinking)return;
- const active=english?englishSession:session,questionNumber=active.n;
+ const active=english?englishSession:session;
+ if(document.hidden||view!=='quiz'||!active?.done||active.rewarded)return;
+ const questionNumber=active.n,question=english?active.word:q,profile=person(),epoch=autoNextEpoch;
  const button=document.querySelector(english?'#englishNext':'#next');if(button)button.classList.add('hidden');
+ // All completed answers advance after the same short feedback pause.
  autoNextTimer=setTimeout(()=>{
+  if(epoch!==autoNextEpoch)return;
   autoNextTimer=null;
-  if(document.hidden||view!=='quiz'||(english?englishSession:session)!==active||active.n!==questionNumber||!active.done)return;
+  if(document.hidden||view!=='quiz'||person()!==profile||(english?englishSession:session)!==active||active.n!==questionNumber||(english?active.word:q)!==question||!active.done||active.rewarded)return;
+  autoNextEpoch++;
   if(english)englishAdvance();else advance();
  },2200);
 }

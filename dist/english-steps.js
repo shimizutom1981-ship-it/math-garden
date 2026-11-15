@@ -160,8 +160,6 @@
   if(e.level>=12&&!e.curriculumKind)document.querySelector('.question')?.insertAdjacentHTML('afterend','<p class="english-context" lang="en">'+esc(e.word[3]||e.word[0])+'</p>');
   if(planFor(practiceItem))document.querySelector('.actions')?.insertAdjacentHTML('afterend','<button class="sub english-easier" onclick="EnglishSteps.easier()">🌱 えいごを やさしく</button>');
  };
- const auto=scheduleAutoNext;
- scheduleAutoNext=function(english){if(english&&englishSession?.englishStep){cancelAutoNext();return}return auto(english)};
  const answer=englishAnswer;
  englishAnswer=function(i,button){answer(i,button);if(englishSession?.done){const easier=document.querySelector('.english-easier');if(easier)easier.disabled=true}};
  function reset(p,keys){
