@@ -23,7 +23,24 @@ for(const d of C.defs)for(const [stage,bank] of C.banks[d.id].entries()){
    else{assert.ok(m.value*m.each<=m.total);assert.ok((m.value+1)*m.each>m.total)}
    assert.equal(stage===0,m.total%m.each===0);
   }
-  if(q.thinkingKind==='schedule'){const m=q.meta;assert.equal(m.start+m.duration+m.travel,m.end);assert.ok(m.start>0&&m.end<720);assert.equal(q.answer,C.time(m.start))}
+  if(q.thinkingKind==='schedule'){
+   const m=q.meta;assert.equal(m.start+m.duration+m.travel,m.end);assert.ok(m.start>0&&m.end<720);assert.equal(q.answer,C.time(m.start));
+   function checkClock(html,total){
+    assert.match(html,new RegExp('aria-label="'+C.time(total)+'の とけい"'));
+    const hour=html.match(/class="th-clock-hour"[^>]*transform="rotate\(([\d.]+) 80 80\)"/);
+    const minute=html.match(/class="th-clock-minute"[^>]*transform="rotate\(([\d.]+) 80 80\)"/);
+    assert.ok(hour&&minute,q.id);assert.equal(Number(hour[1]),(total/60%12)*30);assert.equal(Number(minute[1]),total%60*6);
+    assert.equal((html.match(/<text /g)||[]).length,12);
+   }
+   checkClock(q.visualHTML,m.end);
+   assert.equal((q.visualHTML.match(/<svg /g)||[]).length,1);assert.doesNotMatch(q.visualHTML,/th-timeline/);
+   assert.ok(q.visualHTML.includes(m.duration+'ふん'));assert.equal(q.visualHTML.includes('あるく じかん'),!!m.travel);
+   for(const choice of q.choices){
+    const match=choice.match(/^(\d+)じ(?:(\d+)ふん)?$/);assert.ok(match);
+    const total=Number(match[1])*60+Number(match[2]||0);checkClock(q.choicePictures[choice],total);
+    assert.ok(q.choicePictures[choice].includes('>'+choice+'</span>'));
+   }
+  }
   if(q.thinkingKind==='evidence'){assert.equal(q.passage.length,stage+2);assert.ok(q.passage[q.evidence]);assert.equal(/[\u3400-\u9fff]/u.test(q.text+q.passage.join('')+q.choices.join('')),false)}
   if(q.thinkingKind==='englishBuild')assert.equal(q.tokens.join(' '),q.answer);
  }

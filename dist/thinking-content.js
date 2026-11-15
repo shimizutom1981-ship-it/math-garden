@@ -94,11 +94,19 @@ for(let stage=0;stage<2;stage++)readings.forEach(([lines,text,answer,wrong,evide
   visualHTML:'<div class="lesson-passage">'+passage.map(s=>'<p>'+esc(s)+'</p>').join('')+'</div>',reviewText:'てがかりは「'+passage[evidence]+'」だね。'}));
 });
 const time=n=>Math.floor(n/60)+'じ'+(n%60? n%60+'ふん':'');
+function scheduleClock(minutes){
+ const minute=minutes%60,hourAngle=(minutes%720)/2;
+ const ticks=Array.from({length:60},(_,i)=>'<line x1="80" y1="9" x2="80" y2="'+(i%5?12:17)+'" transform="rotate('+i*6+' 80 80)" stroke="#658373" stroke-width="'+(i%5?1:2)+'"/>').join('');
+ const numbers=Array.from({length:12},(_,i)=>{const n=i+1,a=n*Math.PI/6;return '<text x="'+(80+Math.sin(a)*54).toFixed(2)+'" y="'+(85-Math.cos(a)*54).toFixed(2)+'" text-anchor="middle" fill="#234638" font-size="15" font-family="sans-serif">'+n+'</text>'}).join('');
+ return '<svg class="th-clock" viewBox="0 0 160 160" role="img" aria-label="'+time(minutes)+'の とけい"><circle cx="80" cy="80" r="76" fill="#fffef9" stroke="#688b77" stroke-width="3"/>'+ticks+numbers+'<line class="th-clock-hour" x1="80" y1="80" x2="80" y2="47" transform="rotate('+hourAngle+' 80 80)" stroke="#234638" stroke-width="6" stroke-linecap="round"/><line class="th-clock-minute" x1="80" y1="80" x2="80" y2="29" transform="rotate('+minute*6+' 80 80)" stroke="#b0692b" stroke-width="3" stroke-linecap="round"/><circle cx="80" cy="80" r="4" fill="#234638"/></svg>';
+}
 for(let stage=0;stage<2;stage++)for(const end of [600,630,660,690])for(const duration of [15,30,45]){
  const travel=stage?15:0,start=end-duration-travel;
  add('gardenSchedule',stage,base('schedule','schedule-'+stage+'-'+end+'-'+duration,{text:time(end)+(travel?'に いえへ かえりつきます。':'に あそびおわります。')+'こうえんで '+duration+'ふん あそびます。'+(travel?'こうえんから いえまでは '+travel+'ふんです。':'')+'\nなんじから あそぶ？',
   answer:time(start),choices:[start,start+15,start-15].map(time),hint:(travel?'かえりつく':'あそびおわる')+' じこくから、'+(travel?'あるく じかんと ':'')+'あそぶ じかんを もどそう。',meta:{end,duration,travel,start},
-  visualHTML:'<div class="th-timeline"><span>あそぶ<br>'+duration+'ふん</span>'+(travel?'<span>あるく<br>'+travel+'ふん</span>':'')+'<span>'+(travel?'かえる':'おわる')+'<br>'+time(end)+'</span></div>',reviewText:time(start)+'に はじめ、'+time(start+duration)+'に あそびおわる。'+(travel?travel+'ふん あるくと '+time(end)+'に かえりつくね。':'')}));
+  visualHTML:'<div class="th-schedule"><figure class="th-schedule-end"><figcaption>'+(travel?'いえに つく':'おわる とけい')+'</figcaption>'+scheduleClock(end)+'<span class="th-clock-time">'+time(end)+'</span></figure><div class="th-schedule-durations"><p><span>あそぶ じかん</span><strong>'+duration+'ふん</strong></p>'+(travel?'<p><span>あるく じかん</span><strong>'+travel+'ふん</strong></p>':'')+'</div></div>',
+  choicePictures:Object.fromEntries([start,start+15,start-15].map(n=>[time(n),'<span class="th-clock-option">'+scheduleClock(n)+'<span class="th-clock-time">'+time(n)+'</span></span>'])),
+  reviewText:time(start)+'に はじめ、'+time(start+duration)+'に あそびおわる。'+(travel?travel+'ふん あるくと '+time(end)+'に かえりつくね。':'')}));
 }
 const objects=[['apple','りんご'],['ball','ボール'],['cup','コップ']];
 function objectPicture(object,color){

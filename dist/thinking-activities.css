@@ -13,7 +13,11 @@
 .th-tile{width:44px;height:44px;flex-shrink:0;vertical-align:middle}.th-pattern .th-tile{width:36px;height:36px}.th-blank{font-size:27px;line-height:36px;min-width:32px;text-align:center}
 .th-equation{font-size:clamp(24px,7vw,36px);font-weight:700;background:#fff5d9;padding:16px 8px;border-radius:16px;text-align:center}
 .th-groups{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}.th-groups>span{border:2px solid #71967d;border-radius:15px;padding:10px;font-size:19px}
-.th-timeline{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:12px auto}.th-timeline>span{padding:10px;border:2px solid #96b5a2;border-radius:10px;background:#f5f8eb;text-align:center;font-size:18px;flex:1;min-width:76px}
+.th-schedule{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);align-items:center;gap:12px;width:100%;max-width:360px;margin:8px auto}
+.th-schedule-end{margin:0;min-width:0;text-align:center}.th-schedule-end figcaption{font-size:16px;font-weight:700;margin-bottom:6px}
+.th-clock{display:block;width:172px;max-width:100%;height:auto;margin:0 auto}.th-clock-time{display:block;white-space:nowrap;font-size:18px;font-weight:700;line-height:1.5;margin-top:5px}
+.th-schedule-durations{display:grid;gap:10px;min-width:0}.th-schedule-durations p{margin:0;padding:10px 5px;border:1px solid #a7c1ad;border-radius:12px;background:#f0f5e9;line-height:1.6}.th-schedule-durations span{display:block;font-size:14px;white-space:nowrap}.th-schedule-durations strong{display:block;font-size:22px;white-space:nowrap}
+.th-clock-option{display:block}.th-clock-option .th-clock{width:112px}.th-clock-option .th-clock-time{font-size:18px}
 .th-object{display:block;margin:auto;width:90px;height:90px;max-width:100%}.th-scene{display:block;max-width:100%;width:215px;height:160px;margin:auto}
 #thinking-work,#thinking-english{width:100%;min-width:0}#ga-review{line-height:1.7;overflow-wrap:anywhere}
 @media(max-width:390px){.th-card{padding:8px 10px;font-size:20px}.th-lines .th-card{font-size:17px}.th-plate{padding:8px;gap:5px}.th-pattern .th-tile{width:32px;height:32px}}
