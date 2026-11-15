@@ -281,6 +281,39 @@ run('data=JSON.parse(localStorage.getItem(KEY));home();avatarRoom()');assert.equ
 assert.equal(run('JSON.stringify({game:game(),stats:person().stats,flowers:person().flowers,practice:person().practice,flow:person().practiceFlow})'),preservedBeforeOutfit);
 run("data.current=1;setAvatar('hair','short');data.current=0;avatarRoom()");assert.equal(run('JSON.stringify(person().avatar)'),selectedAvatar);
 console.log('PASS all unlocked avatar choices preview and save; reopen/reload/profile isolation preserve coins, purchases and learning records');
+
+// Wardrobe levels are enforced in both UI and handlers; old saves stay compatible.
+const wardrobeSnapshot=run('JSON.stringify(data)');
+const wardrobeStored=storage.get('kazunoniwa-v1');
+const extras=run("[['outfit',AVATAR_EXTRA_OUTFITS],['accessory',AVATAR_EXTRA_ACCESSORIES]]");
+assert.equal(extras.reduce((n,[,rows])=>n+rows.length,0),48);
+for(const [key,rows] of extras){
+ assert.equal(new Set(run(`AVATAR_OPTIONS.${key}.map(o=>o[0])`)).size,38);
+ for(const row of rows){
+  run(`data.current=0;game().growth=${Math.max(0,row.level-2)*3};person().avatar={hair:'bob',face:'smile',color:'brown',skin:'light',outfit:'everyday',accessory:'none'}`);
+  const saved=run('JSON.stringify(data)');
+  if(row.level>1){run(`setAvatar('${key}','${row.id}')`);assert.equal(run('JSON.stringify(data)'),saved)}
+  run(`game().growth=${(row.level-1)*3};setAvatar('${key}','${row.id}')`);
+  assert.equal(run(`avatarState().${key}`),row.id);
+  assert.doesNotMatch(run('avatarArt()'),/undefined|NaN/);
+  assert.equal(JSON.parse(storage.get('kazunoniwa-v1')).profiles[0].avatar[key],row.id);
+ }
+ for(const level of [1,2,3,4,...Array.from({length:20},(_,i)=>(i+1)*5)])assert.ok(rows.some(o=>o.level===level));
+}
+run("game().growth=27;person().avatar.accessory='bowblue';save()");
+assert.match(run('avatarArt()'),/data-decoration="ribbon"/);
+assert.match(run('avatarArt()'),/#68afe8/);
+assert.doesNotMatch(run('avatarArt()'),/🦋/);
+assert.equal(run("AVATAR_OPTIONS.accessory.find(o=>o[0]==='bowblue')[2]"),10);
+assert.equal(run("AVATAR_OPTIONS.outfit.find(o=>o[0]==='star')[2]"),1);
+run('data=JSON.parse(localStorage.getItem(KEY));avatarRoom()');
+assert.equal(run('avatarState().accessory'),'bowblue');
+assert.match(app.innerHTML,/つぎは <b>Lv.15/);
+run('game().growth=297;avatarRoom()');assert.match(app.innerHTML,/すべての きせかえ/);
+run('game().growth=0;avatarRoom()');assert.match(app.innerHTML,/つぎは <b>Lv.2/);
+run(`data=JSON.parse(${JSON.stringify(wardrobeSnapshot)})`);storage.set('kazunoniwa-v1',wardrobeStored);
+console.log('PASS 48 wardrobe additions: every unlock boundary, blocked early use, save/reload, blue SVG ribbon, legacy levels and next reward');
+
 // New content registration and actual routes, using synthetic profiles only.
 const oldSkills=run('Practice.defs.filter(d=>!d.id.startsWith("life")).map(d=>({id:d.id,courses:d.courses.slice()}))');
 assert.equal(run('Practice.defs.filter(d=>d.id.startsWith("life")).length'),3);

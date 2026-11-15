@@ -44,3 +44,17 @@ button.result-secondary,.result-panel button:not(.primary){background:#efefed;co
 .ga-open{animation:ga-separate .75s ease-out both}.ga-close{animation:ga-separate .75s ease-out reverse both}
 @keyframes ga-separate{from{transform:translate(0,0)}to{transform:translate(var(--dx),var(--dy))}}
 @media(prefers-reduced-motion:reduce){.ga-open,.ga-close{animation:none}}
+
+/* Wardrobe: visible decorations, level order, and the next reward. */
+.avatar-option-icon{display:block;width:64px;height:40px;margin:0 auto 5px;font-size:28px;line-height:40px}
+.avatar-group button{max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.avatar-unlocks{padding:14px;background:#f6f0df;border:1px solid #eadcba;border-radius:16px;margin:0 0 20px}
+.avatar-unlocks>strong{font-size:15px;color:#346146}
+.avatar-unlocks p{margin:5px 0 10px;font-size:14px}
+.avatar-next-items{display:flex;flex-wrap:wrap;gap:8px}
+.avatar-next-items>span{display:flex;align-items:center;gap:5px;font-size:12px;background:#fffcf4;border-radius:9px;padding:4px 8px}
+.avatar-next-items .avatar-option-icon{width:40px;height:28px;line-height:28px;font-size:22px;margin:0}
+.avatar-room .avatar-group>div{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:9px}
+.avatar-room .avatar-group button{min-width:0;padding:10px 5px;font-size:15px}
+.avatar-room .avatar-group button:disabled{opacity:.7}
+@media(max-width:360px){.avatar-room .avatar-group>div{grid-template-columns:repeat(2,minmax(0,1fr))}.avatar-room .avatar-group button{font-size:13px}}

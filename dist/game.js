@@ -365,6 +365,121 @@ const AVATAR_OPTIONS={
  outfit:[['driver','うんてんし',5],['conductor','しゃしょう',1],['everyday','おさんぽ',1],['flower','おはな',5],['star','ほしぞら',10],['royal','プリンセス',25],['rainbow','にじいろ',50],['sport','スポーツ',1],['marine','マリン',5],['berry','いちご',10],['forest','もりの たんけん',15],['magic','まほうつかい',30],['space','うちゅう',75],['angel','てんし',100]],
  accessory:[['railcap','せいぼう',5],['railbag','えきいんバッグ',1],['none','なし',1],['ribbon','リボン',5],['flower','おはなかざり',10],['crown','おうかん',25],['sparkle','きらきら',100],['bowblue','あおい リボン',1],['cat','ねこみみ',5],['bunny','うさみみ',10],['hat','むぎわら',15],['magic','まほうの ぼうし',30],['moon','おつきさま',50],['gem','ほうせき',75]]
 };
+
+// Wardrobe rewards use the existing growth level and never spend coins.
+const AVATAR_EXTRA_OUTFITS=[
+ ['sprout','わかば',1,'#9acb81','🌱','collar'],
+ ['sunny','おひさま',2,'#f3c85e','☀','stripe'],
+ ['cloud','あおぞら',3,'#9ecde5','☁','collar'],
+ ['heart','ハート',4,'#e899ae','♡','dress'],
+ ['railholiday','でんしゃの たび',5,'#6e94bc','🚂','jacket'],
+ ['runner','かけっこ',10,'#edaa64','★','stripe'],
+ ['sailor','みならい セーラー',15,'#e5f1fa','⚓','sailor'],
+ ['flowerdress','はなびら ドレス',20,'#e9acc9','🌸','dress'],
+ ['catshirt','ねこの パーカー',25,'#c6ac8f','🐱','collar'],
+ ['ocean','うみの セーラー',30,'#67b9bc','🐬','sailor'],
+ ['baker','パンやさん',35,'#e9c78c','🥐','apron'],
+ ['berrydress','いちご ドレス',40,'#d67c93','🍓','dress'],
+ ['raincoat','あめの おさんぽ',45,'#e6c85c','☂','jacket'],
+ ['explorer','ぼうけん ジャケット',50,'#98af73','🧭','jacket'],
+ ['sunflower','ひまわり ドレス',55,'#e8b74d','🌻','dress'],
+ ['prince','おうじさま',60,'#7497cd','♛','royal'],
+ ['mermaid','うみの たからもの',65,'#7ec7c3','🐚','dress'],
+ ['wizardrobe','ほしの ローブ',70,'#8b78bd','★','royal'],
+ ['festival','おまつり',75,'#7f9bc8','🌸','kimono'],
+ ['moonpilot','つきの パイロット',80,'#b2bfd9','🌙','jacket'],
+ ['snowdress','ゆきの ドレス',85,'#c4e4ed','❄','dress'],
+ ['jeweldress','ほうせき ドレス',90,'#b29cd9','💎','royal'],
+ ['auroradress','オーロラ ドレス',95,'#a6c6db','✦','aurora'],
+ ['gardenroyal','にわの ロイヤル',100,'#e8d48d','🌼','royal']
+].map(([id,name,level,color,motif,style])=>({id,name,level,color,motif,style}));
+const AVATAR_EXTRA_ACCESSORIES=[
+ ['leafpin','わかばピン',1,'leaf','#79af68'],
+ ['bowyellow','きいろい リボン',2,'bow','#f3c653'],
+ ['bowmint','ミントの リボン',3,'bow','#7acdb5'],
+ ['heartpin','ハートピン',4,'heart','#e68da9'],
+ ['railbow','でんしゃ リボン',5,'bow','#719bc9'],
+ ['starclip','ほしの ヘアピン',10,'star','#e5bb53'],
+ ['sailorbow','セーラー リボン',15,'bow','#587bad'],
+ ['flowerband','おはなの カチューシャ',20,'flowers','#e99cb6'],
+ ['pawpin','にくきゅう ピン',25,'paw','#caa282'],
+ ['shellpin','かいがら ピン',30,'shell','#93d1cd'],
+ ['chefhat','コックさん',35,'chef','#fff8e9'],
+ ['berrybow','いちご リボン',40,'bow','#e1839b'],
+ ['raindrop','しずくの ヘアピン',45,'drop','#7fbee4'],
+ ['leafcrown','はっぱの かんむり',50,'laurel','#84b56d'],
+ ['sunflowerpin','ひまわり ピン',55,'sunflower','#f0c45b'],
+ ['tiara','きらめく ティアラ',60,'tiara','#bac9ed'],
+ ['pearls','しんじゅの カチューシャ',65,'pearls','#fff2db'],
+ ['witchbow','まほうの リボン',70,'bow','#ac88cd'],
+ ['festivalflower','おまつりの はな',75,'flowers','#b6a4db'],
+ ['planetpin','わくせい ピン',80,'planet','#ad9bd8'],
+ ['snowcrown','ゆきの かんむり',85,'snow','#a9dce9'],
+ ['jewelbow','ほうせき リボン',90,'bow','#88aedb'],
+ ['auroracrown','オーロラの かんむり',95,'aurora','#a4d8d3'],
+ ['royalcrown','にわの かんむり',100,'royal','#e2bd62']
+].map(([id,name,level,kind,color])=>({id,name,level,kind,color}));
+AVATAR_OPTIONS.outfit.push(...AVATAR_EXTRA_OUTFITS.map(o=>[o.id,o.name,o.level]));
+AVATAR_OPTIONS.accessory.push(...AVATAR_EXTRA_ACCESSORIES.map(o=>[o.id,o.name,o.level]));
+function avatarRibbon(color){
+ // A tied knot, two fabric loops and two cut tails, independent of emoji fonts.
+ return '<g data-decoration="ribbon" stroke="#426285" stroke-width="1.6" stroke-linejoin="round"><path d="M85 28L76 52L87 47L92 51L94 29M95 28L104 52L94 47L89 51L86 29" fill="'+color+'"/><path d="M86 23Q63 4 61 15L61 34Q63 44 86 30M94 23Q117 4 119 15L119 34Q117 44 94 30" fill="'+color+'"/><path d="M65 19L83 25M65 32L83 28M115 19L97 25M115 32L97 28" stroke="#fff" opacity=".55"/><rect x="84" y="19" width="12" height="16" rx="4" fill="'+color+'"/></g>';
+}
+function avatarStar(x,y,size,color){return '<path transform="translate('+x+' '+y+') scale('+size/10+')" d="M0-10L3-3 10-3 5 2 6 9 0 5-6 9-5 2-10-3-3-3Z" fill="'+color+'" stroke="#957c59" stroke-width=".7"/>'}
+function avatarDecoration(o){
+ const c=o.color;
+ const band='<path d="M51 48Q54 6 90 13Q126 6 129 48" fill="none" stroke="'+c+'" stroke-width="7"/>';
+ let shape='';
+ switch(o.kind){
+ case 'bow':return avatarRibbon(c);
+ case 'leaf':shape='<path d="M108 35Q91 9 116 12Q129 10 132 9Q134 36 108 35" fill="'+c+'" stroke="#50814c" stroke-width="2"/><path d="M106 39L126 18" stroke="#50814c" stroke-width="2"/>';break;
+ case 'heart':shape='<path d="M120 40L104 25C94 7 115 5 120 17C127 5 145 12 135 26Z" fill="'+c+'" stroke="#bb6084" stroke-width="2"/>';break;
+ case 'star':shape=avatarStar(121,25,14,c);break;
+ case 'flowers':case 'sunflower':{
+ const xs=o.kind==='flowers'?[65,90,115]:[120];
+ shape=(o.kind==='flowers'?band:'')+xs.map(x=>'<g transform="translate('+x+' 23)">'+Array.from({length:o.kind==='flowers'?5:8},(_,i)=>'<ellipse cy="-9" rx="5" ry="9" transform="rotate('+i*360/(o.kind==='flowers'?5:8)+')" fill="'+c+'" stroke="#b48b68" stroke-width=".7"/>').join('')+'<circle r="6" fill="'+(o.kind==='sunflower'?'#927052':'#ffde7b')+'"/></g>').join('');break;
+ }
+ case 'paw':shape='<g fill="'+c+'" stroke="#906b58"><ellipse cx="120" cy="29" rx="11" ry="9"/><ellipse cx="107" cy="17" rx="4" ry="6"/><ellipse cx="118" cy="12" rx="4" ry="6"/><ellipse cx="130" cy="16" rx="4" ry="6"/></g>';break;
+ case 'shell':shape='<path d="M112 40Q87 20 103 15Q106 4 117 11Q128 1 132 14Q148 19 124 40Z" fill="'+c+'" stroke="#5a9eaa" stroke-width="2"/><path d="M117 36L106 17M119 35L118 14M122 35L130 17" fill="none" stroke="#fff" stroke-width="2"/>';break;
+ case 'chef':shape='<path d="M58 29C36 14 63 0 76 10C79-2 103-2 106 10C126-1 145 19 123 30V45H58Z" fill="'+c+'" stroke="#bba88d" stroke-width="2"/><path d="M60 35H121" stroke="#e0cba7" stroke-width="3"/>';break;
+ case 'drop':shape='<path d="M120 7Q94 35 120 42Q146 35 120 7Z" fill="'+c+'" stroke="#5b91bc" stroke-width="2"/><path d="M113 25Q106 34 117 36" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>';break;
+ case 'laurel':shape=band+[56,68,80,100,112,124].map((x,i)=>'<ellipse cx="'+x+'" cy="'+(30-Math.sin(i/5*Math.PI)*17)+'" rx="6" ry="13" transform="rotate('+(x<90?-42:42)+' '+x+' '+(30-Math.sin(i/5*Math.PI)*17)+')" fill="'+c+'" stroke="#538357"/>').join('');break;
+ case 'pearls':shape=band+[54,65,77,90,103,115,126].map((x,i)=>'<circle cx="'+x+'" cy="'+(35-Math.sin(i/6*Math.PI)*22)+'" r="6" fill="'+c+'" stroke="#b5a9a0"/>').join('');break;
+ case 'planet':shape='<circle cx="119" cy="24" r="15" fill="'+c+'" stroke="#76659d" stroke-width="2"/><ellipse cx="119" cy="24" rx="25" ry="6" transform="rotate(-25 119 24)" fill="none" stroke="#eac677" stroke-width="4"/>';break;
+ case 'snow':shape=band+[65,90,115].map(x=>'<g transform="translate('+x+' 19)" stroke="#689cae" stroke-width="2.5">'+[0,60,120].map(r=>'<path transform="rotate('+r+')" d="M0-11V11M-4-7L0-3 4-7M-4 7L0 3 4 7"/>').join('')+'</g>').join('');break;
+ case 'tiara':case 'aurora':case 'royal':shape='<path d="M55 39L51 16L73 28L90 5L107 28L129 16L125 39Z" fill="'+c+'" stroke="#a88d59" stroke-width="2"/><path d="M58 34H122" stroke="#fff4c7" stroke-width="3"/>'+[70,90,110].map((x,i)=>avatarStar(x,i===1?23:31,5,o.kind==='aurora'?['#f4b4cf','#c4b8ed','#f0db9b'][i]:'#fff8d5')).join('');break;
+ }
+ return '<g data-decoration="'+o.kind+'">'+shape+'</g>';
+}
+function avatarOutfitDetails(o){
+ if(!o)return '';
+ const collar='<path d="M69 126L83 145L90 135L97 145L111 126" fill="#fff7e8" stroke="#ffffff" stroke-width="2"/>';
+ const style={collar,stripe:collar+'<path d="M49 170H131M53 155H127" stroke="#ffffff" opacity=".55" stroke-width="5"/>',dress:'<path d="M60 139Q90 158 120 139M48 174Q90 190 132 174" fill="none" stroke="#fff6e6" stroke-width="5"/>',sailor:'<path d="M66 126L90 148L114 126L121 135L90 160L59 135Z" fill="#f8f5ec" stroke="#548399" stroke-width="2"/>',jacket:collar+'<path d="M90 144V181M57 158H72V169H57ZM108 158H123V169H108Z" fill="none" stroke="#fff3d4" stroke-width="3"/>',apron:'<path d="M73 129H107L114 180H66Z" fill="#fff9ec"/><path d="M73 157H107V171H73Z" fill="none" stroke="#cda878" stroke-width="2"/>',royal:'<path d="M67 128L90 144L113 128M51 176H129" fill="none" stroke="#fce4a5" stroke-width="5"/>',kimono:'<path d="M69 125L107 160M111 125L78 157" stroke="#fff2e0" stroke-width="7"/><path d="M53 163H127" stroke="#e2a5b9" stroke-width="15"/>',aurora:'<path d="M66 130L48 179M80 137L72 183M100 137L108 183M114 130L132 179" stroke="#eebcd3" stroke-width="7" opacity=".7"/>'}[o.style];
+ return '<g data-outfit="'+o.id+'">'+style+'</g>';
+}
+function avatarAccessoryArt(id,hair='#634235'){
+ if(id==='bowblue')return avatarRibbon('#68afe8');
+ if(id==='ribbon')return avatarRibbon('#e58ba8');
+ const extra=AVATAR_EXTRA_ACCESSORIES.find(o=>o.id===id);if(extra)return avatarDecoration(extra);
+ const headwear={railcap:'<path d="M48 31Q90 2 132 31L127 46H53Z" fill="#284b77"/><path d="M53 40H127Q90 64 53 40" fill="#182f50"/><circle cx="90" cy="29" r="6" fill="#f5cf69"/>',railbag:'<path d="M62 128L113 177" stroke="#69503d" stroke-width="6"/><rect x="98" y="155" width="30" height="26" rx="5" fill="#aa7750"/>',cat:'<path d="M53 44L49 13L77 31M103 31L131 13L127 44" fill="'+hair+'" stroke="#554653" stroke-width="3"/>',bunny:'<ellipse cx="69" cy="22" rx="9" ry="22" fill="#fff0ed"/><ellipse cx="111" cy="22" rx="9" ry="22" fill="#fff0ed"/><path d="M69 9v22M111 9v22" stroke="#e8a0b0" stroke-width="6"/>',magic:'<path d="M58 36L85 1L119 36Z" fill="#7955ad"/><ellipse cx="89" cy="37" rx="43" ry="7" fill="#7955ad"/><text x="83" y="28" font-size="17">★</text>'}[id];
+ if(headwear)return headwear;
+ const icon={none:'',flower:'🌸',crown:'👑',sparkle:'✨',hat:'👒',moon:'🌙',gem:'💎'}[id]||'';
+ return icon?'<text x="90" y="36" text-anchor="middle" font-size="34">'+icon+'</text>':'';
+}
+function avatarOptionIcon(key,id){
+ if(key==='accessory')return '<svg class="avatar-option-icon" viewBox="'+(id==='railbag'?'35 115 110 75':'35 0 110 60')+'" aria-hidden="true">'+avatarAccessoryArt(id)+'</svg>';
+ if(key==='outfit'){
+ const extra=AVATAR_EXTRA_OUTFITS.find(o=>o.id===id);
+ return '<span class="avatar-option-icon" aria-hidden="true">'+(extra?.motif||{driver:'🚆',conductor:'🎫',everyday:'♡',flower:'🌼',star:'⭐',royal:'💎',rainbow:'🌈',sport:'⚽',marine:'⚓',berry:'🍓',forest:'🍀',magic:'⭐',space:'🚀',angel:'🪽'}[id])+'</span>';
+ }
+ return '';
+}
+function avatarNextUnlock(){
+ const level=mainPetLevel(),all=['outfit','accessory'].flatMap(key=>AVATAR_OPTIONS[key].map(([id,name,at=1])=>({key,id,name,at})));
+ const next=Math.min(...all.filter(o=>o.at>level).map(o=>o.at)),items=all.filter(o=>o.at===next),count=all.filter(o=>o.at<=level&&o.id!=='none').length;
+ return '<section class="avatar-unlocks" aria-label="つぎの きせかえ"><strong>つかえる きせかえ '+count+'こ</strong>'+(items.length?'<p>つぎは <b>Lv.'+next+'</b> で '+items.length+'こ！</p><div class="avatar-next-items">'+items.map(o=>'<span>'+avatarOptionIcon(o.key,o.id)+esc(o.name)+'</span>').join('')+'</div>':'<p>すべての きせかえが つかえるよ！</p>')+'</section>';
+}
+
 function avatarState(p=person()){
  if(!p.avatar||typeof p.avatar!=='object'||Array.isArray(p.avatar))p.avatar={};
  const avatarLevel=1+Math.floor((Number.isSafeInteger(p.game?.growth)&&p.game.growth>=0?p.game.growth:0)/3);
@@ -372,12 +487,10 @@ function avatarState(p=person()){
  return p.avatar;
 }
 function avatarArt(p=person()){
- const a=avatarState(p),hair={brown:'#634235',black:'#30303c',gold:'#dba947',pink:'#ca7496',blue:'#527ba7',purple:'#9573b2',silver:'#b4b9c8',red:'#aa5744'}[a.color],skin={light:'#ffdabd',warm:'#dfaa7e',deep:'#a66f50'}[a.skin],cloth={driver:'#284b77',conductor:'#457f80',everyday:'#8ac7bd',flower:'#f4a7bd',star:'#819cdd',royal:'#b396de',rainbow:'#efb1d4',sport:'#ec9960',marine:'#6bafd0',berry:'#dd718f',forest:'#78a777',magic:'#7c65b4',space:'#54668e',angel:'#e0d7f0'}[a.outfit];
+ const a=avatarState(p),hair={brown:'#634235',black:'#30303c',gold:'#dba947',pink:'#ca7496',blue:'#527ba7',purple:'#9573b2',silver:'#b4b9c8',red:'#aa5744'}[a.color],skin={light:'#ffdabd',warm:'#dfaa7e',deep:'#a66f50'}[a.skin],extraOutfit=AVATAR_EXTRA_OUTFITS.find(o=>o.id===a.outfit),cloth=extraOutfit?.color||{driver:'#284b77',conductor:'#457f80',everyday:'#8ac7bd',flower:'#f4a7bd',star:'#819cdd',royal:'#b396de',rainbow:'#efb1d4',sport:'#ec9960',marine:'#6bafd0',berry:'#dd718f',forest:'#78a777',magic:'#7c65b4',space:'#54668e',angel:'#e0d7f0'}[a.outfit];
  const back=a.hair==='pony'?'<ellipse cx="137" cy="95" rx="22" ry="48"/>':a.hair==='bun'?'<circle cx="59" cy="27" r="19"/><circle cx="121" cy="27" r="19"/>':a.hair==='wave'?'<path d="M48 59Q39 22 90 22Q141 22 132 59Q151 80 137 99Q155 124 132 147Q110 157 90 146Q65 159 43 143Q28 124 43 103Q26 82 48 59Z"/>':a.hair==='long'?'<path d="M49 67 Q47 22 90 22 Q133 22 131 67 L140 145 Q90 168 40 145Z"/>':a.hair==='twin'?'<ellipse cx="38" cy="93" rx="20" ry="44"/><ellipse cx="142" cy="93" rx="20" ry="44"/>':'';
  const eyes=a.face==='sleepy'?'<path d="M65 80q7 7 14 0 M101 80q7 7 14 0" fill="none" stroke="#443b43" stroke-width="4" stroke-linecap="round"/>':a.face==='surprise'?'<ellipse cx="72" cy="79" rx="5" ry="7"/><ellipse cx="108" cy="79" rx="5" ry="7"/>':a.face==='spark'?'<path d="M72 70l3 6 7 3-7 3-3 6-3-6-7-3 7-3Z M108 70l3 6 7 3-7 3-3 6-3-6-7-3 7-3Z"/>':a.face==='happy'?'<path d="M65 81q7-10 14 0 M101 81q7-10 14 0" fill="none" stroke="#443b43" stroke-width="4" stroke-linecap="round"/>':a.face==='wink'?'<circle cx="72" cy="79" r="4"/><path d="M102 77l10 4-10 4" fill="none" stroke="#443b43" stroke-width="3"/>':'<circle cx="72" cy="79" r="4"/><circle cx="108" cy="79" r="4"/>';
- const headwear={railcap:'<path d="M48 31Q90 2 132 31L127 46H53Z" fill="#284b77"/><path d="M53 40H127Q90 64 53 40" fill="#182f50"/><circle cx="90" cy="29" r="6" fill="#f5cf69"/>',railbag:'<path d="M62 128L113 177" stroke="#69503d" stroke-width="6"/><rect x="98" y="155" width="30" height="26" rx="5" fill="#aa7750"/>',cat:'<path d="M53 44L49 13L77 31M103 31L131 13L127 44" fill="'+hair+'" stroke="#554653" stroke-width="3"/>',bunny:'<ellipse cx="69" cy="22" rx="9" ry="22" fill="#fff0ed"/><ellipse cx="111" cy="22" rx="9" ry="22" fill="#fff0ed"/><path d="M69 9v22M111 9v22" stroke="#e8a0b0" stroke-width="6"/>',magic:'<path d="M58 36L85 1L119 36Z" fill="#7955ad"/><ellipse cx="89" cy="37" rx="43" ry="7" fill="#7955ad"/><text x="83" y="28" font-size="17">★</text>'}[a.accessory]||'';
- const accessory={railcap:'',railbag:'',none:'',ribbon:'🎀',flower:'🌸',crown:'👑',sparkle:'✨',bowblue:'🦋',cat:'',bunny:'',hat:'👒',magic:'',moon:'🌙',gem:'💎'}[a.accessory];
- return '<svg class="avatar-art" viewBox="0 0 180 210" role="img" aria-label="じぶんの アバター"><ellipse cx="90" cy="196" rx="62" ry="8" fill="#d7dfce"/><g fill="'+hair+'">'+back+'</g><path d="M69 125h42q21 12 25 57H44q4-45 25-57" fill="'+cloth+'" stroke="#ffffff" stroke-width="3"/><path d="M82 119v13q8 9 16 0v-13" fill="'+skin+'"/><ellipse cx="90" cy="78" rx="39" ry="45" fill="'+skin+'"/><path d="'+(a.hair==='crop'?'M50 63Q46 24 90 25Q134 24 130 63L117 46 105 50 91 43 75 49 63 45Z':a.hair==='short'?'M50 78Q39 20 90 25Q140 20 130 74L107 51 94 62 74 50Z':a.hair==='bob'?'M49 97V66Q46 23 90 23Q134 23 131 66V97L120 91V59Q94 68 63 54V95Z':'M50 74Q42 23 90 23Q138 23 130 74L114 53Q91 66 63 50Z')+'" fill="'+hair+'"/><g fill="#443b43">'+eyes+'</g><ellipse cx="62" cy="92" rx="7" ry="4" fill="#e99497"/><ellipse cx="118" cy="92" rx="7" ry="4" fill="#e99497"/><path d="M80 96q10 12 20 0" fill="none" stroke="#a75060" stroke-width="3" stroke-linecap="round"/><text x="90" y="166" text-anchor="middle" font-size="26">'+({driver:'🚆',conductor:'🎫',everyday:'♡',flower:'🌼',star:'⭐',royal:'💎',rainbow:'🌈',sport:'⚽',marine:'⚓',berry:'🍓',forest:'🍀',magic:'⭐',space:'🚀',angel:'🪽'}[a.outfit])+'</text><text x="90" y="36" text-anchor="middle" font-size="34">'+accessory+'</text>'+headwear+'</svg>';
+ return '<svg class="avatar-art" viewBox="0 0 180 210" role="img" aria-label="じぶんの アバター"><ellipse cx="90" cy="196" rx="62" ry="8" fill="#d7dfce"/><g fill="'+hair+'">'+back+'</g><path d="M69 125h42q21 12 25 57H44q4-45 25-57" fill="'+cloth+'" stroke="#ffffff" stroke-width="3"/>'+avatarOutfitDetails(extraOutfit)+'<path d="M82 119v13q8 9 16 0v-13" fill="'+skin+'"/><ellipse cx="90" cy="78" rx="39" ry="45" fill="'+skin+'"/><path d="'+(a.hair==='crop'?'M50 63Q46 24 90 25Q134 24 130 63L117 46 105 50 91 43 75 49 63 45Z':a.hair==='short'?'M50 78Q39 20 90 25Q140 20 130 74L107 51 94 62 74 50Z':a.hair==='bob'?'M49 97V66Q46 23 90 23Q134 23 131 66V97L120 91V59Q94 68 63 54V95Z':'M50 74Q42 23 90 23Q138 23 130 74L114 53Q91 66 63 50Z')+'" fill="'+hair+'"/><g fill="#443b43">'+eyes+'</g><ellipse cx="62" cy="92" rx="7" ry="4" fill="#e99497"/><ellipse cx="118" cy="92" rx="7" ry="4" fill="#e99497"/><path d="M80 96q10 12 20 0" fill="none" stroke="#a75060" stroke-width="3" stroke-linecap="round"/><text x="90" y="166" text-anchor="middle" font-size="26">'+(extraOutfit?.motif||{driver:'🚆',conductor:'🎫',everyday:'♡',flower:'🌼',star:'⭐',royal:'💎',rainbow:'🌈',sport:'⚽',marine:'⚓',berry:'🍓',forest:'🍀',magic:'⭐',space:'🚀',angel:'🪽'}[a.outfit])+'</text>'+avatarAccessoryArt(a.accessory,hair)+'</svg>';
 }
 function setAvatar(key,id){
  const option=AVATAR_OPTIONS[key]?.find(o=>o[0]===id);if(!option||mainPetLevel()<(option[2]||1))return;
@@ -387,7 +500,7 @@ function avatarRoom(message=''){
  const scroll=view==='avatar'?(app.querySelector('.avatar-options')?.scrollTop||0):0;
  leaveQuizScreen();view='avatar';session=null;
  const a=avatarState(),labels={hair:'かみがた',face:'おかお',color:'かみの いろ',skin:'はだの いろ',outfit:'おようふく',accessory:'かざり'};
- app.innerHTML='<section class="panel avatar-room"><button class="sub" onclick="home()">← にわへ</button><h1 class="center">じぶんの アバター</h1><div class="avatar-editor"><div class="avatar-preview">'+avatarArt()+'<strong>'+esc(person().name)+'</strong><p>にわっち レベル '+mainPetLevel()+'</p><p class="muted">にわっちが そだつと<br>きせかえが ふえるよ！<br>コインは つかわないよ。</p><p role="status">'+esc(message)+'</p></div><div class="avatar-options" tabindex="0" aria-label="きせかえを えらぶ">'+Object.entries(AVATAR_OPTIONS).map(([k,opts])=>'<fieldset class="avatar-group"><legend>'+labels[k]+'</legend><div>'+opts.map(([id,name,level=1])=>'<button class="sub" aria-pressed="'+(a[k]===id)+'" onclick="setAvatar(\''+k+'\',\''+id+'\')" '+(mainPetLevel()<level?'disabled':'')+'>'+name+(level>1?'<small>'+(mainPetLevel()<level?'🔒 にわっち Lv.'+level:'✨ つかえるよ')+'</small>':'')+'</button>').join('')+'</div></fieldset>').join('')+'</div></div></section>';
+ app.innerHTML='<section class="panel avatar-room"><button class="sub" onclick="home()">← にわへ</button><h1 class="center">じぶんの アバター</h1><div class="avatar-editor"><div class="avatar-preview">'+avatarArt()+'<strong>'+esc(person().name)+'</strong><p>にわっち レベル '+mainPetLevel()+'</p><p class="muted">にわっちが そだつと<br>きせかえが ふえるよ！<br>コインは つかわないよ。</p><p role="status">'+esc(message)+'</p></div><div class="avatar-options" tabindex="0" aria-label="きせかえを えらぶ">'+avatarNextUnlock()+['accessory','outfit','hair','face','color','skin'].map(k=>[k,AVATAR_OPTIONS[k]]).map(([k,opts])=>'<fieldset class="avatar-group"><legend>'+labels[k]+'</legend><div>'+opts.map(([id,name,level=1])=>'<button class="sub" aria-pressed="'+(a[k]===id)+'" onclick="setAvatar(\''+k+'\',\''+id+'\')" '+(mainPetLevel()<level?'disabled':'')+'>'+avatarOptionIcon(k,id)+name+(level>1?'<small>'+(mainPetLevel()<level?'🔒 Lv.'+level:'Lv.'+level+' · つかえるよ')+'</small>':'')+'</button>').join('')+'</div></fieldset>').join('')+'</div></div></section>';
  const options=app.querySelector('.avatar-options');if(options)options.scrollTop=scroll;
 }
 const avatarStyle=document.createElement('style');
@@ -624,8 +737,9 @@ const UNLOCK_LEVELS={
  pet:{flower:5,cap:15,ribbon:25,star:45,butterfly:70,crown:100},
  room:{garden:1,none:1,plant:10,pinkroom:20,sofa:35,skyroom:45,bear:55,bed:75,nightroom:100}
 };
-const AVATAR_UNLOCKS={outfit:{everyday:1,driver:5,conductor:15,sport:10,flower:20,marine:30,berry:40,forest:50,royal:60,magic:70,space:80,rainbow:90,angel:100},accessory:{none:1,railcap:5,railbag:15,bowblue:10,ribbon:20,cat:25,flower:30,bunny:40,hat:50,crown:60,magic:70,moon:80,gem:90,sparkle:100}};
-for(const [key,levels] of Object.entries(AVATAR_UNLOCKS))for(const option of AVATAR_OPTIONS[key])option[2]=levels[option[0]]||1;
+const AVATAR_UNLOCKS={outfit:{everyday:1,star:1,driver:5,conductor:15,sport:10,flower:20,marine:30,berry:40,forest:50,royal:60,magic:70,space:80,rainbow:90,angel:100},accessory:{none:1,railcap:5,railbag:15,bowblue:10,ribbon:20,cat:25,flower:30,bunny:40,hat:50,crown:60,magic:70,moon:80,gem:90,sparkle:100}};
+for(const [key,levels] of Object.entries(AVATAR_UNLOCKS))for(const option of AVATAR_OPTIONS[key])option[2]=levels[option[0]]??option[2]??1;
+for(const key of ['outfit','accessory'])AVATAR_OPTIONS[key].sort((a,b)=>(a[2]||1)-(b[2]||1));
 function requiredUnlock(action,a,b){
  const g=game();
  if(action==='railPick')return UNLOCK_LEVELS.rail[a]?.[b]??Infinity;
