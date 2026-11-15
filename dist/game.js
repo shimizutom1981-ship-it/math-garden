@@ -3,7 +3,8 @@ function enterQuizScreen(){document.body.classList.add('quiz-mode');window.scrol
 function leaveQuizScreen(){document.body.classList.remove('quiz-mode');if(quizOwnsFullscreen&&document.fullscreenElement)document.exitFullscreen?.().catch(()=>{});quizOwnsFullscreen=false}
 // Learning rewards are local to each learner. No paid or random items.
 const SHOP=[['flower','おはな','🌸','hat',15],['cap','ぼうし','🧢','hat',20],['crown','おうかん','👑','hat',40],['ribbon','リボン','🎀','bow',15],['star','おほしさま','⭐','badge',20],['butterfly','ちょうちょ','🦋','badge',25]].map(([id,name,emoji,slot,cost])=>({id,name,emoji,slot,cost}));
-function initGame(p){let g=p.game;if(!g||typeof g!=='object'||Array.isArray(g))g=p.game={};for(let k of ['coins','growth'])if(!Number.isSafeInteger(g[k])||g[k]<0)g[k]=0;if(!Array.isArray(g.owned))g.owned=[];g.owned=g.owned.filter(id=>SHOP.some(i=>i.id===id));if(!g.equipped||typeof g.equipped!=='object')g.equipped={};for(let slot of ['hat','bow','badge'])if(!SHOP.some(i=>i.id===g.equipped[slot]&&i.slot===slot&&g.owned.includes(i.id)))delete g.equipped[slot];if(!g.days||typeof g.days!=='object'||Array.isArray(g.days))g.days={};return g}
+SHOP.push(...(window.NiwatchiContent?.clothes||[]));
+function initGame(p){let g=p.game;if(!g||typeof g!=='object'||Array.isArray(g))g=p.game={};for(let k of ['coins','growth'])if(!Number.isSafeInteger(g[k])||g[k]<0)g[k]=0;if(!Array.isArray(g.owned))g.owned=[];g.owned=g.owned.filter(id=>SHOP.some(i=>i.id===id));if(!g.equipped||typeof g.equipped!=='object')g.equipped={};for(let slot of ['hat','bow','badge','hand'])if(!SHOP.some(i=>i.id===g.equipped[slot]&&i.slot===slot&&g.owned.includes(i.id)))delete g.equipped[slot];if(!g.days||typeof g.days!=='object'||Array.isArray(g.days))g.days={};return g}
 function game(){return initGame(person())}
 function todayKey(){let d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function dailyRecord(){let g=game(),k=todayKey();if(!g.days[k]||typeof g.days[k]!=='object')g.days[k]={};return g.days[k]}
@@ -17,7 +18,7 @@ function friendState(){
   let p=g.friends[f.id];if(!p||typeof p!=='object'||Array.isArray(p))p=g.friends[f.id]={growth:0,equipped:{}};
   if(!Number.isSafeInteger(p.growth)||p.growth<0)p.growth=0;
   if(!p.equipped||typeof p.equipped!=='object')p.equipped={};
-  for(const slot of ['hat','bow','badge'])if(!SHOP.some(i=>i.id===p.equipped[slot]&&i.slot===slot&&g.owned.includes(i.id)))delete p.equipped[slot];
+  for(const slot of ['hat','bow','badge','hand'])if(!SHOP.some(i=>i.id===p.equipped[slot]&&i.slot===slot&&g.owned.includes(i.id)))delete p.equipped[slot];
  }
  if(!available.some(f=>f.id===g.activeFriend))g.activeFriend='main';
  return g.activeFriend==='main'?g:g.friends[g.activeFriend];
@@ -32,6 +33,7 @@ const PET_FOODS=[
  {id:'rice',name:'おにぎり',emoji:'🍙',reaction:'もぐもぐ！ げんき いっぱい！',motion:'pet-hop'},
  {id:'cake',name:'ケーキ',emoji:'🍰',reaction:'ふわふわ！ うれしくて おどっちゃう！',motion:'pet-dance'}
 ];
+PET_FOODS.push(...(window.NiwatchiContent?.foods||[]));
 function petWish(){return '<aside class="pet-wish"><strong>🌱 にわっちから おねがい</strong><p>いっしょに おはなを そだてよう！<br>すきな ステージを 5もん やると、おはなが ひとつ さくよ。</p><div aria-label="そだてた おはな">'+ '🌷'.repeat(Math.min(12,Math.max(0,Number(person().flowers)||0)))+'</div><small>そだてた おはな：'+(Number(person().flowers)||0)+'こ · いつ あそびに きても だいじょうぶ</small></aside>'}
 function petLevelBadge(){const g=friendState(),lv=petLevel();return `<div class="pet-level-badge">${lv>=100?'🌈':'🌱'} レベル <b>${lv}</b></div><div class="pet-growth-track" role="progressbar" aria-label="つぎのレベルまでのせいちょう" aria-valuemin="0" aria-valuemax="3" aria-valuenow="${g.growth%3}"><span style="width:${g.growth%3/3*100}%"></span></div><p>レベル ${lv+1} まで、あと ${3-g.growth%3}かい ごはんを あげよう！</p>`}
 
@@ -107,6 +109,7 @@ const ROOM_ITEMS=[
  ['garden','おにわ','🌿','wall',0,'#edf5df'],['pinkroom','いちごの おへや','🍓','wall',20,'#fbe1e9'],['skyroom','そらの おへや','☁️','wall',20,'#dcedfa'],['nightroom','ほしの おへや','🌟','wall',30,'#e4ddf5'],
  ['none','かぐを しまう','📦','furniture',0,''],['sofa','ソファ','🛋️','furniture',20,''],['bed','ベッド','🛏️','furniture',25,''],['plant','おはな','🪴','furniture',10,''],['bear','ぬいぐるみ','🧸','furniture',15,'']
 ].map(([id,name,icon,slot,cost,color])=>({id,name,icon,slot,cost,color}));
+ROOM_ITEMS.push(...(window.NiwatchiContent?[...NiwatchiContent.furniture,...NiwatchiContent.gifts]:[]));
 function roomState(){
  const g=game();if(!g.room||typeof g.room!=='object'||Array.isArray(g.room))g.room={};
  const r=g.room;if(!Array.isArray(r.owned))r.owned=[];
