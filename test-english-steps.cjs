@@ -5,6 +5,21 @@ for(const [kind,bank] of Object.entries(E.banks)){
  for(const row of bank){count++;assert.equal(row.choices.length,2);assert.notEqual(row.choices[0][0],row.choices[1][0]);assert.ok(row.meaning);assert.ok(row.text.split(/\s+/).length<=10)}
 }
 for(const bank of ['place','placeSentence'])assert.ok(E.banks[bank].every(x=>!x.text.includes('next to')));
+assert.equal(count,104);
+for(const [animal,plural,icon] of [['mouse','mice','🐭'],['turtle','turtles','🐢'],['fox','foxes','🦊']]){
+ for(const [word,n] of [['one',1],['two',2],['three',3]]){
+  const row=E.banks.count.find(x=>x.id==='count:'+word+animal);
+  assert.equal(row.text,word+' '+(n===1?animal:plural));assert.equal(row.choices[0][1],icon.repeat(n));
+ }
+ for(const place of ['on','under']){
+  const row=E.banks.placeSentence.find(x=>x.id==='placeSentence:'+animal+place);
+  assert.ok(row.text.includes(place+' the table'));assert.ok(row.choices[0][1].includes(place==='on'?'y="40"':'y="85"'));
+ }
+}
+for(const kind of ['cup','book'])for(const color of ['red','blue','green','yellow']){
+ const row=E.banks.phrase.find(x=>x.id==='phrase:'+color+kind);assert.equal(row.text,'a '+color+' '+kind);
+ assert.equal(row.choices[0][0],color);assert.ok(row.choices.every(x=>x[1].includes('<svg')));
+}
 assert.ok(E.banks.beside.some(x=>x.text.includes('next to')));
 console.log('PASS '+count+' two-choice preparation items; spatial contrast introduces on/under before next to');
 const setup=fs.readFileSync('test-foundations.cjs','utf8').split("if(process.argv.includes('--inspect'))")[0];

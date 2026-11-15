@@ -6,14 +6,22 @@
   ['🐙','たこ'],['🦑','いか'],['🦀','かに'],['🐵','さる'],['🐯','とら'],['🐿️','りす'],
   ['🐷','ぶた'],['🐦','とり'],['🐟','さかな'],['🐰','うさぎ'],['🦊','きつね'],['🐑','ひつじ'],
   ['🦒','きりん'],['🐼','ぱんだ'],['🍎','りんご'],['🍌','ばなな'],['🍇','ぶどう'],['🍓','いちご'],
-  ['🍉','すいか'],['🍊','みかん'],['🍑','もも'],['🍆','なす'],['🚗','くるま'],['☂️','かさ']
+  ['🍉','すいか'],['🍊','みかん'],['🍑','もも'],['🍆','なす'],['🚗','くるま'],['☂️','かさ'],
+  ['🐘','ぞう'],['🦌','しか'],['🐍','へび'],['🐊','わに'],['🦆','あひる'],['🐤','ひよこ'],
+  ['🐬','いるか'],['🐳','くじら'],['🐝','はち'],['🐜','あり'],['🕷️','くも'],['🦋','ちょう'],
+  ['🐌','かたつむり'],['🍄','きのこ'],['🍁','もみじ'],['🌰','くり'],['🍐','なし'],
+  ['🌽','とうもろこし'],['🥕','にんじん'],['🥚','たまご']
  ];
  const katakana=[
   ['🐱','ネコ'],['🐶','イヌ'],['🐼','パンダ'],['🦒','キリン'],['🦁','ライオン'],['🐯','トラ'],
   ['🐧','ペンギン'],['🍌','バナナ'],['🍎','リンゴ'],['🍊','ミカン'],['🍋','レモン'],['🍈','メロン'],
   ['🍅','トマト'],['🍞','パン'],['🖊️','ペン'],['🚌','バス'],['📺','テレビ'],['📷','カメラ'],
   ['🎹','ピアノ'],['🎸','ギター'],['🍰','ケーキ'],['⚽','ボール'],['🎻','バイオリン'],['🪣','バケツ'],
-  ['🚕','タクシー'],['🧀','チーズ'],['🚀','ロケット'],['🍩','ドーナツ'],['🍮','プリン'],['🐨','コアラ']
+  ['🚕','タクシー'],['🧀','チーズ'],['🚀','ロケット'],['🍩','ドーナツ'],['🍮','プリン'],['🐨','コアラ'],
+  ['🐘','ゾウ'],['🐻','クマ'],['🐰','ウサギ'],['🐢','カメ'],['🐵','サル'],['🐴','ウマ'],
+  ['🐮','ウシ'],['🐷','ブタ'],['🐐','ヤギ'],['🐑','ヒツジ'],['🦍','ゴリラ'],['🐬','イルカ'],
+  ['🐳','クジラ'],['🐝','ハチ'],['🐜','アリ'],['🍆','ナス'],['🍟','ポテト'],
+  ['🎤','マイク'],['⛺','テント'],['🚚','トラック']
  ];
  const letters='あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽ';
  const toKatakana=s=>s.replace(/[ぁ-ゖ]/g,c=>String.fromCharCode(c.charCodeAt(0)+96));
@@ -56,7 +64,7 @@
   }
   return result;
  };
- const symbols=['🍎','🍓','🌼'];
+ const symbols=['🍎','🍓','🌼','🌷','🐦','🍎'];
  function counters(n,icon,removed=0){
   return '<span class="basic-counter-group">'+Array.from({length:n},(_,k)=>'<button class="object basic-counter'+(k>=n-removed?' removed':'')+'" aria-label="'+(k+1)+'こめ'+(k>=n-removed?' とるもの':'')+'" onclick="this.classList.toggle(\'counted\')">'+icon+'</button>').join('')+'</span>';
  }
@@ -65,8 +73,24 @@
   foundationMakers[course]=()=>{
    const [a,b]=lowerGradePick('basic-facts:'+course,bank),plus=op==='add',answer=plus?a+b:a-b;
    const turns=session?(session.basicForms??={}):{},turn=turns[course]||0;turns[course]=turn+1;
-   const form=turn%3,icon=symbols[form],symbol=plus?'＋':'−';
-   const text=form===0?`${a} ${symbol} ${b} ＝ ？`:plus?(form===1?`${a}こ と ${b}こ。\nあわせて いくつ？`:`${a}こ あります。\n${b}こ もらうと、ぜんぶで いくつ？`):(form===1?`${a}こ あります。\n${b}こ とると、のこりは いくつ？`:`${a}この うち ${b}こ つかったよ。\nのこりは いくつ？`);
+   // A set has only five questions. Shift the first form between completed sets
+   // so every form remains reachable even when other activities occupy a slot.
+   const offset=session?(person().practice?.sessions?.math||0):0;
+   const form=(turn+offset)%6,icon=symbols[form],symbol=plus?'＋':'−';
+   const texts=plus?[
+    `${a} ${symbol} ${b} ＝ ？`,`${a}こ と ${b}こ。\nあわせて いくつ？`,
+    `${a}こ あります。\n${b}こ もらうと、ぜんぶで いくつ？`,
+    `はなが ${a}ほん さいています。\nあと ${b}ほん さくと、ぜんぶで なんぼん？`,
+    `とりが ${a}わ います。\n${b}わ くると、ぜんぶで なんわ？`,
+    `りんごが ${a}こ あります。\n${b}こ かうと、ぜんぶで なんこ？`
+   ]:[
+    `${a} ${symbol} ${b} ＝ ？`,`${a}こ あります。\n${b}こ とると、のこりは いくつ？`,
+    `${a}この うち ${b}こ つかったよ。\nのこりは いくつ？`,
+    `はなが ${a}ほん あります。\n${b}ほん あげると、のこりは なんぼん？`,
+    `とりが ${a}わ います。\n${b}わ とんでいくと、のこりは なんわ？`,
+    `りんごが ${a}こ あります。\n${b}こ たべると、のこりは なんこ？`
+   ];
+   const text=texts[form];
    const low=plus?1:0,values=Array.from({length:max-low+1},(_,n)=>n+low);
    const choices=[answer,...values.filter(n=>n!==answer).sort((x,y)=>Math.abs(x-answer)-Math.abs(y-answer))].slice(0,3).sort(()=>Math.random()-.5);
    const diagram=plus?counters(a,icon)+'<span class="basic-plus" aria-hidden="true">＋</span>'+counters(b,icon):counters(a,icon,b);

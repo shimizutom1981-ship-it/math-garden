@@ -50,6 +50,31 @@
  }
  const greetings=[['Good morning!','おはよう','🌅','Good night!','おやすみ','🌙'],['Good night!','おやすみ','🌙','Good morning!','おはよう','🌅'],['Thank you.','ありがとう','🎁','Good morning!','おはよう','🌅'],['See you!','またね','👋','Thank you.','ありがとう','🎁']];
  greetings.forEach(([en,ja,icon,other,otherJa,otherIcon])=>add('greeting',en,en,ja,[[en,icon+'<br>'+ja,ja],[other,otherIcon+'<br>'+otherJa,otherJa]]));
+ // More examples at the same steps: two choices, one contrast, no longer sentences.
+ const moreAnimals=[['mouse','🐭','ねずみ','mice'],['turtle','🐢','かめ','turtles'],['fox','🦊','きつね','foxes']];
+ for(const a of moreAnimals){
+  add('animalSentence',a[0],'It is a '+a[0]+'.','これは '+a[2]+'です。',[a,animals[0]].map(x=>[x[0],x[1],x[2]]),'It is a ... は「これは …です」。さいごの ことばを みよう。');
+  numbers.forEach((n,i)=>add('count',n[0]+a[0],n[0]+' '+(n[1]===1?a[0]:a[3]),a[2]+n[1]+'ひき',[n,numbers[(i+1)%3]].map(x=>[x[0],a[1].repeat(x[1]),a[2]+x[1]+'ひき']),a[0]+' は「'+a[2]+'」。かずを みよう。'));
+  actions.forEach((action,i)=>add('actionSentence',a[0]+action[0],'The '+a[0]+' / is '+action[0]+'.',a[2]+'が '+action[1],[action,actions[(i+1)%3]].map(x=>[x[0],a[1]+' '+x[2],a[2]+'が '+x[1]]),'The '+a[0]+' は「'+a[2]+'」。うごきの ことばを みよう。'));
+  for(const [i,p] of places.entries()){
+   const opts=[p,places[i===0?1:0]].map(x=>[x[0],scene(a,x),a[2]+'が つくえの '+x[1]]);
+   if(i<2){
+    add('place',a[0]+p[0],p[0]+' the table','つくえの '+p[1],opts,'table は「つくえ」。どうぶつの ばしょを みよう。');
+    add('placeSentence',a[0]+p[0],'The '+a[0]+' / is / '+p[0]+' the table.',a[2]+'が つくえの '+p[1]+'に いる',opts,'The '+a[0]+' は「'+a[2]+'」。is は「いる」。ばしょを みよう。');
+   }else{
+    add('beside',a[0]+'next','The '+a[0]+' / is / next to the table.',a[2]+'が つくえの よこに いる',opts,'next to は ばしょの ことば。うえ・した・よこを くらべよう。');
+    add('beside',a[0]+'on','The '+a[0]+' / is / on the table.',a[2]+'が つくえの うえに いる',[opts[1],opts[0]],'on と next to。ばしょを くらべよう。');
+   }
+  }
+ }
+ function colorObject(kind,color){
+  const shape=kind==='cup'?'<path d="M21 17 H65 V62 Q43 72 21 62 Z"/><path d="M65 24 Q91 24 80 45 Q76 51 65 51" fill="none" stroke-width="5"/>':'<path d="M21 14 H75 V68 H21 Q14 68 14 61 V21 Q14 14 21 14 Z"/><path d="M23 15 V59 M18 59 H75 M18 64 H75" fill="none" stroke="#fff" stroke-width="3"/>';
+  return '<svg viewBox="0 0 100 85" width="100" height="85" role="img" aria-label="'+color[2]+'の '+(kind==='cup'?'コップ':'ほん')+'"><g fill="'+color[1]+'" stroke="#52616a" stroke-width="2">'+shape+'</g></svg>';
+ }
+ for(const [kind,ja] of [['cup','コップ'],['book','ほん']])colors.forEach((c,i)=>{
+  const opts=[c,colors[(i+1)%colors.length]].map(x=>[x[0],colorObject(kind,x),x[2]+'の '+ja]);
+  add('phrase',c[0]+kind,'a '+c[0]+' '+kind,c[2]+'の '+ja,opts,'a '+kind+' は「'+ja+'」だよ。いろの ことばを みつけよう。');
+ });
  function planFor(item){
   if(item.skill==='enDescribe')return item.index<4?'color':'number';
   if(item.skill==='gardenEnglishPhrase')return 'color';
