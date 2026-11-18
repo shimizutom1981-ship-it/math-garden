@@ -346,6 +346,13 @@ function englishNext(){
  e.choices=[e.word,...others].map(w=>({w,r:Math.random()})).sort((a,b)=>a.r-b.r).map(x=>x.w);
  const reading=data.noListening===true||!data.sound||!('speechSynthesis'in window);
  e.readingAlternative=reading;
+ const colorRequest=item.skill==='enDescribe' && item.index<4;
+ if(e.n===1 && (item.skill==='enWords'||colorRequest) && typeof GardenWorkshop!=='undefined'){
+  const card=item.skill==='enWords' && e.level>=8;
+  const title=card?'ことばに あう えカードを わたそう。':e.level<4?'たのまれた どうぶつの カードを わたそう。':'たのまれた ものを わたそう。';
+  GardenWorkshop.errand(e,card?'the '+e.word[0]+' card':e.word[0],title);
+  return;
+ }
  if(reading){
   e.curriculumKind=e.word[3]?'読んで返事をえらぶ':'読んで絵をえらぶ';
   app.innerHTML=`<section class="quiz"><div class="quiztop"><button class="sub" onclick="home()">⌂ にわへ</button><strong>🔤 えいご</strong><span>${e.n+1} / 5</span></div><div class="board"><div class="eyebrow">リスニングなし · 読む練習</div><h1 class="question">${e.word[3]?'ことばを よんで、へんじを えらぼう！':'えいごを よんで、えを えらぼう！'}</h1><p class="english-context">${esc(e.word[3]||e.word[0])}</p><div class="choices">${e.choices.map((w,i)=>`<button class="choice" style="font-size:54px;min-height:85px" aria-label="${esc(e.word[3]?w[0]:w[2])}" onclick="englishAnswer(${i},this)">${w[1]}${e.word[3]?`<span class="quiet-reply">${esc(w[0])}</span>`:''}</button>`).join('')}</div><div id="englishFeedback" class="feedback" role="status"></div><div class="actions"><button class="sub" id="englishHint" onclick="englishHint()">💡 ヒント</button><button class="primary hidden" id="englishNext" onclick="englishAdvance()">つぎへ →</button></div></div></section>`;

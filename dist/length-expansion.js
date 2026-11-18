@@ -2,12 +2,14 @@
 (function(root){
  'use strict';
  const banks=[[],[],[]];
- function ruler(start,end){
+ function ruler(start,end,pencil=false){
   const x=n=>28+n*30;
-  return `<svg viewBox="0 0 340 115" width="340" height="115" style="display:block;max-width:100%;margin:auto" role="img" aria-label="1めもりが1センチの ものさし。ぼうの はじめは${start}、おわりは${end}の めもり。">`+
+  return `<svg viewBox="0 0 340 115" width="340" height="115" style="display:block;max-width:100%;margin:auto" role="img" aria-label="1めもりが1センチの ものさし。${pencil?'えんぴつ':'ぼう'}の はじめは${start}、おわりは${end}の めもり。">`+
    `<rect x="18" y="55" width="300" height="50" rx="3" fill="#fff5d8" stroke="#586655"/>`+
    Array.from({length:10},(_,n)=>`<line x1="${x(n)}" y1="55" x2="${x(n)}" y2="73" stroke="#263b31"/><text x="${x(n)}" y="95" text-anchor="middle" font-size="15" fill="#263b31">${n}</text>`).join('')+
-   `<line x1="${x(start)}" y1="30" x2="${x(end)}" y2="30" stroke="#277057" stroke-width="10"/>`+
+   (pencil?`<path d="M${x(start)} 24 H${x(end)-10} L${x(end)} 30 L${x(end)-10} 36 H${x(start)} Z" fill="#f4bc55" stroke="#6b5031" stroke-width="2"/><path d="M${x(end)-4} 27 L${x(end)} 30 L${x(end)-4} 33Z" fill="#49382b"/>`:
+    `<line x1="${x(start)}" y1="30" x2="${x(end)}" y2="30" stroke="#277057" stroke-width="10"/>`)+
+   (pencil?Array.from({length:end-start},(_,i)=>`<rect class="gw-unit" style="--beat:${i}" x="${x(start+i)+2}" y="57" width="26" height="12" rx="3"/>`).join(''):'')+
    [start,end].map(n=>`<line x1="${x(n)}" y1="17" x2="${x(n)}" y2="55" stroke="#263b31" stroke-width="2" stroke-dasharray="3 2"/>`).join('')+'</svg>';
  }
  function add(stage,text,answer,choices,hint,meta,visualHTML=''){

@@ -52,7 +52,9 @@ test('visible spelling keeps audio replay, first-answer recording and quiet-mode
  assert.equal(run("person().englishWordPractice.banks['animals:listening'].words[englishSession.word[0]].correct"),1);
  assert.equal(run('practiceItem.form'),'listening');
  run('englishAdvance();setNoListening(true)');assert.equal(run('englishSession.n'),1);assert.equal(run('englishSession.readingAlternative'),true);
- assert.ok(app.innerHTML.includes('<p class="english-context">'+run('englishSession.word[0]')+'</p>'));assert.ok(!app.innerHTML.includes('onclick="englishSay'));
+ const target=run('englishSession.word[0]'),request=target.charAt(0).toUpperCase()+target.slice(1)+', please!';
+ assert.ok(app.innerHTML.includes('<span lang="en">'+request+'</span>'));assert.equal(run('englishSession.audioTarget'),request);
+ const quietCount=spoken.length;run('englishSay(englishSession.audioTarget)');assert.equal(spoken.length,quietCount);
 });
 test('a bank is used before repeating across five-question sets; no duplicate in each set',()=>{
  fresh();run('data.noListening=true;data.sound=false');at(0);let cycle=[];
