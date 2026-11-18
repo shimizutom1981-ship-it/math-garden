@@ -107,7 +107,8 @@
   e.englishStep=null;
   const step=stageFor(person(),item,e.n);
   if(!step)return build(e,item);
-  const bank=banks[step.kind],unused=bank.filter(x=>!e.seen.includes('english-step:'+x.id)),pool=unused.length?unused:bank;
+  const errand=e.n===1&&step.kind==='phrase'&&typeof GardenWorkshop!=='undefined';
+  const bank=errand?GardenWorkshop.appleRequests:banks[step.kind],unused=bank.filter(x=>!e.seen.includes('english-step:'+x.id)),pool=unused.length?unused:bank;
   const row=pool[rand(0,pool.length-1)];e.seen.push('english-step:'+row.id);
   e.thinking=null;e.englishStep={...step,id:row.id};item.englishStep=e.englishStep;
   const target=row.text.replaceAll(' / ',' ');
@@ -115,6 +116,7 @@
   e.extensionQuestion={id:'english-step:'+row.id};e.answerAudio=row.text.replaceAll(' / ',' ');
   e.readingAlternative=data.noListening||!data.sound||!('speechSynthesis'in window);
   e.curriculumKind='すこしずつ えいご · '+labels[step.kind];
+  if(errand){GardenWorkshop.errand(e,target,'たのまれた りんごを わたそう。');return true}
   const text=row.text.split(' / ').map(x=>'<span lang="en">'+esc(x)+'</span>').join('<span aria-hidden="true"> / </span>');
   renderCurriculumEnglish(e,'あう えを えらぼう。',text,e.curriculumKind,e.answerAudio);
   document.querySelector('.board')?.classList.add('english-step-board');
