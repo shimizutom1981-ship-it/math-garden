@@ -26,6 +26,28 @@ act('furniture','pressedflower');assert.equal(run('roomState().owned.includes("p
 const token=life.token(),before=run('game().coins');act('dress','basket');life.act('dress','basket',token);assert.equal(run('game().coins'),before-15);assert.equal(run('game().equipped.hand'),'basket');
 run("selectFriend('momo')");act('dress','wand');assert.equal(run('game().friends.momo.equipped.hand'),'wand');assert.equal(run('game().equipped.hand'),'basket');
 console.log('PASS five placements, theme grouping, frozen photos, held-item separation, stale-click guard');
+
+// The home and avatar portraits show Niwatchi, even while dressing a different friend.
+run('home();avatarRoom();petRoom()');act('tab','dress');run('save()');
+const beforePortraits=json('data.profiles'),storedPortraits=storage.get('kazunoniwa-v1');
+function assertPortrait(friend,item){
+ const portrait=run('gardenPortrait(FRIENDS.find(f=>f.id==="'+friend+'"))');
+ const companion=run('petArt(FRIENDS.find(f=>f.id==="'+friend+'"),false)');
+ assert.match(app.innerHTML,/class="garden-portrait\b/);
+ assert.ok(app.innerHTML.includes(companion),'expected the equipped '+friend+' on this screen');
+ assert.ok(portrait.includes(run('avatarArt()')));
+ assert.ok(portrait.includes(companion));
+ assert.ok(companion.includes(item));
+ assert.doesNotMatch(portrait,/<button\b|\son(?:click|keydown)=|role="button"|tabindex="0"/i);
+ assert.equal(run('game().activeFriend'),'momo');
+}
+run('home()');assertPortrait('main','🧺');
+run('avatarRoom()');assertPortrait('main','🧺');
+run('petRoom()');act('tab','dress');assertPortrait('momo','🪄');
+assert.deepEqual(json('data.profiles'),beforePortraits);
+assert.equal(storage.get('kazunoniwa-v1'),storedPortraits);
+console.log('PASS paired portraits use the correct child and equipped friend, preserve saves, and contain no nested controls');
+
 for(const recipe of life.recipes){fresh(recipe.level-1);act('tab','food');for(const i of recipe.pair)act('ingredient',i);act('cook');assert.equal(life.state().dish,null);fresh(recipe.level);act('tab','food');for(const i of recipe.pair)act('ingredient',i);const before=run('game().coins'),growth=run('friendState().growth');act('cook');assert.equal(life.state().dish,recipe.id);assert.equal(run('game().coins'),before-10);assert.equal(run('friendState().growth'),growth);const dish=life.state().dish;run('home();petRoom()');assert.equal(life.state().dish,dish);act('serve',dish);act('serve',dish);assert.equal(run('friendState().growth'),growth+1);assert.equal(run('game().coins'),before-10);assert.equal(life.state().album.filter(m=>m.id==='cook-'+recipe.id).length,1);}
 fresh();act('ingredient','bread');act('ingredient','milk');act('cook');assert.equal(run('game().coins'),1000);assert.equal(life.state().dish,null);
 console.log('PASS every recipe, level gate, charged once, meal persistence, growth once, invalid pair');

@@ -10,7 +10,7 @@ function todayKey(){let d=new Date();return d.getFullYear()+'-'+String(d.getMont
 function dailyRecord(){let g=game(),k=todayKey();if(!g.days[k]||typeof g.days[k]!=='object')g.days[k]={};return g.days[k]}
 const FRIENDS=[{id:'main',name:'にわっち',icon:'🌱',at:1},{id:'momo',name:'ももっち',icon:'🌸',at:10},{id:'sora',name:'そらっち',icon:'☁️',at:25},{id:'hoshi',name:'ほしっち',icon:'⭐',at:50}];
 function mainPetLevel(){return 1+Math.floor(game().growth/3)}
-function friendState(){
+function friendState(id){
  const g=game();
  if(!g.friends||typeof g.friends!=='object'||Array.isArray(g.friends))g.friends={};
  const available=FRIENDS.filter(f=>mainPetLevel()>=f.at);
@@ -21,7 +21,8 @@ function friendState(){
   for(const slot of ['hat','bow','badge','hand'])if(!SHOP.some(i=>i.id===p.equipped[slot]&&i.slot===slot&&g.owned.includes(i.id)))delete p.equipped[slot];
  }
  if(!available.some(f=>f.id===g.activeFriend))g.activeFriend='main';
- return g.activeFriend==='main'?g:g.friends[g.activeFriend];
+ const target=id??g.activeFriend;
+ return target==='main'?g:g.friends[target];
 }
 function selectedFriend(){friendState();return FRIENDS.find(f=>f.id===game().activeFriend)}
 function petLevel(){return 1+Math.floor(friendState().growth/3)}
@@ -37,17 +38,40 @@ PET_FOODS.push(...(window.NiwatchiContent?.foods||[]));
 function petWish(){return '<aside class="pet-wish"><strong>🌱 にわっちから おねがい</strong><p>いっしょに おはなを そだてよう！<br>すきな ステージを 5もん やると、おはなが ひとつ さくよ。</p><div aria-label="そだてた おはな">'+ '🌷'.repeat(Math.min(12,Math.max(0,Number(person().flowers)||0)))+'</div><small>そだてた おはな：'+(Number(person().flowers)||0)+'こ · いつ あそびに きても だいじょうぶ</small></aside>'}
 function petLevelBadge(){const g=friendState(),lv=petLevel();return `<div class="pet-level-badge">${lv>=100?'🌈':'🌱'} レベル <b>${lv}</b></div><div class="pet-growth-track" role="progressbar" aria-label="つぎのレベルまでのせいちょう" aria-valuemin="0" aria-valuemax="3" aria-valuenow="${g.growth%3}"><span style="width:${g.growth%3/3*100}%"></span></div><p>レベル ${lv+1} まで、あと ${3-g.growth%3}かい ごはんを あげよう！</p>`}
 
-function friendSilhouette(){
- const id=selectedFriend().id;if(id==='main')return '';
+let rainbowSilhouetteNumber=0;
+function friendSilhouette(id,level){
+ if(id==='main')return '';
  const paths={
  momo:'M90 30C114 0 149 19 143 48C183 42 197 80 167 100C197 125 170 164 139 150C131 185 90 192 76 157C42 180 10 151 29 122C-5 110 0 67 36 64C23 31 61 5 90 30Z',
  sora:'M39 144C-8 142-8 84 29 78C25 39 69 21 92 50C119 17 164 42 156 77C197 74 203 139 160 145Z',
  hoshi:'M90 8Q96 8 100 20L119 61L164 65Q180 66 167 80L134 112L143 158Q147 174 132 167L90 144L48 167Q33 174 37 158L46 112L13 80Q0 66 16 65L61 61L80 20Q84 8 90 8Z'
  };
- return '<svg class="friend-silhouette" viewBox="0 0 180 180" aria-hidden="true"><defs><linearGradient id="friend-rainbow-'+id+'" x2="1" y2="1"><stop stop-color="#ffd3e5"/><stop offset=".35" stop-color="#ffe5a3"/><stop offset=".65" stop-color="#bfe9ff"/><stop offset="1" stop-color="#e1caff"/></linearGradient></defs><path d="'+paths[id]+'" fill="'+(petLevel()>=100?'url(#friend-rainbow-'+id+')':'var(--pet-fill)')+'" stroke="'+({momo:'#c883a5',sora:'#83aabc',hoshi:'#d7ac52'}[id])+'" stroke-width="4" stroke-linejoin="round"/></svg>';
+ const gradient=level>=100?'friend-rainbow-'+ ++rainbowSilhouetteNumber:'';
+ const defs=gradient?`<defs><linearGradient id="${gradient}" x2="1" y2="1"><stop stop-color="#ffd3e5"/><stop offset=".35" stop-color="#ffe5a3"/><stop offset=".65" stop-color="#bfe9ff"/><stop offset="1" stop-color="#e1caff"/></linearGradient></defs>`:'';
+ const outline={momo:'#c883a5',sora:'#83aabc',hoshi:'#d7ac52'}[id];
+ return `<svg class="friend-silhouette" viewBox="0 0 180 180" aria-hidden="true">${defs}<path d="${paths[id]}" fill="${gradient?'url(#'+gradient+')':'var(--pet-fill)'}" stroke="${outline}" stroke-width="4" stroke-linejoin="round"/></svg>`;
 }
 
-function petArt(){let g=friendState(),growth=Math.min(12,g.growth),season=Math.floor((petLevel()-1)/5),e=slot=>SHOP.find(i=>i.id===g.equipped[slot]);return `<div class="pet-scene ${petLevel()>=100?'pet-rainbow':''}" role="button" tabindex="0" onclick="petNiwatchi()" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();petNiwatchi()}" aria-label="レベル${petLevel()}の ${selectedFriend().name}を なでる"><div class="pet-body friend-${selectedFriend().id}" style="--scale:${.83+growth*.022};--pet-fill:${petLevel()>=100?'linear-gradient(135deg,#ffd3e5,#ffe5a3,#d8f3bc,#bfe9ff,#e1caff)':`hsl(${(42+growth+season*29+FRIENDS.findIndex(f=>f.id===game().activeFriend)*65)%360},78%,${72-growth*.4}%)`};background:var(--pet-fill);">${friendSilhouette()}<span class="pet-leaf" style="transform:scale(${.75+growth*.035})">${selectedFriend().id!=='main'?selectedFriend().icon:growth>=12?['🌸','🌻','🌺','🌼','🌷'][season%5]:growth>=9?'🌷':growth>=6?'🌿':'🌱'}</span><span class="pet-face">• •</span><span class="pet-mouth"></span><span class="cheek left"></span><span class="cheek right"></span>${e('hat')?`<span class="pet-hat">${e('hat').emoji}</span>`:''}${e('bow')?`<span class="pet-bow">${e('bow').emoji}</span>`:''}</div>${e('badge')?`<span class="pet-badge">${e('badge').emoji}</span>`:''}</div>`}
+function petCostume(equipped){
+ const parts={hat:'',bow:'',badge:'',hand:'',necklace:''};
+ for(const slot of ['hat','bow','badge']){
+  const item=SHOP.find(i=>i.id===equipped[slot]);
+  if(item)parts[slot]=`<span class="pet-${slot}">${item.emoji}</span>`;
+ }
+ return parts;
+}
+function petArt(friend=selectedFriend(),interactive=true){
+ const state=friendState(friend.id);
+ if(!state)return '';
+ const level=1+Math.floor(state.growth/3),growth=Math.min(12,state.growth),season=Math.floor((level-1)/5);
+ const hue=(42+growth+season*29+FRIENDS.indexOf(friend)*65)%360;
+ const fill=level>=100?'linear-gradient(135deg,#ffd3e5,#ffe5a3,#d8f3bc,#bfe9ff,#e1caff)':`hsl(${hue},78%,${72-growth*.4}%)`;
+ const leaf=friend.id!=='main'?friend.icon:growth>=12?['🌸','🌻','🌺','🌼','🌷'][season%5]:growth>=9?'🌷':growth>=6?'🌿':'🌱';
+ const costume=petCostume(state.equipped);
+ const controls=interactive?`role="button" tabindex="0" onclick="petNiwatchi()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();petNiwatchi()}"`:'role="img"';
+ const label=`レベル${level}の ${friend.name}${interactive?'を なでる':''}`;
+ return `<span class="pet-scene ${level>=100?'pet-rainbow':''}" ${controls} aria-label="${label}"><span class="pet-body friend-${friend.id}" style="--scale:${.83+growth*.022};--pet-fill:${fill};background:var(--pet-fill);">${friendSilhouette(friend.id,level)}<span class="pet-leaf" style="transform:scale(${.75+growth*.035})">${leaf}</span>${costume.hand}${costume.necklace}<span class="pet-face">• •</span><span class="pet-mouth"></span><span class="cheek left"></span><span class="cheek right"></span>${costume.hat}${costume.bow}</span>${costume.badge}</span>`;
+}
 let musicCtx=null,musicTimer=null,musicNodes=[],musicGeneration=0;
 if(typeof data.music!=='boolean')data.music=true;
 function refreshMusic(){let status=data.noListening?'♫ おんがく OFF（リスニングなし）':!data.music?'♫ おんがく OFF':musicCtx?.state==='running'?'♫ おんがく ON':'♫ おんがくを はじめる';document.querySelectorAll('[data-music]').forEach(b=>{b.textContent=status;b.disabled=data.noListening===true})}
@@ -72,7 +96,7 @@ home=function(){
  leaveQuizScreen();view='home';session=null;refresh();
  let g=game();
  app.innerHTML=`<section class="panel center subject-home">
- <div class="home-avatar-heading"><button class="sub avatar-home" onclick="avatarRoom()" aria-label="じぶんの アバターを きせかえる">${avatarArt()}<span>きせかえ</span></button><div><p class="eyebrow">${esc(person().name)} の にわ</p><h1>きょうは なにを する？</h1></div></div>
+ <div class="home-avatar-heading"><div class="home-portrait-card">${gardenPortrait()}<button class="avatar-home" onclick="avatarRoom()" aria-label="じぶんの アバターを きせかえる">きせかえ</button></div><div><p class="eyebrow">${esc(person().name)} の にわ</p><h1>きょうは なにを する？</h1></div></div>
  <p>算数 → 国語 → 英語。ひとつずつ、5もんで おはなが さくよ。</p>
  <button class="primary" onclick="startGuidedPractice()">${guidedStartLabel()}</button>
  <p class="muted" ${freeSubjectChoice()?'':'hidden'}>すきな教科・分野から はじめられます。</p>
@@ -93,14 +117,10 @@ finish=function(){if(!session||session.rewarded)return;session.rewarded=true;lea
 
 
 function petCompany(){
- const g=game();friendState();const active=g.activeFriend;
- const others=FRIENDS.filter(f=>f.id!==active&&mainPetLevel()>=f.at);
- let html='';
- try{html=others.map(f=>{
-  g.activeFriend=f.id;
-  const art=petArt().replace(/ role="button"| tabindex="0"| onclick="[^"]*"| onkeydown="[^"]*"/g,'');
-  return '<button class="pet-companion" onclick="selectFriend(\''+f.id+'\')" aria-label="'+f.name+'を えらぶ">'+art+'<span>'+f.name+'</span></button>';
- }).join('')}finally{g.activeFriend=active}
+ const active=selectedFriend().id,level=mainPetLevel();
+ const html=FRIENDS.filter(f=>f.id!==active&&level>=f.at).map(f=>
+  `<button class="pet-companion" onclick="selectFriend('${f.id}')" aria-label="${f.name}を えらぶ">${petArt(f,false)}<span class="pet-companion-name">${f.name}</span></button>`
+ ).join('');
  return '<div class="pet-company" aria-label="なかまに なった ともだち">'+html+'</div>';
 }
 
@@ -200,7 +220,7 @@ function feedPet(id='apple'){
 }
 const feedingStyle=document.createElement('style');
 feedingStyle.textContent=`
-.pet-room-cast{display:flex;align-items:center;justify-content:center;width:100%;min-height:240px;gap:4px}.pet-room-cast>.pet-scene{flex:1;min-width:0}.pet-company{display:flex;flex-direction:column;gap:3px;flex-shrink:0}.pet-companion{position:relative;background:#ffffffa8;border:1px solid #d6e2c6;border-radius:14px;width:84px;height:77px;padding:0;overflow:hidden}.pet-room-preview .pet-companion .pet-scene{position:absolute;left:0;top:0;width:84px;height:59px;min-height:0;margin:0;background:transparent;overflow:visible;pointer-events:none}.pet-companion .pet-body{scale:.3}.pet-companion .pet-badge{font-size:15px;bottom:0;right:5px}.pet-companion>span{position:absolute;bottom:3px;left:0;right:0;font-size:11px}.pet-companion:focus-visible{outline:3px solid #739654}.pet-room-preview .pet-company:empty{display:none}@media(max-width:650px){.pet-room-preview .pet-room-cast{position:absolute;left:0;top:0;width:45%;height:205px;min-height:0;display:flex;flex-direction:column;gap:0}.pet-room-preview .pet-room-cast>.pet-scene{position:relative;left:auto;top:auto;width:100%;height:135px;min-height:135px;flex:none;margin:0}.pet-room-cast>.pet-scene>.pet-body{scale:.7}.pet-company{flex-direction:row;justify-content:center;width:100%;gap:1px}.pet-companion{width:32%;max-width:65px;height:65px}.pet-room-preview .pet-companion .pet-scene{width:100%;height:48px;min-height:0;top:0}.pet-companion .pet-body{scale:.23}.pet-companion>span{font-size:9px}}
+.pet-room-cast{display:flex;align-items:center;justify-content:center;width:100%;min-height:240px;gap:4px}.pet-room-cast>.pet-scene{flex:1;min-width:0}.pet-company{display:flex;flex-direction:column;gap:3px;flex-shrink:0}.pet-companion{position:relative;background:#ffffffa8;border:1px solid #d6e2c6;border-radius:14px;width:84px;height:77px;padding:0;overflow:hidden}.pet-room-preview .pet-companion .pet-scene{position:absolute;left:0;top:0;width:84px;height:59px;min-height:0;margin:0;background:transparent;overflow:visible;pointer-events:none}.pet-companion .pet-body{scale:.3}.pet-companion .pet-badge{font-size:15px;bottom:0;right:5px}.pet-companion>.pet-companion-name{position:absolute;bottom:3px;left:0;right:0;font-size:11px}.pet-companion:focus-visible{outline:3px solid #739654}.pet-room-preview .pet-company:empty{display:none}@media(max-width:650px){.pet-room-preview .pet-room-cast{position:absolute;left:0;top:0;width:45%;height:205px;min-height:0;display:flex;flex-direction:column;gap:0}.pet-room-preview .pet-room-cast>.pet-scene{position:relative;left:auto;top:auto;width:100%;height:135px;min-height:135px;flex:none;margin:0}.pet-room-cast>.pet-scene>.pet-body{scale:.7}.pet-company{flex-direction:row;justify-content:center;width:100%;gap:1px}.pet-companion{width:32%;max-width:65px;height:65px}.pet-room-preview .pet-companion .pet-scene{width:100%;height:48px;min-height:0;top:0}.pet-companion .pet-body{scale:.23}.pet-companion>.pet-companion-name{font-size:9px}}
 
 .friend-silhouette{position:absolute;inset:-20px;width:180px;height:180px;overflow:visible;z-index:-1;filter:drop-shadow(0 7px 0 #9cac7d33)}.pet-body.friend-momo,.pet-body.friend-sora,.pet-body.friend-hoshi{isolation:isolate;border-color:transparent;background:transparent!important;box-shadow:none}.friend-momo .pet-leaf,.friend-sora .pet-leaf,.friend-hoshi .pet-leaf{display:none}.friend-sora .friend-silhouette{inset:-10px -28px;width:196px;height:170px}.friend-hoshi .friend-silhouette{inset:-25px;width:190px;height:190px}.friend-hoshi .pet-hat{top:-42px}.pet-rainbow .friend-silhouette{filter:drop-shadow(0 0 12px #e9c3ee)}
 
@@ -227,14 +247,14 @@ feedingStyle.textContent+=`
 .pet-room-preview .pet-company .pet-companion{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;width:100px;height:105px;padding:0;position:relative;overflow:hidden}
 .pet-room-preview .pet-company .pet-companion .pet-scene{position:relative;inset:auto;display:block;flex:none;width:100%;height:80px;min-height:80px;max-width:none;margin:0;border-radius:0;overflow:hidden}
 .pet-room-preview .pet-company .pet-companion .pet-body{position:absolute;left:50%;top:52%;margin:0;scale:1;transform:translate(-50%,-50%) scale(calc(var(--scale,1)*.43));transform-origin:center}
-.pet-room-preview .pet-company .pet-companion>span{position:static;display:block;flex:none;width:100%;height:22px;line-height:22px;font-size:12px;text-align:center;white-space:nowrap}
+.pet-room-preview .pet-company .pet-companion>.pet-companion-name{position:static;display:block;flex:none;width:100%;height:22px;line-height:22px;font-size:12px;text-align:center;white-space:nowrap}
 .pet-room-preview .pet-company .pet-companion .pet-badge{right:7px;bottom:4px;font-size:17px}
 .pet-room-preview .pet-company .pet-companion .pet-scene:before{display:none}
 @media(max-width:650px){
  .pet-room-preview .pet-company .pet-companion{width:32%;max-width:65px;height:65px}
  .pet-room-preview .pet-company .pet-companion .pet-scene{height:47px;min-height:47px}
  .pet-room-preview .pet-company .pet-companion .pet-body{transform:translate(-50%,-50%) scale(calc(var(--scale,1)*.26))}
- .pet-room-preview .pet-company .pet-companion>span{height:18px;line-height:18px;font-size:9px}
+ .pet-room-preview .pet-company .pet-companion>.pet-companion-name{height:18px;line-height:18px;font-size:9px}
  .pet-room-preview .pet-company .pet-companion .pet-badge{font-size:12px;right:2px;bottom:1px}
 }
 `;
@@ -424,63 +444,215 @@ const AVATAR_EXTRA_ACCESSORIES=[
 ].map(([id,name,level,kind,color])=>({id,name,level,kind,color}));
 AVATAR_OPTIONS.outfit.push(...AVATAR_EXTRA_OUTFITS.map(o=>[o.id,o.name,o.level]));
 AVATAR_OPTIONS.accessory.push(...AVATAR_EXTRA_ACCESSORIES.map(o=>[o.id,o.name,o.level]));
-function avatarRibbon(color){
- // A tied knot, two fabric loops and two cut tails, independent of emoji fonts.
- return '<g data-decoration="ribbon" stroke="#426285" stroke-width="1.6" stroke-linejoin="round"><path d="M85 28L76 52L87 47L92 51L94 29M95 28L104 52L94 47L89 51L86 29" fill="'+color+'"/><path d="M86 23Q63 4 61 15L61 34Q63 44 86 30M94 23Q117 4 119 15L119 34Q117 44 94 30" fill="'+color+'"/><path d="M65 19L83 25M65 32L83 28M115 19L97 25M115 32L97 28" stroke="#fff" opacity=".55"/><rect x="84" y="19" width="12" height="16" rx="4" fill="'+color+'"/></g>';
+function avatarStar(x, y, size, color) {
+ return `<path transform="translate(${x} ${y}) scale(${size/10})" d="M0-10 3-3 10-2 5 3 6 10 0 6-6 10-5 3-10-2-3-3Z" fill="${color}" stroke="#917453" stroke-width="1" stroke-linejoin="round"/>`;
 }
-function avatarStar(x,y,size,color){return '<path transform="translate('+x+' '+y+') scale('+size/10+')" d="M0-10L3-3 10-3 5 2 6 9 0 5-6 9-5 2-10-3-3-3Z" fill="'+color+'" stroke="#957c59" stroke-width=".7"/>'}
-function avatarDecoration(o){
+
+function avatarJewel(x, y, size, color) {
+ return `<g transform="translate(${x} ${y}) scale(${size/10})" stroke-linejoin="round">
+  <path d="M-11-3-6-9H6L11-3 0 10Z" fill="${color}" stroke="#676582" stroke-width="1.5"/>
+  <path d="M-11-3 0 10-4-3ZM4-3 0 10 11-3Z" fill="#3c567c" opacity=".28"/>
+  <path d="M-4-3 0-8 4-3ZM-9-3-5-7H-2L-5-3Z" fill="#fff" opacity=".85"/>
+ </g>`;
+}
+
+function avatarRibbon(color, id) {
+ // The two notched tails hang below the loops. The accessory sits against the hair at the temple.
+ const accent = {
+  railbow:'<path d="M-27-8-22-7M15-10 22-13M4 16 10 16" fill="none" stroke="#ffe29b" stroke-width="3"/>',
+  sailorbow:'<path d="M-27-7Q-16-5-9 1M11-5Q15-10 22-11M8 16 14 13" fill="none" stroke="#fff9e9" stroke-width="2.7"/>',
+  berrybow:'<g fill="#ffe4aa"><ellipse cx="-20" cy="1" rx="1.2" ry="2"/><ellipse cx="-13" cy="-4" rx="1.2" ry="2"/><ellipse cx="15" cy="-2" rx="1.2" ry="2"/><ellipse cx="20" cy="-9" rx="1.2" ry="2"/></g>',
+  witchbow:avatarStar(17,-7,4,'#ffd878'),
+  jewelbow:avatarJewel(0,0,6,'#a3dff3')
+ }[id] || '';
+ return `<g data-decoration="ribbon" transform="translate(112 36) rotate(10)" stroke="#514758" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round">
+  <path d="M-4 0Q-10 12-19 21L-12 20-11 26Q-2 18 3 4M1 3Q10 12 13 27L16 21 23 22Q20 8 6-2Z" fill="${color}"/>
+  <path d="M-4 1Q-8 11-16 21M4 2Q14 9 18 20" fill="none" stroke="#364564" stroke-opacity=".35" stroke-width="2.6"/>
+  <path d="M-2-4C-10-7-18-15-26-13Q-32-10-30 5Q-29 15-19 12L-2 4ZM3-4Q13-16 22-17Q29-16 30-2Q31 9 23 10Q12 8 3 4Z" fill="${color}"/>
+  <path d="M-28 6Q-25 12-16 8L-3 2Q-17 4-24 3ZM5 1Q16-4 25-5Q30 4 23 6Q14 5 5 1Z" fill="#344866" opacity=".28" stroke="none"/>
+  <path d="M-26-8Q-18-9-10-3M13-8Q18-13 22-13" fill="none" stroke="#fff" stroke-opacity=".78" stroke-width="2.4"/>
+  <path d="M-4-6Q0-8 4-6L6 3Q4 8-3 7L-6 1Z" fill="${color}"/><path d="M-2-4 0 2" fill="none" stroke="#fff" stroke-opacity=".7"/>
+  ${accent}
+ </g>`;
+}
+
+function avatarFlower(x, y, radius, color, center, petals = 5) {
+ const petal = Array.from({length:petals}, (_,i) =>
+  `<ellipse cy="-6.8" rx="${petals > 5 ? 3.3 : 5.4}" ry="7.6" transform="rotate(${i*360/petals})"/>`).join('');
+ return `<g transform="translate(${x} ${y}) scale(${radius/14.4})" fill="${color}" stroke="#926b66" stroke-width="1">
+  ${petal}<circle r="4.7" fill="${center}"/><circle cx="-1.4" cy="-1.5" r="1.3" fill="#fff7d5" stroke="none"/>
+ </g>`;
+}
+
+function avatarHeadband(color) {
+ const arc='M48 63C48 8 130 1 132 62';
+ return `<path d="${arc}" fill="none" stroke="#68594e" stroke-width="7" stroke-linecap="round"/><path d="${arc}" fill="none" stroke="${color}" stroke-width="4.5" stroke-linecap="round"/>`;
+}
+
+function avatarDecoration(o) {
  const c=o.color;
- const band='<path d="M51 48Q54 6 90 13Q126 6 129 48" fill="none" stroke="'+c+'" stroke-width="7"/>';
- let shape='';
- switch(o.kind){
- case 'bow':return avatarRibbon(c);
- case 'leaf':shape='<path d="M108 35Q91 9 116 12Q129 10 132 9Q134 36 108 35" fill="'+c+'" stroke="#50814c" stroke-width="2"/><path d="M106 39L126 18" stroke="#50814c" stroke-width="2"/>';break;
- case 'heart':shape='<path d="M120 40L104 25C94 7 115 5 120 17C127 5 145 12 135 26Z" fill="'+c+'" stroke="#bb6084" stroke-width="2"/>';break;
- case 'star':shape=avatarStar(121,25,14,c);break;
- case 'flowers':case 'sunflower':{
- const xs=o.kind==='flowers'?[65,90,115]:[120];
- shape=(o.kind==='flowers'?band:'')+xs.map(x=>'<g transform="translate('+x+' 23)">'+Array.from({length:o.kind==='flowers'?5:8},(_,i)=>'<ellipse cy="-9" rx="5" ry="9" transform="rotate('+i*360/(o.kind==='flowers'?5:8)+')" fill="'+c+'" stroke="#b48b68" stroke-width=".7"/>').join('')+'<circle r="6" fill="'+(o.kind==='sunflower'?'#927052':'#ffde7b')+'"/></g>').join('');break;
+ let shape;
+ switch(o.kind) {
+ case 'bow': return avatarRibbon(c, o.id);
+ case 'leaf':
+  shape=`<path d="M104 43Q108 34 119 28M104 43 126 37" fill="none" stroke="#a07a52" stroke-width="4"/><path d="M108 37Q100 11 131 15Q130 36 108 37Z" fill="${c}" stroke="#48794d" stroke-width="2"/><path d="M109 36 126 20M116 29V23M120 25 125 25" fill="none" stroke="#edf3c8" stroke-width="2"/>`;break;
+ case 'heart':
+  shape=`<path d="m107 43 24-10" stroke="#ae854c" stroke-width="5"/><path d="M119 40Q96 29 100 18Q105 7 116 17Q124 5 133 12Q144 20 119 40Z" fill="${c}" stroke="#a85672" stroke-width="2"/><path d="M104 21Q104 16 109 16" fill="none" stroke="#ffebdd" stroke-width="3.2"/>`;break;
+ case 'star':
+  shape='<path d="m101 43 28-8" stroke="#927b63" stroke-width="5"/>'+avatarStar(120,28,16,c)+'<path d="m119 18-2 7-6 2" fill="none" stroke="#fff6bd" stroke-width="2"/>';break;
+ case 'flowers':
+  shape=avatarHeadband('#90ae80');
+  if(o.id==='festivalflower') {
+   shape+='<path d="M124 31q6 16 9 24m-14-24q2 17 4 24" fill="none" stroke="#bf895e" stroke-width="2"/><circle cx="133" cy="55" r="3" fill="#eecc8c"/><circle cx="123" cy="55" r="3" fill="#eecc8c"/>'+avatarFlower(125,32,12,'#e9b8cd','#f6d576')+avatarFlower(114,24,15,c,'#f3ce79');
+  } else {
+   shape+=avatarFlower(64,32,11,c,'#f3ce79')+avatarFlower(88,21,12,'#fff4da','#eab657')+avatarFlower(114,27,11,c,'#f3ce79');
+  }
+  break;
+ case 'sunflower':
+  shape='<path d="M110 43q-13-1-14-12 13 0 16 8m9-2q10 0 14-10-12-1-16 7" fill="#83a565" stroke="#678052"/>'
+   +avatarFlower(118,29,19,c,'#835538',10);break;
+ case 'paw':
+  shape=`<g fill="${c}" stroke="#815f52" stroke-width="1.8" transform="rotate(-12 120 29)"><path d="M117 25Q121 20 125 25L132 34Q134 42 125 39Q121 37 117 39Q107 42 109 34Z"/><ellipse cx="107" cy="22" rx="4" ry="6"/><ellipse cx="116" cy="15" rx="4" ry="6"/><ellipse cx="126" cy="15" rx="4" ry="6"/><ellipse cx="135" cy="22" rx="4" ry="6"/></g>`;break;
+ case 'shell':
+  shape=`<path d="M114 41Q88 23 100 17Q100 9 110 12Q117 2 123 10Q135 5 134 16Q147 19 124 40Z" fill="${c}" stroke="#527d85" stroke-width="2"/><path d="M116 36 103 20M118 35 113 15M121 35 122 13M123 36 132 20" fill="none" stroke="#eaffeb" stroke-width="2"/><path d="M112 39Q119 36 126 39L124 43H114Z" fill="#e2ede2" stroke="#527d85"/>`;break;
+ case 'chef':
+  shape=`<path d="M59 30C38 26 44 6 62 9Q71-2 84 7Q103-4 113 9Q136 3 137 19Q136 28 124 31L121 45Q90 40 61 46Z" fill="${c}" stroke="#a39489" stroke-width="2.4"/><path d="M60 32Q91 26 124 31M69 13q-4 5-2 9m45-9q6 3 5 9" fill="none" stroke="#dbd0b9" stroke-width="2.7"/>`;break;
+ case 'drop':
+  shape=`<path d="m104 42 25-7" stroke="#968273" stroke-width="4"/><path d="M120 8Q94 36 115 43Q133 49 136 32Q137 23 120 8Z" fill="${c}" stroke="#537eaa" stroke-width="2"/><path d="M114 22Q106 34 115 37" fill="none" stroke="#edfcff" stroke-width="3"/>`;break;
+ case 'laurel':
+  shape=avatarHeadband('#b3c682')+[[54,44,-42],[62,32,-32],[74,23,-17],[103,22,17],[115,30,32],[126,43,42]].map(([x,y,angle])=>
+   `<g transform="translate(${x} ${y}) rotate(${angle})"><path d="M0 9Q-12-2-4-14Q6-10 0 9Z" fill="${c}" stroke="#55774d" stroke-width="1.5"/><path d="M0 6-3-7" stroke="#cee8a8"/></g>`).join('');break;
+ case 'pearls':
+  shape=avatarHeadband('#e2d4c3')+[[51,48],[58,36],[71,26],[87,21],[103,22],[117,29],[127,40]].map(([x,y])=>
+   `<g transform="translate(${x} ${y})"><circle r="6.5" fill="${c}" stroke="#a69a96" stroke-width="1.5"/><circle cx="-2" cy="-2" r="2.1" fill="#fff"/></g>`).join('');break;
+ case 'planet':
+  shape=`<circle cx="119" cy="28" r="15" fill="${c}" stroke="#76659d" stroke-width="2"/><path d="M113 19q5-4 10-2" fill="none" stroke="#e9d5f2" stroke-width="3"/><path d="M130 20q13-7 13-3c3 6-33 25-45 24q-8-1 6-12" fill="none" stroke="#936c52" stroke-width="5"/><path d="M130 20q13-7 13-3c3 6-33 25-45 24q-8-1 6-12" fill="none" stroke="#f4d790" stroke-width="2.5"/>`;break;
+ case 'snow':
+  shape=avatarHeadband(c)+[[65,32,9],[90,20,12],[115,29,9]].map(([x,y,r])=>`<g transform="translate(${x} ${y}) scale(${r/11})" fill="none" stroke="#678ea3" stroke-width="2.7">${[0,60,120].map(angle=>`<path transform="rotate(${angle})" d="M0-11V11M-4-7 0-4 4-7M-4 7 0 4 4 7"/>`).join('')}<circle r="2" fill="#f6fbff"/></g>`).join('');break;
+ case 'tiara':
+  shape=`<path d="M53 40Q48 20 64 25Q74 35 79 23Q90-4 100 23Q106 35 116 25Q132 17 127 40Q90 32 53 40Z" fill="none" stroke="#79748f" stroke-width="4.5"/><path d="M53 40Q48 20 64 25Q74 35 79 23Q90-4 100 23Q106 35 116 25Q132 17 127 40Q90 32 53 40Z" fill="none" stroke="${c}" stroke-width="2.6"/>`+avatarJewel(90,23,7,'#d5bcf0');break;
+ case 'aurora':
+  shape=`<path d="M54 44 51 15 70 30 83 8 94 25 114 5 111 27 132 17 125 43Q91 36 54 44Z" fill="${c}" stroke="#688d9c" stroke-width="2"/><path d="m54 20 15 12-8 7Zm30-8-7 21 12-6Zm26 0-13 17 9-1Z" fill="#c4b8ed"/><path d="M57 39Q92 31 123 38" fill="none" stroke="#f8e1b5" stroke-width="3"/>`+avatarJewel(93,34,5,'#dfb7e4');break;
+ case 'royal':
+  shape=`<path d="M54 40 50 16 72 28 90 5 107 28 130 16 125 40Q90 32 54 40Z" fill="${c}" stroke="#9c794c" stroke-width="2"/><path d="M58 35Q90 29 123 35" fill="none" stroke="#fff1c1" stroke-width="2.8"/>`+avatarFlower(90,25,8,'#fff0c6','#cf925b')+avatarJewel(65,32,3,'#b5d8a9')+avatarJewel(115,32,3,'#b5d8a9');break;
  }
- case 'paw':shape='<g fill="'+c+'" stroke="#906b58"><ellipse cx="120" cy="29" rx="11" ry="9"/><ellipse cx="107" cy="17" rx="4" ry="6"/><ellipse cx="118" cy="12" rx="4" ry="6"/><ellipse cx="130" cy="16" rx="4" ry="6"/></g>';break;
- case 'shell':shape='<path d="M112 40Q87 20 103 15Q106 4 117 11Q128 1 132 14Q148 19 124 40Z" fill="'+c+'" stroke="#5a9eaa" stroke-width="2"/><path d="M117 36L106 17M119 35L118 14M122 35L130 17" fill="none" stroke="#fff" stroke-width="2"/>';break;
- case 'chef':shape='<path d="M58 29C36 14 63 0 76 10C79-2 103-2 106 10C126-1 145 19 123 30V45H58Z" fill="'+c+'" stroke="#bba88d" stroke-width="2"/><path d="M60 35H121" stroke="#e0cba7" stroke-width="3"/>';break;
- case 'drop':shape='<path d="M120 7Q94 35 120 42Q146 35 120 7Z" fill="'+c+'" stroke="#5b91bc" stroke-width="2"/><path d="M113 25Q106 34 117 36" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>';break;
- case 'laurel':shape=band+[56,68,80,100,112,124].map((x,i)=>'<ellipse cx="'+x+'" cy="'+(30-Math.sin(i/5*Math.PI)*17)+'" rx="6" ry="13" transform="rotate('+(x<90?-42:42)+' '+x+' '+(30-Math.sin(i/5*Math.PI)*17)+')" fill="'+c+'" stroke="#538357"/>').join('');break;
- case 'pearls':shape=band+[54,65,77,90,103,115,126].map((x,i)=>'<circle cx="'+x+'" cy="'+(35-Math.sin(i/6*Math.PI)*22)+'" r="6" fill="'+c+'" stroke="#b5a9a0"/>').join('');break;
- case 'planet':shape='<circle cx="119" cy="24" r="15" fill="'+c+'" stroke="#76659d" stroke-width="2"/><ellipse cx="119" cy="24" rx="25" ry="6" transform="rotate(-25 119 24)" fill="none" stroke="#eac677" stroke-width="4"/>';break;
- case 'snow':shape=band+[65,90,115].map(x=>'<g transform="translate('+x+' 19)" stroke="#689cae" stroke-width="2.5">'+[0,60,120].map(r=>'<path transform="rotate('+r+')" d="M0-11V11M-4-7L0-3 4-7M-4 7L0 3 4 7"/>').join('')+'</g>').join('');break;
- case 'tiara':case 'aurora':case 'royal':shape='<path d="M55 39L51 16L73 28L90 5L107 28L129 16L125 39Z" fill="'+c+'" stroke="#a88d59" stroke-width="2"/><path d="M58 34H122" stroke="#fff4c7" stroke-width="3"/>'+[70,90,110].map((x,i)=>avatarStar(x,i===1?23:31,5,o.kind==='aurora'?['#f4b4cf','#c4b8ed','#f0db9b'][i]:'#fff8d5')).join('');break;
- }
- return '<g data-decoration="'+o.kind+'">'+shape+'</g>';
+ return `<g data-decoration="${o.kind}" stroke-linejoin="round" stroke-linecap="round">${shape}</g>`;
 }
-function avatarOutfitDetails(o){
- if(!o)return '';
- const collar='<path d="M69 126L83 145L90 135L97 145L111 126" fill="#fff7e8" stroke="#ffffff" stroke-width="2"/>';
- const style={collar,stripe:collar+'<path d="M49 170H131M53 155H127" stroke="#ffffff" opacity=".55" stroke-width="5"/>',dress:'<path d="M60 139Q90 158 120 139M48 174Q90 190 132 174" fill="none" stroke="#fff6e6" stroke-width="5"/>',sailor:'<path d="M66 126L90 148L114 126L121 135L90 160L59 135Z" fill="#f8f5ec" stroke="#548399" stroke-width="2"/>',jacket:collar+'<path d="M90 144V181M57 158H72V169H57ZM108 158H123V169H108Z" fill="none" stroke="#fff3d4" stroke-width="3"/>',apron:'<path d="M73 129H107L114 180H66Z" fill="#fff9ec"/><path d="M73 157H107V171H73Z" fill="none" stroke="#cda878" stroke-width="2"/>',royal:'<path d="M67 128L90 144L113 128M51 176H129" fill="none" stroke="#fce4a5" stroke-width="5"/>',kimono:'<path d="M69 125L107 160M111 125L78 157" stroke="#fff2e0" stroke-width="7"/><path d="M53 163H127" stroke="#e2a5b9" stroke-width="15"/>',aurora:'<path d="M66 130L48 179M80 137L72 183M100 137L108 183M114 130L132 179" stroke="#eebcd3" stroke-width="7" opacity=".7"/>'}[o.style];
- return '<g data-outfit="'+o.id+'">'+style+'</g>';
+const AVATAR_BASE_OUTFITS={
+ everyday:['#80b9a9','overalls'], driver:['#284b77','uniform'], conductor:['#478184','uniform'],
+ flower:['#e9a8b7','dress'], star:['#809bcd','stripe'], royal:['#ae97d2','royal'],
+ rainbow:['#e9adc8','aurora'], sport:['#e79b64','stripe'], marine:['#78afc6','sailor'],
+ berry:['#d38394','dress'], forest:['#86a578','jacket'], magic:['#8f7ab6','royal'],
+ space:['#788ca9','jacket'], angel:['#d3cbe9','dress']
+};
+const AVATAR_OUTFIT_TRIMS={
+ collar:'<path d="M77 122q-6 9 5 13l8-7 8 7q11-4 5-13l-13 3Z" fill="#fff2d9"/>',
+ stripe:'<path d="M67 142h46m-47 8h48" stroke="#fff4d7" stroke-width="4"/><path d="M74 122q16 15 32 0" stroke="#fff0d0" stroke-width="3" fill="none"/>',
+ dress:'<path d="M75 122q2 11 15 12 13-1 15-12l-15 4Z" fill="#fff5e2"/><path d="M67 149q23 4 46 0" fill="none" stroke="#fff0d9" stroke-width="3"/><path d="m75 154-5 13m35-13 5 13" fill="none" stroke="#714d64" opacity=".25" stroke-width="1.6"/>',
+ sailor:'<path d="M72 122l18 13 18-13 5 6-23 16-23-16Z" fill="#fff6df"/><path d="m73 128 17 12 17-12" fill="none" stroke="#577f95" stroke-width="1.7"/><path d="m87 138 5-1 4 10-6 6-4-5Z" fill="#bc7476"/>',
+ jacket:'<path d="m77 122 13 7-10 10-6-10Zm26 0-13 7 10 10 6-10Z" fill="#fff1cb"/><path d="M90 132v37m-21-21h12v7q-7 5-12 0Zm30 0h12v7q-6 5-12 0Z" fill="none" stroke="#faf1d4" stroke-width="2"/>',
+ uniform:'<path d="m76 122 14 6 14-6-3 12-11 7-12-7Z" fill="#fff1d5"/><path d="m88 127 4 0 2 9-4 5-4-5Z" fill="#c87d69"/><path d="m72 125 13 17-7-1-9-12m39-4-13 17 7-1 9-12" fill="#fff" opacity=".23"/><path d="M104 145h8" stroke="#f7ce78" stroke-width="3"/><g fill="#f7ce78"><circle cx="87" cy="151" r="1.8"/><circle cx="94" cy="151" r="1.8"/><circle cx="87" cy="161" r="1.8"/><circle cx="94" cy="161" r="1.8"/></g>',
+ apron:'<path d="m76 122 5 1 2 12h14l2-12 5-1-1 13 9 36q-22 6-44 0l9-36Z" fill="#fff5df"/><path d="M81 150h18v7q-9 8-18 0Z" fill="#e7c9a6" stroke="#ba967d" stroke-width="1.4"/>',
+ overalls:'<path d="m73 122 6 0 2 15h18l2-15h6l-2 22 7 24q-22 6-44 0l7-24Z" fill="#568e80"/><path d="M82 145h16v8q-8 7-16 0Z" fill="#82b5a0" stroke="#427568" stroke-width="1.4"/><path d="m79 165 1-5m20 5-1-5" stroke="#a3c8b0" stroke-width="1.5"/><g fill="#f7da9d"><circle cx="78" cy="138" r="2.4"/><circle cx="102" cy="138" r="2.4"/></g>',
+ royal:'<path d="m73 123 17 9 17-9-2 7-15 12-15-12Z" fill="#f8dfa1"/><path d="m88 135 3-2 3 3-3 4Z" fill="#bd879a"/><path d="M66 168q24 7 48 0" fill="none" stroke="#fbe4ad" stroke-width="3"/>',
+ kimono:'<path d="m74 123 28 27m5-27-29 29" fill="none" stroke="#fcf0d1" stroke-width="5"/><path d="M67 150q23 4 46 0v10q-23 4-46 0Z" fill="#d5899e"/><path d="M68 155q22 4 44 0" stroke="#f4ce9e" fill="none" stroke-width="2"/>',
+ aurora:'<path d="M74 123q16 10 32 0l-4 9q-12 7-24 0Z" fill="#fff4db"/><path d="m76 153-7 15m15-16-3 19m15-19 3 19m5-18 7 15" fill="none" stroke-width="5" stroke="#f7dbca"/><path d="m81 154-5 16m23-16 5 16" fill="none" stroke-width="4" stroke="#ade0cb"/>'
+};
+function avatarOutfitDetails(style,id){
+ let embroidery='';
+ if(['sprout','forest','gardenroyal'].includes(id))embroidery='<g transform="translate(90 155)"><path d="M0 7V0q-7 0-8-7Q0-7 0 0q2-8 9-7Q8-1 1 1" fill="#476f59" stroke="#f9e9bd" stroke-width="1.4"/></g>';
+ if(['flower','flowerdress','sunflower','berrydress','berry'].includes(id))embroidery='<g transform="translate(91 160)" fill="#fff3dc"><circle cy="-3" r="3.4"/><circle cx="3" cy="-1" r="3.4"/><circle cx="2" cy="3" r="3.4"/><circle cx="-2" cy="3" r="3.4"/><circle cx="-3" cy="-1" r="3.4"/><circle r="2.3" fill="#d89b58"/></g>';
+ if(['star','magic','wizardrobe','moonpilot','space','jeweldress','snowdress'].includes(id))embroidery='<path d="m91 151 2 5 5 2-5 2-2 5-2-5-5-2 5-2Z" fill="#fff1b7"/>';
+ if(id==='heart')embroidery='<path d="M90 165q-13-8-7-12 4-3 7 2 4-5 7-2 6 5-7 12Z" fill="#b96781"/>';
+ return AVATAR_OUTFIT_TRIMS[style]+embroidery;
 }
-function avatarAccessoryArt(id,hair='#634235'){
- if(id==='bowblue')return avatarRibbon('#68afe8');
- if(id==='ribbon')return avatarRibbon('#e58ba8');
- const extra=AVATAR_EXTRA_ACCESSORIES.find(o=>o.id===id);if(extra)return avatarDecoration(extra);
- const headwear={railcap:'<path d="M48 31Q90 2 132 31L127 46H53Z" fill="#284b77"/><path d="M53 40H127Q90 64 53 40" fill="#182f50"/><circle cx="90" cy="29" r="6" fill="#f5cf69"/>',railbag:'<path d="M62 128L113 177" stroke="#69503d" stroke-width="6"/><rect x="98" y="155" width="30" height="26" rx="5" fill="#aa7750"/>',cat:'<path d="M53 44L49 13L77 31M103 31L131 13L127 44" fill="'+hair+'" stroke="#554653" stroke-width="3"/>',bunny:'<ellipse cx="69" cy="22" rx="9" ry="22" fill="#fff0ed"/><ellipse cx="111" cy="22" rx="9" ry="22" fill="#fff0ed"/><path d="M69 9v22M111 9v22" stroke="#e8a0b0" stroke-width="6"/>',magic:'<path d="M58 36L85 1L119 36Z" fill="#7955ad"/><ellipse cx="89" cy="37" rx="43" ry="7" fill="#7955ad"/><text x="83" y="28" font-size="17">★</text>'}[id];
- if(headwear)return headwear;
- const icon={none:'',flower:'🌸',crown:'👑',sparkle:'✨',hat:'👒',moon:'🌙',gem:'💎'}[id]||'';
- return icon?'<text x="90" y="36" text-anchor="middle" font-size="34">'+icon+'</text>':'';
-}
-function avatarOptionIcon(key,id){
- if(key==='accessory')return '<svg class="avatar-option-icon" viewBox="'+(id==='railbag'?'35 115 110 75':'35 0 110 60')+'" aria-hidden="true">'+avatarAccessoryArt(id)+'</svg>';
- if(key==='outfit'){
+function avatarGarment(id){
  const extra=AVATAR_EXTRA_OUTFITS.find(o=>o.id===id);
- return '<span class="avatar-option-icon" aria-hidden="true">'+(extra?.motif||{driver:'🚆',conductor:'🎫',everyday:'♡',flower:'🌼',star:'⭐',royal:'💎',rainbow:'🌈',sport:'⚽',marine:'⚓',berry:'🍓',forest:'🍀',magic:'⭐',space:'🚀',angel:'🪽'}[id])+'</span>';
- }
- return '';
+ const [color,style]=extra?[extra.color,extra.style]:AVATAR_BASE_OUTFITS[id];
+ const flared=['dress','royal','aurora','kimono'].includes(style);
+ const hem=flared?'M75 121q15 6 30 0 4 10 5 19l13 31q-33 12-66 0l13-31q1-9 5-19Z':'M75 121q15 6 30 0l7 18 4 30q-26 8-52 0l4-30Z';
+ return `<g data-outfit="${id}" stroke-linejoin="round" stroke-linecap="round">
+ <path d="M74 122q-12 1-17 13l-7 13 13 7 14-23Zm32 0q12 1 17 13l7 13-13 7-14-23Z" fill="${color}" stroke="#635952" stroke-width="1.8"/>
+ <path d="m53 146 12 6m50 0 12-6" fill="none" stroke="#fff3da" stroke-width="3"/>
+ <path d="${hem}" fill="${color}" stroke="#635952" stroke-width="1.9"/>
+ <path d="M67 167q23 6 46 0" fill="none" stroke="#574c4c" stroke-opacity=".18" stroke-width="2"/>
+ ${avatarOutfitDetails(style,id)}</g>`;
 }
-function avatarNextUnlock(){
+function avatarAccessoryArt(id, hair = '#634235') {
+ if(id==='none')return '';
+ if(id==='bowblue')return avatarRibbon('#68afe8',id);
+ if(id==='ribbon')return avatarRibbon('#e58ba8',id);
+ const extra=AVATAR_EXTRA_ACCESSORIES.find(o=>o.id===id);
+ if(extra)return avatarDecoration(extra);
+
+ let art;
+ switch(id) {
+ case 'railcap':
+  art='<path d="M48 33Q48 18 60 16L80 9Q90 4 101 10L123 15Q137 18 132 34L124 40H57Z" fill="#436386" stroke="#35455e" stroke-width="2.3"/><path d="M51 30Q90 19 130 30L127 38Q90 29 54 39Z" fill="#253c5a"/><path d="M55 36Q90 27 126 36Q114 51 92 48Q75 44 55 41Z" fill="#283d53" stroke="#273347" stroke-width="2"/><path d="M54 33Q90 23 128 33" fill="none" stroke="#f0c876" stroke-width="2"/><path d="M85 18 90 15 95 18 94 24 90 27 86 24Z" fill="#f9d786" stroke="#a67c42"/>';break;
+ case 'railbag':
+  art='<path d="M65 125Q85 148 115 165" fill="none" stroke="#614b43" stroke-width="7"/><path d="M65 125Q85 148 115 165" fill="none" stroke="#b98860" stroke-width="3.5"/><g transform="rotate(-7 121 170)"><path d="M108 158v-3q8-10 17-1v4" fill="none" stroke="#805b49" stroke-width="3.5"/><rect x="100" y="156" width="34" height="27" rx="5" fill="#aa7853" stroke="#715143" stroke-width="2"/><path d="M100 158q16-4 34 0v7q-16 8-34 0Z" fill="#c99967" stroke="#795747" stroke-width="1.7"/><rect x="115" y="163" width="6" height="8" rx="1.4" fill="#f8d582" stroke="#866b47"/><path d="M104 177q13 3 25 0" fill="none" stroke="#ebc794" stroke-width="1.5" stroke-dasharray="2 3"/></g>';break;
+ case 'cat':
+  art=avatarHeadband('#876a7c')+`<path d="M51 43Q45 27 50 7Q64 14 76 29M103 29Q117 13 130 7Q136 28 127 43" fill="${hair}" stroke="#564951" stroke-width="2.6"/><path d="M54 33Q52 25 54 17L66 29ZM114 28 126 16Q129 27 125 33Z" fill="#e8a5a3"/>`;break;
+ case 'bunny':
+  art=avatarHeadband('#ebc0c1')+'<path d="M61 34C45 22 45 4 53 3Q66 2 76 27ZM104 26C106 8 116 0 123 3Q138 10 117 34Z" fill="#fff2e8" stroke="#967f84" stroke-width="2.2"/><path d="M55 10Q56 20 67 29M121 10Q116 14 111 27" fill="none" stroke="#eaa8b7" stroke-width="4.8"/>';break;
+ case 'magic':
+  art='<path d="M56 37Q71 25 79 12Q88-2 101 4L110 9 100 12Q104 23 119 35Z" fill="#8b78ae" stroke="#5a547d" stroke-width="2.5"/><path d="M68 30Q88 35 109 26L117 34Q91 43 61 35Z" fill="#ecc47c"/><path d="M46 34Q67 37 90 32Q111 25 135 31Q141 35 123 41Q99 48 75 45Q48 44 45 38Z" fill="#796795" stroke="#564e72" stroke-width="2"/>'
+   +avatarStar(90,18,5,'#f9db91');break;
+ case 'hat':
+  art='<path d="M57 37Q59 9 77 8Q89 13 104 8Q122 9 125 36Z" fill="#ebc584" stroke="#a67e57" stroke-width="2.4"/><path d="M57 29Q88 36 124 27L126 36Q91 47 56 38Z" fill="#bf7e78"/><path d="M39 36Q54 37 71 35Q103 29 136 31Q148 32 139 39Q121 49 86 48Q50 49 38 42Q34 40 39 36Z" fill="#edce91" stroke="#a67e57" stroke-width="2.4"/><path d="M43 40Q72 46 108 41M66 17q11-3 17 0" fill="none" stroke="#fff1bc" stroke-width="2.5"/>'
+   +avatarFlower(119,31,7,'#f6e1b3','#b17f55');break;
+ case 'flower':
+  art='<path d="M110 41q-12-2-14-12 12-1 18 8m5-8q3-12 15-14-1 13-11 17" fill="#85ad7c" stroke="#627d57" stroke-width="1.6"/>'+avatarFlower(118,30,16,'#e9a2b7','#f9d077');break;
+ case 'moon':
+  art='<path d="M125 11C110 10 99 22 103 34C109 51 129 49 137 35C126 39 115 34 115 25Q116 16 125 11Z" fill="#f6d17c" stroke="#a57b4d" stroke-width="2.2"/><path d="M106 31q1 8 8 10" fill="none" stroke="#fff0b3" stroke-width="2.2"/>'
+   +avatarStar(132,22,6,'#fff0aa');break;
+ case 'gem':
+  art='<path d="m103 43 30-10" fill="none" stroke="#9a7e70" stroke-width="4"/>'+avatarJewel(119,29,16,'#86cbe4');break;
+ case 'crown':
+  art='<path d="m54 18 19 10L90 7l17 21 19-12-6 25q-30-5-60 0Z" fill="#eabc62" stroke="#9b744c" stroke-width="2.5"/><g fill="#fff0ac" stroke="#a78353"><circle cx="54" cy="17" r="3.2"/><circle cx="90" cy="7" r="3.2"/><circle cx="126" cy="16" r="3.2"/></g><path d="M62 36q28-5 56 0" fill="none" stroke="#fff0bf" stroke-width="2.5"/>'
+   +avatarJewel(90,28,6,'#d9899c');break;
+ case 'sparkle':
+  art='<g fill="#f4cd77" stroke="#a7805c" stroke-width="1.6"><path d="M121 12q2 12 13 15-11 3-13 16-2-13-14-16 12-3 14-15Z"/><path d="M103 18q1 6 7 8-6 2-7 8-1-6-7-8 6-2 7-8Z" fill="#ebbfce"/><path d="M136 31q1 5 6 6-5 2-6 7-1-5-6-7 5-1 6-6Z" fill="#e3d8f1"/></g>';break;
+ default: return '';
+ }
+ return `<g data-decoration="${id}" stroke-linejoin="round" stroke-linecap="round">${art}</g>`;
+}
+
+function avatarOptionIcon(key, id, a = avatarState()) {
+ let frame, art;
+ const hair=AVATAR_HAIR_COLORS[a.color], skin=AVATAR_SKIN_COLORS[a.skin];
+ switch(key) {
+ case 'accessory': {
+  const kind=AVATAR_EXTRA_ACCESSORIES.find(o=>o.id===id)?.kind || id;
+  const smallPins=['leaf','heart','star','sunflower','paw','shell','drop','planet','flower','moon','gem','sparkle'];
+  frame=smallPins.includes(kind)?'90 3 58 52':'32 -3 116 69';
+  if(['ribbon','bowblue','bow'].includes(kind))frame='74 11 78 59';
+  if(id==='railbag')frame='58 119 82 71';
+  art=avatarAccessoryArt(id,hair);
+  if(id==='none'){
+   frame='0 0 70 50';
+   art='<circle cx="35" cy="25" r="15" fill="#faf6e9" stroke="#abac91" stroke-width="1.8" stroke-dasharray="3 3"/><path d="M28 25H42" stroke="#7c826c" stroke-width="2.5" stroke-linecap="round"/>';
+  }
+  break;
+ }
+ case 'outfit': frame='44 115 92 68';art=avatarGarment(id);break;
+ case 'hair': frame='13 5 154 144';art=avatarHead(id,a.face,hair,skin);break;
+ case 'face': frame='42 48 96 81';art=avatarHead(a.hair,id,hair,skin);break;
+ case 'color':
+  frame='0 0 66 46';
+  art=`<path d="M14 31C14 12 33 7 53 8Q44 13 44 21Q43 36 21 39L25 31Q21 33 14 33Z" fill="${AVATAR_HAIR_COLORS[id]}" stroke="#64534f" stroke-width="1.7"/><path d="M21 29Q26 17 41 13" fill="none" stroke="#fff" opacity=".4" stroke-width="2" stroke-linecap="round"/>`;break;
+ case 'skin':
+  frame='0 0 66 46';
+  art=`<circle cx="33" cy="23" r="15.5" fill="${AVATAR_SKIN_COLORS[id]}" stroke="#956d58" stroke-width="1.5"/>`;break;
+ default:return '';
+ }
+ return `<svg class="avatar-option-icon" viewBox="${frame}" aria-hidden="true" focusable="false">${art}</svg>`;
+}
+function avatarNextUnlock(a){
  const level=mainPetLevel(),all=['outfit','accessory'].flatMap(key=>AVATAR_OPTIONS[key].map(([id,name,at=1])=>({key,id,name,at})));
  const next=Math.min(...all.filter(o=>o.at>level).map(o=>o.at)),items=all.filter(o=>o.at===next),count=all.filter(o=>o.at<=level&&o.id!=='none').length;
- return '<section class="avatar-unlocks" aria-label="つぎの きせかえ"><strong>つかえる きせかえ '+count+'こ</strong>'+(items.length?'<p>つぎは <b>Lv.'+next+'</b> で '+items.length+'こ！</p><div class="avatar-next-items">'+items.map(o=>'<span>'+avatarOptionIcon(o.key,o.id)+esc(o.name)+'</span>').join('')+'</div>':'<p>すべての きせかえが つかえるよ！</p>')+'</section>';
+ if(!items.length)return '<p class="avatar-unlocks">すべての きせかえが つかえるよ！</p>';
+ return `<details class="avatar-unlocks"><summary>つぎは <b>Lv.${next}</b> で きせかえが ${items.length}こ ふえるよ</summary><p>いま つかえる きせかえは ${count}こ。コインは つかわないよ。</p><div class="avatar-next-items">${items.map(o=>'<span>'+avatarOptionIcon(o.key,o.id,a)+esc(o.name)+'</span>').join('')}</div></details>`;
 }
 
 function avatarState(p=person()){
@@ -489,45 +661,122 @@ function avatarState(p=person()){
  for(const [k,opts] of Object.entries(AVATAR_OPTIONS))if(!opts.some(o=>o[0]===p.avatar[k]&&(o[2]||1)<=avatarLevel))p.avatar[k]=k==='outfit'?'everyday':k==='accessory'?'none':opts[0][0];
  return p.avatar;
 }
-function avatarArt(p=person()){
- const a=avatarState(p),hair={brown:'#634235',black:'#30303c',gold:'#dba947',pink:'#ca7496',blue:'#527ba7',purple:'#9573b2',silver:'#b4b9c8',red:'#aa5744'}[a.color],skin={light:'#ffdabd',warm:'#dfaa7e',deep:'#a66f50'}[a.skin],extraOutfit=AVATAR_EXTRA_OUTFITS.find(o=>o.id===a.outfit),cloth=extraOutfit?.color||{driver:'#284b77',conductor:'#457f80',everyday:'#8ac7bd',flower:'#f4a7bd',star:'#819cdd',royal:'#b396de',rainbow:'#efb1d4',sport:'#ec9960',marine:'#6bafd0',berry:'#dd718f',forest:'#78a777',magic:'#7c65b4',space:'#54668e',angel:'#e0d7f0'}[a.outfit];
- const back=a.hair==='pony'?'<ellipse cx="137" cy="95" rx="22" ry="48"/>':a.hair==='bun'?'<circle cx="59" cy="27" r="19"/><circle cx="121" cy="27" r="19"/>':a.hair==='wave'?'<path d="M48 59Q39 22 90 22Q141 22 132 59Q151 80 137 99Q155 124 132 147Q110 157 90 146Q65 159 43 143Q28 124 43 103Q26 82 48 59Z"/>':a.hair==='long'?'<path d="M49 67 Q47 22 90 22 Q133 22 131 67 L140 145 Q90 168 40 145Z"/>':a.hair==='twin'?'<ellipse cx="38" cy="93" rx="20" ry="44"/><ellipse cx="142" cy="93" rx="20" ry="44"/>':'';
- const eyes=a.face==='sleepy'?'<path d="M65 80q7 7 14 0 M101 80q7 7 14 0" fill="none" stroke="#443b43" stroke-width="4" stroke-linecap="round"/>':a.face==='surprise'?'<ellipse cx="72" cy="79" rx="5" ry="7"/><ellipse cx="108" cy="79" rx="5" ry="7"/>':a.face==='spark'?'<path d="M72 70l3 6 7 3-7 3-3 6-3-6-7-3 7-3Z M108 70l3 6 7 3-7 3-3 6-3-6-7-3 7-3Z"/>':a.face==='happy'?'<path d="M65 81q7-10 14 0 M101 81q7-10 14 0" fill="none" stroke="#443b43" stroke-width="4" stroke-linecap="round"/>':a.face==='wink'?'<circle cx="72" cy="79" r="4"/><path d="M102 77l10 4-10 4" fill="none" stroke="#443b43" stroke-width="3"/>':'<circle cx="72" cy="79" r="4"/><circle cx="108" cy="79" r="4"/>';
- return '<svg class="avatar-art" viewBox="0 0 180 210" role="img" aria-label="じぶんの アバター"><ellipse cx="90" cy="196" rx="62" ry="8" fill="#d7dfce"/><g fill="'+hair+'">'+back+'</g><path d="M69 125h42q21 12 25 57H44q4-45 25-57" fill="'+cloth+'" stroke="#ffffff" stroke-width="3"/>'+avatarOutfitDetails(extraOutfit)+'<path d="M82 119v13q8 9 16 0v-13" fill="'+skin+'"/><ellipse cx="90" cy="78" rx="39" ry="45" fill="'+skin+'"/><path d="'+(a.hair==='crop'?'M50 63Q46 24 90 25Q134 24 130 63L117 46 105 50 91 43 75 49 63 45Z':a.hair==='short'?'M50 78Q39 20 90 25Q140 20 130 74L107 51 94 62 74 50Z':a.hair==='bob'?'M49 97V66Q46 23 90 23Q134 23 131 66V97L120 91V59Q94 68 63 54V95Z':'M50 74Q42 23 90 23Q138 23 130 74L114 53Q91 66 63 50Z')+'" fill="'+hair+'"/><g fill="#443b43">'+eyes+'</g><ellipse cx="62" cy="92" rx="7" ry="4" fill="#e99497"/><ellipse cx="118" cy="92" rx="7" ry="4" fill="#e99497"/><path d="M80 96q10 12 20 0" fill="none" stroke="#a75060" stroke-width="3" stroke-linecap="round"/><text x="90" y="166" text-anchor="middle" font-size="26">'+(extraOutfit?.motif||{driver:'🚆',conductor:'🎫',everyday:'♡',flower:'🌼',star:'⭐',royal:'💎',rainbow:'🌈',sport:'⚽',marine:'⚓',berry:'🍓',forest:'🍀',magic:'⭐',space:'🚀',angel:'🪽'}[a.outfit])+'</text>'+avatarAccessoryArt(a.accessory,hair)+'</svg>';
+const AVATAR_HAIR_COLORS={brown:'#735141',black:'#45414b',gold:'#d4a75b',pink:'#c78399',blue:'#6687a6',purple:'#9981aa',silver:'#a7a9b4',red:'#a96651'};
+const AVATAR_SKIN_COLORS={light:'#ffddbc',warm:'#dfaa80',deep:'#ae795d'};
+const AVATAR_HAIR_BACK={
+ bob:'M48 64q0-39 43-41 40 0 44 40l1 37q1 9 5 14-16 13-32 5H68q-15 5-27-6 6-10 7-49Z',
+ long:'M47 62q0-39 43-40 42 0 44 40-1 42 10 76-12 12-27 7l-6-6q-23 12-45 1l-7 6q-16 4-25-7 13-41 13-77Z',
+ twin:'M53 56q-23-12-29 14-1 12 1 23 2 14-8 25 16 4 26-11 8-14 8-30Zm74 0q23-12 29 14 1 12-1 23-2 14 8 25-16 4-26-11-8-14-8-30Z',
+ pony:'M111 49q7-26 29-19 19 6 13 34-7 32 6 45-26 1-31-23-3-15-2-24Z',
+ bun:'M53 55c-18-1-24-17-16-31 7-13 23-16 34-7 12 11 7 29-2 35Zm74 0c18-1 24-17 16-31-7-13-23-16-34-7-12 11-7 29 2 35Z',
+ wave:'M46 63q-2-41 44-42 44-1 46 42 15 16 4 32 16 16 1 31 4 15-11 19-12 5-22-3-15 10-36 0-14 8-24-1-17 2-18-15-12-16 2-29-10-15 14-34Z'
+};
+const AVATAR_HAIR_FRINGE={
+ bob:'M46 77q-1-51 34-55 33-9 47 15 13 18 7 51l-7 14-5-40q-21 4-33-7l1 6q-15-1-25-10-7 14-8 48l-9-11Z',
+ short:'M48 79Q36 49 53 33q14-14 32-14l-1-5q12 0 21 8 24-2 31 25 3 13-5 31l-8-19-13-12q-5 10-22 15l5-12q-9 11-25 13l3-9q-10 7-17 29Z',
+ crop:'M47 71q-6-21 10-36l-7 2q11-19 31-17l-2-6q12-1 21 7 19-1 26 13l5-4q9 20 1 41l-8-13-6-12-8 7-11-10-13 9-4-7-13 10-3-5Z',
+ long:'M47 78q-4-28 11-45 13-14 34-13 39-1 43 40l-1 39-10-9-4-38q-8 12-22 13l4-10q-12 8-28 6l6-10q-17 4-24 30l-5 14Z',
+ twin:'M47 78q-4-28 12-45 13-14 34-13 38 0 42 40l-4 26-10-32q-15 7-29 3l2 5q-12 0-23-13-6 12-15 18l-5 17Z',
+ pony:'M48 80q-4-32 14-49 16-14 39-9 36 7 34 46l-5 15-10-36q-10 13-26 17l7-12q-16 13-33 13l5-11q-12 7-19 29Z',
+ bun:'M48 79q-4-33 15-49 15-13 37-8 34 4 35 45l-6 17-9-32q-11 7-23 7l-11-11-5 10q-7 1-16-4l-9 27-4 6Z',
+ wave:'M46 79q-7-30 9-45 9-9 22-10 13-11 33-2 29 4 28 36l-5 25-11-13q3-12-6-18-3 11-17 13l2-8q-13 8-25 0-15-10-17 8l-6 16Z'
+};
+function avatarHairBack(style,color){
+ const shape=AVATAR_HAIR_BACK[style];
+ if(!shape)return '';
+ const lines={
+  bob:'M52 82q0 18-4 28m79-25q1 16 6 24',long:'M51 88q-1 30-7 47m87-41q1 25 6 40',
+  twin:'M40 66q-8 4-7 18t-4 18m111-36q8 4 7 18t4 18',pony:'M135 40q13 1 10 17t0 33',
+  bun:'M42 37q-1-13 12-16m73 0q10 3 11 13',wave:'M44 84q-4 7 1 14t-4 16m98-33q3 10-2 16t3 15'
+ };
+ return `<g stroke-linecap="round" stroke-linejoin="round"><path d="${shape}" fill="${color}" stroke="#584c4b" stroke-width="1.9"/><path d="${lines[style]}" fill="none" stroke="#fff2cf" stroke-opacity=".28" stroke-width="3"/></g>`;
 }
+function avatarExpression(face){
+ const openEye=x=>`<ellipse cx="${x}" cy="81" rx="4.6" ry="6.1"/><circle cx="${x-1.1}" cy="78.7" r="1.65" fill="#fff7df"/>`;
+ const wink='<path d="M102 81q5-5 11-1" fill="none" stroke="#4c4041" stroke-width="3.3" stroke-linecap="round"/>';
+ const smiles={happy:'M82 97q8 3 16 0-2 13-11 9-4-2-5-9Z',surprise:'M95 100q0 5-5 5t-5-5q0-4 5-4t5 4Z'};
+ let eyes;
+ switch(face){
+ case 'happy':eyes='<path d="M66 82q6-9 12 0m24 0q6-9 12 0" fill="none" stroke="#4c4041" stroke-width="3.7"/>';break;
+ case 'sleepy':eyes='<path d="M66 81q6 6 12 0m24 0q6 6 12 0" fill="none" stroke="#4c4041" stroke-width="3.2"/>';break;
+ case 'wink':eyes=openEye(72)+wink;break;
+ case 'spark':eyes=[72,108].map(x=>`<ellipse cx="${x}" cy="81" rx="5.7" ry="7"/><path d="m${x} 75 1.2 3.8 3.4 1.3-3.4 1.3-1.2 3.7-1.1-3.7-3.4-1.3 3.4-1.3Z" fill="#ffedb4"/>`).join('');break;
+ case 'surprise':eyes='<g stroke="#594846" stroke-width="1.4" fill="#fff7e7"><ellipse cx="72" cy="80" rx="6.7" ry="8"/><ellipse cx="108" cy="80" rx="6.7" ry="8"/></g>'+openEye(72)+openEye(108);break;
+ default:eyes=openEye(72)+openEye(108);
+ }
+ const mouth=smiles[face]?`<path d="${smiles[face]}" fill="#ae706e" stroke="#956563" stroke-width="1.5"/>`:'<path d="M82 98q8 8 16-1" fill="none" stroke="#a66b68" stroke-width="2.7"/>';
+ return `<g fill="#4c4041" stroke-linecap="round">${eyes}<path d="M66 71q4-3 9-2m30 0q5-1 9 2" stroke="#705447" stroke-opacity=".6" stroke-width="1.8" fill="none"/><path d="M89 88q-1 2 2 2" fill="none" stroke="#ac785f" stroke-width="1.5"/>${mouth}</g>`;
+}
+function avatarHead(hairId,faceId,hairColor,skinColor,includeBack=true){
+ return `${includeBack?avatarHairBack(hairId,hairColor):''}<g stroke-linejoin="round" stroke-linecap="round">
+ <path d="M56 75q-12-6-12 5 0 10 13 13m66-18q12-6 12 5 0 10-13 13" fill="${skinColor}" stroke="#a77b68" stroke-width="1.8"/>
+ <path d="M90 33c23 0 39 15 40 41 1 22-11 40-29 46q-11 4-22 0c-18-6-31-23-30-44 1-26 16-43 41-43Z" fill="${skinColor}" stroke="#9c7766" stroke-width="2"/>
+ <path d="M54 75q-2 15 7 27 4 8 17 14-17-4-23-17-4-8-4-18Z" fill="#a86d5c" opacity=".13"/>
+ <path d="${AVATAR_HAIR_FRINGE[hairId]}" fill="${hairColor}" stroke="#584c4b" stroke-width="2.1"/>
+ <path d="M59 47q7-12 22-16m6-1 5-1" fill="none" stroke="#fff0cf" stroke-opacity=".36" stroke-width="3.2"/>
+ <g fill="#d98584" opacity=".57"><ellipse cx="63" cy="92" rx="7" ry="3.6"/><ellipse cx="117" cy="92" rx="7" ry="3.6"/></g>
+ ${avatarExpression(faceId)}</g>`;
+}
+function avatarArt(p=person()){
+ const a=avatarState(p),hair=AVATAR_HAIR_COLORS[a.color],skin=AVATAR_SKIN_COLORS[a.skin];
+ return `<svg class="avatar-art" viewBox="0 0 180 210" role="img" aria-label="じぶんの アバター">
+ <ellipse cx="90" cy="197" rx="42" ry="4.5" fill="#5d7054" opacity=".16"/>
+ ${avatarHairBack(a.hair,hair)}
+ <g stroke-linecap="round" stroke-linejoin="round">
+ <path d="M72 164h17l-3 24H73Zm20 0h16l-1 24H94Z" fill="${skin}" stroke="#956e60" stroke-width="1.8"/>
+ <path d="M69 164h42l-2 14-16 1-3-7-3 7-16-1Z" fill="#657d81" stroke="#53696c" stroke-width="1.8"/>
+ <path d="M73 183h14l-1 8H72Zm20 0h14l1 8H94Z" fill="#fff1d6" stroke="#a8957f" stroke-width="1.3"/>
+ <path d="M74 188q5 3 12 0l1 7q-1 4-18 3-7 0-6-4 3-5 11-6Zm32 0q-5 3-12 0l-1 7q1 4 18 3 7 0 6-4-3-5-11-6Z" fill="#ac7558" stroke="#755747" stroke-width="1.8"/>
+ <path d="m68 194 5-2m39 2-5-2" stroke="#e8b58a" stroke-width="2.2"/>
+ <path d="m59 140-9 14q-6 7-1 11 3 2 6 0 4-1 7-10l6-9Zm62 0 9 14q6 7 1 11-3 2-6 0-4-1-7-10l-6-9Z" fill="${skin}" stroke="#9c7766" stroke-width="1.7"/>
+ <path d="M82 113v11q8 7 16 0v-11Z" fill="${skin}" stroke="#9c7766" stroke-width="1.7"/></g>
+ ${avatarGarment(a.outfit)}${avatarHead(a.hair,a.face,hair,skin,false)}${avatarAccessoryArt(a.accessory,hair)}</svg>`;
+}
+function gardenPortrait(friend=FRIENDS[0]){
+ const name=esc(person().name);
+ return `<div class="garden-portrait" role="img" aria-label="${name}と ${friend.name}が おにわに ならんでいるよ">
+  <div class="portrait-cast" aria-hidden="true">${avatarArt()}<div class="portrait-pal">${petArt(friend,false)}</div></div>
+  <i class="portrait-flower" aria-hidden="true"></i><i class="portrait-flower" aria-hidden="true"></i>
+ </div>`;
+}
+const AVATAR_GROUPS={accessory:'かざり',outfit:'おようふく',hair:'かみがた',face:'おかお',color:'かみの いろ',skin:'はだの いろ'};
 function setAvatar(key,id){
  const option=AVATAR_OPTIONS[key]?.find(o=>o[0]===id);if(!option||mainPetLevel()<(option[2]||1))return;
- avatarState()[key]=id;save();avatarRoom('きがえたよ！ じどうで ほぞんしたよ。');
+ avatarState()[key]=id;save();avatarRoom('きがえたよ！',key);
+ app.querySelector(`[data-avatar-item="${id}"]`)?.focus?.({preventScroll:true});
 }
-function avatarRoom(message=''){
- const scroll=view==='avatar'?(app.querySelector('.avatar-options')?.scrollTop||0):0;
+function showAvatarGroup(key){
+ if(view!=='avatar'||!Object.hasOwn(AVATAR_GROUPS,key))return;
+ avatarRoom('',key);
+ app.querySelector(`[data-avatar-group="${key}"]`)?.focus?.({preventScroll:true});
+}
+function avatarRoom(message='',key='accessory'){
+ const options=app.querySelector('.avatar-options');
+ const sameGroup=view==='avatar'&&options?.dataset?.group===key;
+ const scroll=sameGroup?options.scrollTop:0;
+ const showUnlocks=sameGroup&&app.querySelector('.avatar-unlocks')?.open;
  leaveQuizScreen();view='avatar';session=null;
- const a=avatarState(),labels={hair:'かみがた',face:'おかお',color:'かみの いろ',skin:'はだの いろ',outfit:'おようふく',accessory:'かざり'};
- app.innerHTML='<section class="panel avatar-room"><button class="sub" onclick="home()">← にわへ</button><h1 class="center">じぶんの アバター</h1><div class="avatar-editor"><div class="avatar-preview">'+avatarArt()+'<strong>'+esc(person().name)+'</strong><p>にわっち レベル '+mainPetLevel()+'</p><p class="muted">にわっちが そだつと<br>きせかえが ふえるよ！<br>コインは つかわないよ。</p><p role="status">'+esc(message)+'</p></div><div class="avatar-options" tabindex="0" aria-label="きせかえを えらぶ">'+avatarNextUnlock()+['accessory','outfit','hair','face','color','skin'].map(k=>[k,AVATAR_OPTIONS[k]]).map(([k,opts])=>'<fieldset class="avatar-group"><legend>'+labels[k]+'</legend><div>'+opts.map(([id,name,level=1])=>'<button class="sub" aria-pressed="'+(a[k]===id)+'" onclick="setAvatar(\''+k+'\',\''+id+'\')" '+(mainPetLevel()<level?'disabled':'')+'>'+avatarOptionIcon(k,id)+name+(level>1?'<small>'+(mainPetLevel()<level?'🔒 Lv.'+level:'Lv.'+level+' · つかえるよ')+'</small>':'')+'</button>').join('')+'</div></fieldset>').join('')+'</div></div></section>';
- const options=app.querySelector('.avatar-options');if(options)options.scrollTop=scroll;
+ const a=avatarState(),level=mainPetLevel();
+ const groupButtons=Object.entries(AVATAR_GROUPS).map(([id,label])=>
+  `<button class="sub" data-avatar-group="${id}" aria-pressed="${id===key}" onclick="showAvatarGroup('${id}')">${label}</button>`
+ ).join('');
+ const choices=[...AVATAR_OPTIONS[key]].sort((first,second)=>(first[2]||1)-(second[2]||1)).map(([id,name,at=1])=>{
+  const locked=at>level;
+  return `<button class="sub" data-avatar-item="${id}" aria-pressed="${a[key]===id}" onclick="setAvatar('${key}','${id}')" ${locked?'disabled':''}>
+   ${avatarOptionIcon(key,id,a)}<span>${esc(name)}</span>${locked?'<small>🔒 Lv.'+at+'</small>':''}</button>`;
+ }).join('');
+ app.innerHTML=`<section class="panel avatar-room">
+  <header class="avatar-room-header"><button class="sub" onclick="home()">← にわへ</button><h1>じぶんの アバター</h1></header>
+  <div class="avatar-editor"><figure class="avatar-preview">
+   ${gardenPortrait()}<figcaption><strong>${esc(person().name)} <span>と</span> にわっち</strong><small>にわっち Lv.${level}</small><p role="status">${esc(message)}</p></figcaption>
+  </figure><div class="avatar-wardrobe"><nav class="avatar-categories" aria-label="きせかえの しゅるい">${groupButtons}</nav>
+   <div class="avatar-options" data-group="${key}" tabindex="0" aria-label="${AVATAR_GROUPS[key]}を えらぶ">
+    ${avatarNextUnlock(a)}<fieldset class="avatar-group"><legend>${AVATAR_GROUPS[key]}</legend><div>${choices}</div></fieldset>
+   </div></div></div></section>`;
+ const nextOptions=app.querySelector('.avatar-options');
+ if(showUnlocks){const unlocks=app.querySelector('details.avatar-unlocks');if(unlocks)unlocks.open=true}
+ if(nextOptions)nextOptions.scrollTop=scroll;
 }
-const avatarStyle=document.createElement('style');
-avatarStyle.textContent='.home-avatar-heading{display:flex;align-items:center;justify-content:center;gap:20px}.home-avatar-heading h1{margin:4px 0;font-size:clamp(22px,3vw,32px)}.home-avatar-heading .avatar-home{margin:0;padding:6px 12px;flex-direction:column;gap:0;flex-shrink:0}.home-avatar-heading .avatar-art{width:72px}.home-avatar-heading .avatar-home span{font-size:13px}.subject-home{margin:8px auto;padding:18px}.subject-home-choices{margin:16px 0;gap:14px}.subject-home-card{min-height:140px;gap:8px;padding:14px}.subject-home-card span{font-size:44px}.subject-home-card strong{font-size:26px}.subject-home-pet{margin-top:12px;gap:12px}@media(max-width:500px){.home-avatar-heading{gap:10px}.home-avatar-heading .avatar-art{width:58px}.subject-home-choices{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.subject-home-card{min-height:110px;padding:8px 2px}.subject-home-card span{font-size:32px}.subject-home-card strong{font-size:19px}.subject-home{padding:12px}.home-avatar-heading h1{font-size:21px}}.avatar-art{width:180px;max-width:100%;height:auto;display:block;margin:auto}.avatar-home{display:flex;align-items:center;justify-content:center;gap:8px;margin:18px auto 0}.avatar-home .avatar-art{width:58px;margin:0}.avatar-editor{display:grid;grid-template-columns:220px 1fr;gap:24px;align-items:start}.avatar-preview{text-align:center;position:sticky;top:12px;background:#f1f5e9;border-radius:24px;padding:20px}.avatar-group{border:0;padding:0;margin:0 0 22px;min-width:0}.avatar-group legend{font-weight:bold;margin-bottom:10px}.avatar-group>div{display:flex;flex-wrap:wrap;gap:10px}.avatar-group button{min-height:58px;min-width:100px}.avatar-group small{display:block;font-size:12px;margin-top:5px}.avatar-group [aria-pressed=true]{outline:3px solid #749759;background:#e1edce}.avatar-group button:disabled{opacity:.6}@media(max-width:600px){.avatar-editor{grid-template-columns:1fr}.avatar-preview{position:static;padding:12px}.avatar-preview .avatar-art{width:130px}}';
-avatarStyle.textContent+=`
-.avatar-room{position:fixed;inset:10px;z-index:50;max-width:none;margin:0;display:flex;flex-direction:column;overflow:hidden;padding:16px}
-.avatar-room>button{align-self:flex-start;flex:none;min-height:44px}
-.avatar-room>h1{font-size:24px;flex:none;margin:8px 0}
-.avatar-room .avatar-editor{flex:1;min-height:0;grid-template-columns:minmax(160px,30%) minmax(0,1fr);overflow:hidden}
-.avatar-room .avatar-preview{position:static;min-height:0;overflow:hidden;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:12px}
-.avatar-room .avatar-preview .avatar-art{width:180px;max-height:42vh;flex-shrink:1;min-height:0;margin:0}
-.avatar-room .avatar-preview p{margin:6px 0;font-size:13px}
-.avatar-room .avatar-options{align-self:stretch;height:100%;max-height:100%;overflow-y:auto;min-height:0;padding:6px 12px 24px 6px;overscroll-behavior:contain;scrollbar-gutter:stable}
-@media(max-width:600px){
- .avatar-room{inset:5px;padding:10px}
- .avatar-room>h1{font-size:20px;margin:4px 0}
- .avatar-room .avatar-editor{grid-template-columns:1fr;grid-template-rows:160px minmax(0,1fr);gap:10px}
- .avatar-room .avatar-preview{position:relative;padding:8px 8px 8px 45%;justify-content:center}
- .avatar-room .avatar-preview .avatar-art{position:absolute;left:2%;top:5px;width:40%;height:150px;max-height:150px}
- .avatar-room .avatar-preview p{font-size:11px;margin:3px 0}
-}
-`;
-document.head.appendChild(avatarStyle);
-
 
 const GARDEN_STORIES=[
  ['⭐ まいごの おほしさま','にわの すみで、ちいさな ほしが ないていたよ。「おうちが わからないの」 にわっちと いっしょに、たすけて あげよう。'],
@@ -544,7 +793,7 @@ const GARDEN_STORIES=[
  ['🏡 だいすきな にわ','「また あそぼうね」 くもに のって にわへ かえったよ。ぼうけんの おもいでを はなそう。つぎは どんな ゆめを みようかな？']
 ];
 function storyProgress(){const p=person();if(!Number.isSafeInteger(p.storyClears)||p.storyClears<0)p.storyClears=0;return p.storyClears}
-function duoArt(){const old=game().activeFriend;game().activeFriend='main';const pet=petArt().replace(/ role="button"| tabindex="0"| onclick="[^"]*"| onkeydown="[^"]*"/g,'');game().activeFriend=old;return '<div class="garden-duo" aria-label="アバターと にわっちが いっしょに おいわい">'+avatarArt()+'<span class="duo-heart">🙌</span>'+pet+'</div>'}
+function duoArt(){return '<div class="garden-duo" aria-label="アバターと にわっちが いっしょに おいわい">'+avatarArt()+'<span class="duo-heart">🙌</span>'+petArt(FRIENDS[0],false)+'</div>'}
 function celebrateAnswer(target){const box=document.querySelector(target);if(!box)return;const duo=document.createElement('div');duo.className='answer-duo';duo.innerHTML=duoArt();box.appendChild(duo)}
 function storyCard(i){const row=GARDEN_STORIES[i];return '<article class="garden-story"><h2>'+row[0]+'</h2><p>'+row[1]+'</p><button class="sub" onclick="speak(GARDEN_STORIES['+i+'][1])">🔊 おはなしを きく</button></article>'}
 function storyReward(){

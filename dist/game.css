@@ -58,3 +58,84 @@ button.result-secondary,.result-panel button:not(.primary){background:#efefed;co
 .avatar-room .avatar-group button{min-width:0;padding:10px 5px;font-size:15px}
 .avatar-room .avatar-group button:disabled{opacity:.7}
 @media(max-width:360px){.avatar-room .avatar-group>div{grid-template-columns:repeat(2,minmax(0,1fr))}.avatar-room .avatar-group button{font-size:13px}}
+
+/* The two characters share a ground line in the garden and dressing room. */
+.garden-portrait {
+ --portrait-zoom:1;
+ position:relative;isolation:isolate;display:grid;align-items:end;justify-items:center;
+ overflow:hidden;width:100%;padding:8px 2px 10px;border-radius:20px;pointer-events:none;
+ background:
+  radial-gradient(ellipse 78% 29% at 35% 111%,#88b891 98%,transparent 100%),
+  radial-gradient(ellipse 75% 42% at 93% 112%,#a0ca9b 98%,transparent 100%),
+  radial-gradient(ellipse 68% 29% at 15% 89%,#c2dbad 98%,transparent 100%),
+  radial-gradient(ellipse 81% 40% at 87% 99%,#b8d6ab 98%,transparent 100%),
+  radial-gradient(circle at 79% 22%,#ffedac 0 6%,#fff2c370 6.4% 9%,transparent 9.5%),
+  linear-gradient(165deg,#d9eeeb,#f8f4d8 88%);
+}
+.portrait-cast{position:relative;z-index:1;zoom:var(--portrait-zoom);display:flex;align-items:end;justify-content:center;width:220px;height:161px}
+.avatar-art{display:block;width:180px;max-width:100%;height:auto;margin:auto}
+.portrait-cast>.avatar-art{width:136px;max-width:none;height:auto;margin:0 -8px 0 0}
+.portrait-pal{position:relative;width:92px;height:128px}
+.portrait-pal>.pet-scene{position:absolute;left:50%;bottom:5px;display:grid;place-items:end center;width:186px;height:194px;min-height:0;margin:0;padding:0;background:transparent;overflow:visible;transform:translateX(-50%) scale(.60);transform-origin:center bottom}
+.portrait-pal .pet-body{transform-origin:center bottom}
+.portrait-pal .pet-face{font:700 40px/1 system-ui;letter-spacing:8px}
+.portrait-pal .pet-scene>.pet-badge{bottom:15px;right:32px;line-height:1}
+.portrait-pal .pet-rainbow:before{font-size:24px;top:-1px}
+.portrait-flower{position:absolute;bottom:12%;left:7%;width:2px;height:12px;background:#669d77;border-radius:2px;transform:rotate(-15deg);color:#fffcdf}
+.portrait-flower:before{content:'';position:absolute;top:0;left:-2px;width:5px;height:5px;border-radius:50%;background:#e8b456;box-shadow:0 -3px currentColor,3px -1px currentColor,2px 3px currentColor,-2px 3px currentColor,-3px -1px currentColor}
+.portrait-flower:after{content:'';position:absolute;top:6px;left:1px;width:6px;height:4px;border-radius:100% 0;background:#75a67e}
+.portrait-flower:last-child{left:auto;right:6%;bottom:8%;color:#f8d4d0;transform:rotate(12deg) scale(.85)}
+
+/* A single tap on the home portrait opens the wardrobe. */
+.home-avatar-heading{display:flex;align-items:center;justify-content:center;gap:20px}
+.home-avatar-heading h1{margin:4px 0;font-size:clamp(22px,3vw,32px)}
+.home-portrait-card{position:relative;flex:none;width:146px;padding:4px 4px 1px;border-radius:20px;background:#f7faef;border:1px solid #b6cbb2}
+.home-portrait-card .garden-portrait{--portrait-zoom:.56;border-radius:16px;padding:2px 0}
+.avatar-home{display:block;margin:0 auto;padding:3px 10px;min-height:24px;background:transparent;color:#335e49;font-size:13px}
+.avatar-home:after{content:'';position:absolute;inset:0;border-radius:20px}
+.avatar-home:focus-visible:after{outline:3px solid #46785c}
+.subject-home{margin:8px auto;padding:18px}.subject-home-choices{margin:16px 0;gap:14px}.subject-home-card{min-height:140px;gap:8px;padding:14px}.subject-home-card span{font-size:44px}.subject-home-card strong{font-size:26px}.subject-home-pet{margin-top:12px;gap:12px}
+
+.panel.avatar-room{position:fixed;inset:10px;z-index:50;max-width:none;margin:0;display:flex;flex-direction:column;gap:14px;overflow:hidden;padding:clamp(12px,2vw,26px);background:#fffcf4}
+.avatar-room .avatar-room-header{display:flex;align-items:center;justify-content:flex-start;gap:18px;flex:none;padding:0}
+.avatar-room-header button{min-height:44px}
+.avatar-room-header h1{font-size:clamp(20px,3vw,29px);margin:0;line-height:1.4}
+.avatar-editor{display:grid;grid-template-columns:minmax(220px,32%) minmax(0,1fr);align-items:start;gap:clamp(12px,2vw,28px);flex:1;min-height:0}
+.avatar-preview{align-self:start;margin:0;padding:7px;background:#fffef9;border:1px solid #c8d7ba;border-radius:25px;box-shadow:0 4px 12px #55774712;text-align:center;min-width:0;overflow:hidden}
+.avatar-preview .garden-portrait{padding-block:20px 12px}
+.avatar-preview figcaption{padding:10px 4px 5px;line-height:1.45;overflow-wrap:anywhere}
+.avatar-preview figcaption strong{font-size:clamp(15px,2vw,20px)}
+.avatar-preview figcaption strong span{font-size:.75em;font-weight:400}
+.avatar-preview figcaption small{display:block;color:#556d50;font-size:12px}
+.avatar-preview [role=status]{margin:0;font-size:12px;font-weight:700;color:#42633f}
+.avatar-wardrobe{display:flex;flex-direction:column;gap:8px;height:100%;min-width:0;min-height:0}
+.avatar-categories{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.avatar-categories button{padding:7px 2px;min-height:44px;font-size:14px;border:1px solid #d6dfcc;background:#f1f4e7;color:#3b5748}
+.avatar-categories [aria-pressed=true]{background:#31624d;color:white;border-color:#31624d}
+.avatar-options{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:4px 7px 20px 4px;scrollbar-gutter:stable}
+.avatar-options .avatar-unlocks{font-size:13px;line-height:1.5;padding:9px 12px;margin:0 0 12px}
+.avatar-unlocks summary{cursor:pointer}
+.avatar-group{margin:0;padding:0;border:0;min-width:0}
+.avatar-group legend{font-weight:700;font-size:18px;margin-bottom:8px}
+.avatar-room .avatar-group button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:77px;line-height:1.35;border:1px solid #d5dfcd;background:#fffefa;color:#345442;border-radius:16px}
+.avatar-room .avatar-group [aria-pressed=true]{border-color:#65956c;background:#e4efdc;box-shadow:inset 0 0 0 2px #65956c}
+.avatar-room .avatar-group [aria-pressed=true]:after{content:'✓';position:absolute;top:4px;right:6px;color:#3c6c4a}
+.avatar-room .avatar-group button:disabled{background:#f4f3ed;color:#4f564c}
+.avatar-group small{margin-top:4px;font-size:11px}
+@media(min-width:860px){.avatar-categories{grid-template-columns:repeat(6,minmax(0,1fr))}.avatar-preview .garden-portrait{--portrait-zoom:1.15}}
+@media(max-width:600px){
+ .home-avatar-heading{gap:10px}.home-portrait-card{width:108px}.home-portrait-card .garden-portrait{--portrait-zoom:.43}
+ .home-avatar-heading h1{font-size:21px}.subject-home{padding:12px}.subject-home-choices{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.subject-home-card{min-height:110px;padding:8px 2px}.subject-home-card span{font-size:32px}.subject-home-card strong{font-size:19px}
+ .panel.avatar-room{inset:4px;padding:10px;gap:7px}.avatar-room .avatar-room-header{gap:12px}
+ .avatar-editor{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);gap:8px}
+ .avatar-preview{padding:4px;border-radius:18px}
+ .avatar-preview .garden-portrait{--portrait-zoom:.68;padding:2px 0 5px;border-radius:14px}
+ .avatar-preview figcaption{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:0 8px;padding:3px 2px}
+ .avatar-preview figcaption strong{font-size:14px}.avatar-preview figcaption small,.avatar-preview [role=status]{font-size:11px}
+ .avatar-categories button{font-size:13px;padding-block:5px}
+}
+@media(max-height:480px) and (min-width:510px){
+ .avatar-editor{grid-template-columns:minmax(150px,28%) minmax(0,1fr);grid-template-rows:1fr}
+ .avatar-preview .garden-portrait{--portrait-zoom:.63;padding:4px 0}
+ .avatar-preview figcaption{display:block}
+}

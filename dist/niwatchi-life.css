@@ -9,6 +9,6 @@
 @media(max-height:560px){.nl-layout{grid-template-columns:minmax(180px,38%) minmax(0,1fr);grid-template-rows:1fr}.nl-preview{display:flex;overflow:auto}.nl-preview .nl-stage{min-height:145px;height:145px}.nl-preview h1{font-size:14px}.nl-unlocks{position:static}.nl-tabs{grid-template-columns:repeat(4,minmax(0,1fr))}.nl-tabs button{flex-direction:row;justify-content:center;min-height:36px}.nl-tabs button span{font-size:10px}}
 @media(prefers-reduced-motion:reduce){.nl-room *, .nl-room *:before,.nl-room *:after{animation:none!important;transition:none!important}.nl-playing-ball .nl-ball{display:none}}
 
-.nl-match-preview{display:flex;align-items:center;gap:12px;padding:12px;background:#eaf1df;border-radius:16px}.nl-match-preview .avatar-art{width:70px;margin:0}.nl-match-preview span{font-size:13px}
+.nl-match-preview{max-width:380px;margin:0 auto 14px}.nl-match-preview .garden-portrait{--portrait-zoom:.86}
 
 .nl-hat{width:100px;height:64px;left:16px;top:-40px}.nl-hat svg,.nl-necklace svg{display:block;width:100%;height:100%}.nl-necklace{position:absolute;left:17px;top:91px;width:96px;height:52px}.nl-necklace+.nl-hand{z-index:4}
