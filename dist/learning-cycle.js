@@ -4,13 +4,43 @@
  const subjects=['math','jp','en'];
  function cycle(){const p=person();if(!p.tileCycle||p.tileCycle.version!==1)p.tileCycle={version:1,done:[],pending:false,level:1,rounds:0,board:null};return p.tileCycle}
  window.learningCycle=cycle;
+ const flowers = [
+  {kind:'math', label:'さんすう', bloom:'🌻', color:'#846216'},
+  {kind:'jp', label:'こくご', bloom:'🌷', color:'#ac4266'},
+  {kind:'en', label:'えいご', bloom:'🪻', color:'#6d519c'}
+ ];
+ function dailyBouquet(){
+  const profile=person(), day=todayKey();
+  if(profile.dailyBouquet?.day!==day)profile.dailyBouquet={day,counts:{}};
+  return profile.dailyBouquet;
+ }
  const oldComplete=completePracticeSubject;
- completePracticeSubject=function(kind){oldComplete(kind);const c=cycle();if(!c.pending&&subjects.includes(kind)&&!c.done.includes(kind))c.done.push(kind);if(subjects.every(s=>c.done.includes(s)))c.pending=true;save()};
- function markup(){const c=cycle();return '<section class="panel center" id="learningCycle"><h2>🌷 まなぶ → あそぶ</h2><p>'+subjects.map((s,i)=>(c.done.includes(s)?'✅ ':'○ ')+['さんすう','こくご','えいご'][i]).join(' → ')+' → 🧩</p><p>それぞれ5もん おわったら、タイルを1ステージ！</p>'+(c.pending?'<button class="primary" onclick="openTileReward()">🧩 '+(c.board?'つづきから あそぶ':'こもれびタイルで あそぶ')+' →</button>':'<p class="muted">あと '+(3-c.done.length)+'きょうか。じぶんの ペースで。</p>')+'</section>'}
+ completePracticeSubject=function(kind){
+  oldComplete(kind);
+  if(!subjects.includes(kind))return;
+  const counts=dailyBouquet().counts;
+  counts[kind]=(counts[kind]||0)+1;
+  const c=cycle();
+  if(!c.pending&&!c.done.includes(kind))c.done.push(kind);
+  if(subjects.every(s=>c.done.includes(s)))c.pending=true;
+  save();
+ };
+ function bouquetMarkup(){
+  const counts=dailyBouquet().counts;
+  const open=subjects.filter(s=>counts[s]>0).length;
+  const heading=open===subjects.length?'きょうの はなたば、できた！':'きょうは '+subjects.length+'りん さかせよう';
+  const plants=flowers.map(({kind,label,bloom,color})=>{
+   const count=counts[kind]||0, extra=Math.max(0,count-1);
+   const small=extra?'<small>✿'+(extra>1?' × '+extra:'')+'</small>':'';
+   return '<span style="color:'+color+'"><span aria-hidden="true" style="display:block;font-size:1.7em">'+(count?bloom:'🌱')+small+'</span>'+label+'<br><small>'+(count?'さいた'+(extra?'・こばな '+extra:''):'つぼみ')+'</small></span>';
+  }).join('');
+  return '<section class="panel center" aria-label="きょうの はなたば"><h2>'+heading+'</h2><div style="display:flex;justify-content:space-evenly;gap:.4em">'+plants+'</div><p>ひとつの きょうかを 5もんで 1りん</p></section>';
+ }
+ function markup(){const c=cycle();return bouquetMarkup()+'<section class="panel center" id="learningCycle"><h2>🧩 こもれびタイル</h2>'+(c.pending?'<button class="primary" onclick="openTileReward()">'+(c.board?'つづきから あそぶ':'こもれびタイルで あそぶ')+' →</button>':'<p class="muted">タイルまで あと '+(3-c.done.length)+'きょうか</p>')+'</section>'}
  const oldHome=home;
  home=function(){oldHome();app.insertAdjacentHTML('afterbegin',markup());if(cycle().pending){const b=app.querySelector('[onclick="startGuidedPractice()"]');if(b)b.textContent='🧩 ごほうびの タイルへ →';const choices=app.querySelector('.subject-home-choices');if(choices)choices.hidden=true}};
  const oldContinuation=renderSubjectContinuation;
- renderSubjectContinuation=function(){if(cycle().pending){app.querySelector('.actions')?.insertAdjacentHTML('afterbegin','<button class="primary" onclick="openTileReward()">🧩 3きょうか できた！ タイルで あそぶ →</button>')}else oldContinuation()};
+ renderSubjectContinuation=function(){const actions=app.querySelector('.actions');if(actions&&!app.querySelector('[aria-label="きょうの はなたば"]'))actions.insertAdjacentHTML('beforebegin',bouquetMarkup());if(cycle().pending){app.querySelector('.actions')?.insertAdjacentHTML('afterbegin','<button class="primary" onclick="openTileReward()">🧩 3きょうか できた！ タイルで あそぶ →</button>')}else oldContinuation()};
  const oldNext=nextSubjectPractice;
  nextSubjectPractice=function(){if(cycle().pending)return openTileReward();oldNext()};
  const oldStart=start,oldEnglish=startEnglish;
