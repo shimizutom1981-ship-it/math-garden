@@ -36,6 +36,27 @@
   for(const preset of presets){preset.limits={};for(const d of P.defs){let cap=-1;for(const row of catalog[d.id]){if(row.rank<0||row.rank>preset.rank)break;cap=row.index}if(cap>=0)preset.limits[d.id]=cap}}
   return catalog;
  }
+ function highestPlayedGrade(p,P){
+  const table=build(P),practice=p.practice?.version===2?p.practice:null;
+  const archives=Array.isArray(practice?.estimateHistory)?practice.estimateHistory:[];
+  const skillRecords=[practice?.skills,...archives.map(entry=>entry?.skills)];
+  let highest=0;
+  for(const d of P.defs){
+   if(d.id==='enWords')continue; // Introductory English has no assigned school grade.
+   for(const row of table[d.id]||[]){
+    if(row.low<=highest)continue;
+    // Math and Japanese also have course-specific counts from manual and older practice.
+    // English course numbers overlap those IDs and use skill-specific records only.
+    const total=d.subject==='en'?0:p.stats?.[row.course]?.total;
+    const attempted=skillRecords.some(skills=>{
+     const count=skills?.[d.id]?.stages?.[row.index]?.attempts;
+     return Number.isSafeInteger(count)&&count>0;
+    });
+    if(attempted||(Number.isSafeInteger(total)&&total>0))highest=row.low;
+   }
+  }
+  return highest;
+ }
  function matches(p,preset,P){build(P);const a=P.state(p);return !a.rangeCustomized&&a.settings.kanji===preset.kanji&&a.settings.carry===preset.carry&&P.defs.every(d=>a.initialRanges?.[d.id]===Math.min(d.courses.length-1,preset.limits[d.id]??(d.prerequisite?-1:0)))}
  function apply(p,id,P){
   build(P);const preset=presets.find(x=>x.id===id);if(!preset)return false;
@@ -94,7 +115,7 @@
   let label=unknown?'学年の目安を設けていない問題':subject==='en'&&stages.every(s=>s.id==='enWords')?'英語入門の問題':labels[lo]+(lo===hi?'':'〜'+labels[hi])+'相当の問題';
   return {label,stages,atLimit:stages.some(x=>x.atLimit),support:defs.filter(d=>P.skill(p,d).support).map(d=>d.id)};
  }
- const api={presets,apply,selected,matches,range,build,advancement,advance,stableStage,applyLimit,selectedLimit};
+ const api={presets,apply,selected,matches,range,build,highestPlayedGrade,advancement,advance,stableStage,applyLimit,selectedLimit};
  if(typeof module==='object')module.exports=api;else root.PracticePresets=api;
 })(typeof globalThis==='object'?globalThis:this);
 
