@@ -662,6 +662,15 @@ function avatarNextUnlock(a){
  return `<details class="avatar-unlocks"><summary>つぎは <b>Lv.${next}</b> で きせかえが ${items.length}こ ふえるよ</summary><p>いま つかえる きせかえは ${count}こ。コインは つかわないよ。</p><div class="avatar-next-items">${items.map(o=>'<span>'+avatarOptionIcon(o.key,o.id,a)+esc(o.name)+'</span>').join('')}</div></details>`;
 }
 
+function avatarGrowthStage(p=person()){
+ // The first home screen renders before the full curriculum is loaded.
+ return typeof PracticePresets==='undefined'?0:PracticePresets.highestPlayedGrade(p,Practice);
+}
+function avatarGrowthCaption(stage){
+ if(stage===0)return 'もんだいが すすむと、せが のびるよ。';
+ const grade=['ねんしょう','ねんちゅう','ねんちょう','小学1年','小学2年','小学3年','小学4年','小学5年','小学6年','中学'][stage];
+ return grade+'の もんだいで、ここまで そだったよ。';
+}
 function avatarState(p=person()){
  if(!p.avatar||typeof p.avatar!=='object'||Array.isArray(p.avatar))p.avatar={};
  const avatarLevel=1+Math.floor((Number.isSafeInteger(p.game?.growth)&&p.game.growth>=0?p.game.growth:0)/3);
@@ -724,20 +733,35 @@ function avatarHead(hairId,faceId,hairColor,skinColor,includeBack=true){
  <g fill="#d98584" opacity=".57"><ellipse cx="63" cy="92" rx="7" ry="3.6"/><ellipse cx="117" cy="92" rx="7" ry="3.6"/></g>
  ${avatarExpression(faceId)}</g>`;
 }
-function avatarArt(p=person()){
+function avatarArt(p=person(),stage=avatarGrowthStage(p)){
  const a=avatarState(p),hair=AVATAR_HAIR_COLORS[a.color],skin=AVATAR_SKIN_COLORS[a.skin];
- return `<svg class="avatar-art" viewBox="0 0 180 210" role="img" aria-label="じぶんの アバター">
+ // Old souvenir photos have no stage. Their joints stay at the original drawing coordinates.
+ const hasStage=Number.isInteger(stage)&&stage>=0&&stage<=9;
+ const hipY=hasStage ? 174-3.3*stage : 164,collarY=hasStage ? 143-4.85*stage : 120;
+ const bodyWidth=hasStage ? 0.77+0.025*stage : 1,headSize=hasStage ? 0.775+0.003*stage : 1;
+ // Keep the soles planted. The legs and torso grow from shared joints while the head stays round.
+ const atJoint=(originalY,newY,width,height=width)=>
+  `translate(90 ${newY}) scale(${width} ${height}) translate(-90 ${-originalY})`;
+ const legs=atJoint(188,188,bodyWidth,(188-hipY)/24);
+ const feet=atJoint(198,198,bodyWidth);
+ const torso=atJoint(164,hipY,bodyWidth,(hipY-collarY)/44);
+ const head=atJoint(120,collarY,headSize);
+ return `<svg class="avatar-art" viewBox="0 0 180 210" role="img" aria-label="じぶんの アバター"${hasStage?' data-avatar-stage="'+stage+'"':''}>
  <ellipse cx="90" cy="197" rx="42" ry="4.5" fill="#5d7054" opacity=".16"/>
- ${avatarHairBack(a.hair,hair)}
+ <g transform="${head}">${avatarHairBack(a.hair,hair)}</g>
  <g stroke-linecap="round" stroke-linejoin="round">
- <path d="M72 164h17l-3 24H73Zm20 0h16l-1 24H94Z" fill="${skin}" stroke="#956e60" stroke-width="1.8"/>
- <path d="M69 164h42l-2 14-16 1-3-7-3 7-16-1Z" fill="#657d81" stroke="#53696c" stroke-width="1.8"/>
+ <path transform="${legs}" d="M72 164h17l-3 24H73Zm20 0h16l-1 24H94Z" fill="${skin}" stroke="#956e60" stroke-width="1.8"/>
+ <path transform="${torso}" d="M69 164h42l-2 14-16 1-3-7-3 7-16-1Z" fill="#657d81" stroke="#53696c" stroke-width="1.8"/>
+ <g transform="${feet}">
  <path d="M73 183h14l-1 8H72Zm20 0h14l1 8H94Z" fill="#fff1d6" stroke="#a8957f" stroke-width="1.3"/>
  <path d="M74 188q5 3 12 0l1 7q-1 4-18 3-7 0-6-4 3-5 11-6Zm32 0q-5 3-12 0l-1 7q1 4 18 3 7 0 6-4-3-5-11-6Z" fill="#ac7558" stroke="#755747" stroke-width="1.8"/>
- <path d="m68 194 5-2m39 2-5-2" stroke="#e8b58a" stroke-width="2.2"/>
+ <path d="m68 194 5-2m39 2-5-2" stroke="#e8b58a" stroke-width="2.2"/></g>
+ <g transform="${torso}">
  <path d="m59 140-9 14q-6 7-1 11 3 2 6 0 4-1 7-10l6-9Zm62 0 9 14q6 7 1 11-3 2-6 0-4-1-7-10l-6-9Z" fill="${skin}" stroke="#9c7766" stroke-width="1.7"/>
- <path d="M82 113v11q8 7 16 0v-11Z" fill="${skin}" stroke="#9c7766" stroke-width="1.7"/></g>
- ${avatarGarment(a.outfit)}${avatarHead(a.hair,a.face,hair,skin,false)}${avatarAccessoryArt(a.accessory,hair)}</svg>`;
+ <path d="M82 113v11q8 7 16 0v-11Z" fill="${skin}" stroke="#9c7766" stroke-width="1.7"/></g></g>
+ <g transform="${torso}">${avatarGarment(a.outfit)}</g>
+ <g transform="${head}">${avatarHead(a.hair,a.face,hair,skin,false)}</g>
+ <g transform="${a.accessory==='railbag'?torso:head}">${avatarAccessoryArt(a.accessory,hair)}</g></svg>`;
 }
 function gardenPortrait(friend=FRIENDS[0]){
  const name=esc(person().name);
@@ -775,7 +799,7 @@ function avatarRoom(message='',key='accessory'){
  app.innerHTML=`<section class="panel avatar-room">
   <header class="avatar-room-header"><button class="sub" onclick="home()">← にわへ</button><h1>じぶんの アバター</h1></header>
   <div class="avatar-editor"><figure class="avatar-preview">
-   ${gardenPortrait()}<figcaption><strong>${esc(person().name)} <span>と</span> にわっち</strong><small>にわっち Lv.${level}</small><p role="status">${esc(message)}</p></figcaption>
+   ${gardenPortrait()}<figcaption><strong>${esc(person().name)} <span>と</span> にわっち</strong><small>${avatarGrowthCaption(avatarGrowthStage())}</small><small>にわっち Lv.${level}</small><p role="status">${esc(message)}</p></figcaption>
   </figure><div class="avatar-wardrobe"><nav class="avatar-categories" aria-label="きせかえの しゅるい">${groupButtons}</nav>
    <div class="avatar-options" data-group="${key}" tabindex="0" aria-label="${AVATAR_GROUPS[key]}を えらぶ">
     ${avatarNextUnlock(a)}<fieldset class="avatar-group"><legend>${AVATAR_GROUPS[key]}</legend><div>${choices}</div></fieldset>
