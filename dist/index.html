@@ -92,8 +92,25 @@ const KEY='kazunoniwa-v1';let data;try{data=JSON.parse(localStorage.getItem(KEY)
  }
  return result+(rest?digits[rest]:'');
 }
+function clockHourReading(hour){
+ return ({4:'よ',7:'しち',9:'く'})[Number(hour)] || japaneseNumber(hour);
+}
+function clockMinuteReading(minute){
+ const n=Number(minute);
+ if(n===0)return 'れいふん';
+ const units=['','いっぷん','にふん','さんぷん','よんぷん','ごふん','ろっぷん','ななふん','はっぷん','きゅうふん'];
+ const tens=n-n%10;
+ if(n%10===0)return japaneseNumber(n).replace(/じゅう$/,'じゅっ')+'ぷん';
+ return (tens?japaneseNumber(tens):'')+units[n%10];
+}
+function clockReading(hour,minute){
+ return clockHourReading(hour)+'じ'+(Number(minute)?clockMinuteReading(minute):'');
+}
 function speechText(text){
  return String(text).replace(/[０-９]/g,c=>String.fromCharCode(c.charCodeAt(0)-0xfee0))
+ .replace(/(\d{1,2})時(\d{1,2})分の\s*(\d{1,2})分あとは[？?]/g,
+   (_,h,m,after)=>clockReading(h,m)+'から、'+clockMinuteReading(after)+'あとは、なんじなんぷんですか？')
+ .replace(/(\d{1,2})時(\d{1,2})分/g,(_,h,m)=>clockReading(h,m))
  .replace(/(\d+)\s*\/\s*(\d+)/g,(_,a,b)=>japaneseNumber(b)+'ぶんの'+japaneseNumber(a))
  .replace(/\d+/g,japaneseNumber)
  .replace(/[＋+]/g,' たす ').replace(/[−－-]/g,' ひく ')
