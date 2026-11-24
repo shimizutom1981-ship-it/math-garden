@@ -20,9 +20,9 @@ for(const [skill,stage,kind] of [['letters',1,'sounds'],['letters',2,'sounds'],[
   const q=run('q');assert.equal(q.workshop,kind);assert.equal(q.choices.filter(x=>x===q.answer).length,1);
   assert.equal(new Set(q.choices).size,q.choices.length);assert.equal(q.practice.skill,skill);
   if(kind==='sounds'){assert.equal(q.names[0][0],q.names[1][0]);assert.equal(q.answer.length,Math.min(...q.names.map(w=>w.length)));assert.ok(!q.visualHTML.includes('onclick="GardenWorkshop.say'))}
-  if(kind==='acorns'){assert.equal(q.answer==='おなじ',q.upper===q.lower);assert.equal(q.visualHTML.split('class="gw-link"').length-1,q.upper)}
+  if(kind==='acorns'){assert.equal(q.answer==='おなじ',q.upper===q.lower);assert.equal(q.visualHTML.split('class="gw-link"').length-1,Math.min(q.upper,q.lower));assert.equal(q.choices.length,3);assert.ok(q.upper<=q.lower||q.answer==='うえが おおい')}
   if(kind==='pencil'){assert.equal(q.answer,q.length+' cm');assert.equal(q.start===0,stage===0);assert.equal(q.visualHTML.split('class="gw-unit"').length-1,q.length);if(stage){W.slide(button());assert.ok(q.aligned);W.slide(button());assert.equal(q.aligned,false);assert.equal(run('session.help'),true)}}
-  if(kind==='memo'){assert.equal(q.visualHTML.split('class="gw-pot-card"').length-1,stage===2?3:2);if(stage===2)assert.ok(q.answer.endsWith('あかい はち'))}
+  if(kind==='memo'){assert.equal(q.visualHTML.split('class="gw-pot-card"').length-1,stage===2?3:2);if(stage===2){assert.ok(q.answer.endsWith('あかい はち'));for(const choice of q.choices)assert.equal(q.matches[choice].length,choice===q.answer?1:2)}}
   if(kind==='seedlings'){assert.equal(q.answer,(q.rows+1)*q.per);if(!stage)assert.ok(q.answer<=12);if(stage===1)assert.ok([2,5].includes(q.per));assert.equal(q.visualHTML.includes('ひとれつ うえる'),stage<2);if(stage<2){const b=button();W.plant(b);assert.ok(b.disabled);assert.equal(b.innerHTML.split('🌱').length-1,q.per)}}
  }
  const state=P.skill(run('person()'),P.defs.find(d=>d.id===skill)),total=state.total;
@@ -31,6 +31,21 @@ for(const [skill,stage,kind] of [['letters',1,'sounds'],['letters',2,'sounds'],[
  run("answer(q.choices.indexOf(q.answer),document.createElement('button'))");
  assert.equal(run('session.done'),true);assert.equal(state.total,total+1);assert.ok(run('autoNextTimer!==null'));
 }
+focus('compare',0,2);
+P.skill(run('person()'),P.defs.find(d=>d.id==='compare')).stages[0].mastered=false;
+run('nextQuestion()');
+assert.equal(run('q.choices.length'),2);assert.ok(run('q.lower>=q.upper'));
+focus('readingConditions',2,2);
+const memo=run('q'),cards=[0,1,2].map(pot=>({dataset:{pot},classList:{toggle(_,value){this.selected=value}}}));
+const selectAll=document.querySelectorAll;
+document.querySelectorAll=selector=>selector==='.gw-pot-card'?cards:selectAll(selector);
+for(const choice of [...memo.choices.filter(x=>x!==memo.answer),memo.answer]){
+ run('answer('+memo.choices.indexOf(choice)+',document.createElement("button"))');
+ assert.deepEqual(cards.filter(card=>card.classList.selected).map(card=>card.dataset.pot),Array.from(memo.matches[choice]).sort());
+ assert.equal(run('session.done'),choice===memo.answer);
+}
+document.querySelectorAll=selectAll;
+console.log('PASS introductory choices and watering highlights on two retries and success');
 console.log('PASS guided math/Japanese routing, 275 items, visual helpers, retries and one score per item');
 for(const audible of [false,true]){
  const spoken=[];c.speechSynthesis={cancel(){},getVoices(){return[]},speak(u){spoken.push(u.text)}};c.SpeechSynthesisUtterance=function(text){this.text=text};

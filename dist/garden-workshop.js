@@ -53,15 +53,17 @@ const GardenWorkshop = (() => {
       visualHTML:'<div class="gw-samples">'+samples.join('')+'</div>'};
   }
   function acorns(){
-    const upper=rand(2,4),lower=upper+rand(0,1);
-    const answer=lower===upper?'おなじ':'したが おおい';
-    const x=(i,spread)=>30+i*(spread?47:31);
-    const links=Array.from({length:upper},(_,i)=>'<line class="gw-link" style="--beat:'+i+'" x1="'+x(i,false)+'" y1="37" x2="'+x(i,true)+'" y2="72"/>').join('');
+    const advanced=Practice.mastered(person(),foundationById('compare'),0);
+    const upper=rand(advanced?3:2,4),lower=upper+rand(advanced?-1:0,1);
+    const options=advanced?['うえが おおい','したが おおい','おなじ']:['おなじ','したが おおい'];
+    const answer=lower===upper?'おなじ':lower>upper?'したが おおい':'うえが おおい';
+    const x=(i,spread)=>26+i*(spread?53:25);
+    const links=Array.from({length:Math.min(upper,lower)},(_,i)=>'<line class="gw-link" style="--beat:'+i+'" x1="'+x(i,false)+'" y1="37" x2="'+x(i,true)+'" y2="72"/>').join('');
     const nut='<path d="M-10 -2 Q-10 10 0 15 Q10 10 10 -2" fill="#bc8043" stroke="#714923" stroke-width="1.5"/><path d="M-12 -2 Q-11 -12 0 -12 Q11 -12 12 -2 Q0 2 -12 -2Z" fill="#785438"/><path d="M0 -11 Q1 -16 4 -17" fill="none" stroke="#61492c" stroke-width="2.5"/>';
     const row=(n,wide,y)=>Array.from({length:n},(_,i)=>'<g transform="translate('+x(i,wide)+' '+y+')">'+nut+'</g>').join('');
-    return {id:'gw-acorns-'+upper+'-'+lower,upper,lower,answer,choices:shuffle(['おなじ','したが おおい']),
-      choicePictures:{'おなじ':'🟰 おなじ','したが おおい':'⬇ したが おおい'},
-      text:'したの どんぐりが おおい？　それとも おなじ？',hint:'うえと したを ひとつずつ むすぶと、あまる どんぐりは あるかな？',
+    return {id:'gw-acorns-'+upper+'-'+lower,upper,lower,answer,choices:shuffle(options),
+      choicePictures:{'うえが おおい':'⬆ うえが おおい','おなじ':'🟰 おなじ','したが おおい':'⬇ したが おおい'},
+      text:advanced?'どんぐりは どっちが おおい？　それとも おなじ？':'したの どんぐりが おおい？　それとも おなじ？',hint:'うえと したを ひとつずつ むすぶと、あまる どんぐりは あるかな？',
       visualHTML:'<svg class="gw-acorns" viewBox="0 0 252 112" role="img" aria-label="うえに '+upper+'こ、したに '+lower+'この どんぐり">'+links+row(upper,false,22)+row(lower,true,91)+'</svg><button class="sub" onclick="GardenWorkshop.pair(this)">ひとつずつ むすぶ</button>'};
   }
   function pencil(stage){
@@ -83,16 +85,32 @@ const GardenWorkshop = (() => {
     const order=shuffle(compound?[0,1,2]:[0,1]);
     const plant=plants[target][1],tag=plant+(compound?' あかい はち':' はち');
     const shared='あかい はち',other=compound?plant+' はち':plants[1-target][1]+' はち';
+    const matches=compound?{[tag]:[target],[other]:[target,2],[shared]:[0,1]}:null;
     const pots=order.map(i=>{
       const [icon,label]=plants[i===2?target:i],yellow=i===2;
-      return '<div class="gw-pot-card"><span class="gw-target">'+(i===target?'▼ ここに おみず':'')+'</span><span class="gw-plant" role="img" aria-label="'+label+(yellow?' きいろい':' あかい')+' はち">'+icon+'</span><span class="gw-pot"'+(yellow?' style="--pot:#d6b533"':'')+'></span></div>';
+      return '<div class="gw-pot-card" data-pot="'+i+'"><span class="gw-target">'+(i===target?'▼ ここに おみず':'')+'</span><span class="gw-plant" role="img" aria-label="'+label+(yellow?' きいろい':' あかい')+' はち">'+icon+'</span><span class="gw-pot"'+(yellow?' style="--pot:#d6b533"':'')+'></span></div>';
     });
-    return {type:'jp',id:'gw-memo-'+stage+'-'+tag,target,answer:tag,choices:shuffle(stage?[tag,other,shared]:[tag,shared]),
+    return {type:'jp',id:'gw-memo-'+stage+'-'+tag,target,matches,answer:tag,choices:shuffle(stage?[tag,other,shared]:[tag,shared]),
       text:stage?'メモの「ここ」を どの ことばに かえると つたわる？':'どの はちに みずを あげる？　にわっちに つたえよう。',
-      hint:'しるしの はちを みよう。ふたつの はちで ちがう ところは どこかな？',
+      hint:compound?'しるしの はちを みてね。うえてある ものと、はちの いろは なにかな？':'しるしの はちを みよう。ふたつの はちで ちがう ところは どこかな？',
       visualHTML:'<div class="gw-pots">'+pots.join('')+'</div>'+(stage?'<p class="gw-note">「<mark>ここ</mark>に みずを あげてね。」</p>':''),
       reviewText:'「'+tag+'に みずを あげてね。」'};
   }
+  const previousAnswer=answer;
+  answer=function(index,button){
+    const choice=q?.choices[index];
+    const matching=active('memo') && !button.disabled && q.matches?.[choice];
+    previousAnswer(index,button);
+    if(!matching)return;
+    document.querySelectorAll('.gw-pot-card').forEach(card=>{
+      card.classList.toggle('gw-match',matching.includes(Number(card.dataset.pot)));
+    });
+    if(matching.length>1){
+      const message='にわっち「'+choice+'は ふたつ あるよ。どっちかな？」';
+      document.querySelector('#feedback').textContent=message;
+      speak(message);
+    }
+  };
   function seedlings(stage){
     const per=stage===1?lowerGradePick('gw-factors',[2,5]):rand(2,stage?6:4);
     const rows=rand(1,stage?4:Math.min(3,Math.floor(12/per)-1)),total=(rows+1)*per;
