@@ -14,6 +14,7 @@
 .gw-unit{fill:#e7a431;opacity:0}
 @keyframes gw-appear{from{opacity:0}to{opacity:1}}
 .gw-pot-card{min-width:60px}
+.gw-pot-card.gw-match{outline:3px solid #8c6518;outline-offset:-3px;background:#fff2bc;border-radius:12px}
 .gw-target{height:26px;line-height:24px;color:#25543e;font-weight:700;font-size:clamp(12px,3.5vw,16px);white-space:nowrap}
 .gw-plant{font-size:37px;line-height:1.05}
 .gw-pot{display:block;width:51px;height:34px;background:var(--pot,#b84e40);border-top:6px solid #633f36;clip-path:polygon(0 0,100% 0,87% 100%,13% 100%);border-radius:3px}
