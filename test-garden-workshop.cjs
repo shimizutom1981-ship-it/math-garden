@@ -19,7 +19,7 @@ for(const [skill,stage,kind] of [['letters',1,'sounds'],['letters',2,'sounds'],[
   if(i)run('nextQuestion()');
   const q=run('q');assert.equal(q.workshop,kind);assert.equal(q.choices.filter(x=>x===q.answer).length,1);
   assert.equal(new Set(q.choices).size,q.choices.length);assert.equal(q.practice.skill,skill);
-  if(kind==='sounds'){assert.equal(q.names[0][0],q.names[1][0]);assert.equal(q.answer.length,Math.min(...q.names.map(w=>w.length)));assert.ok(!q.visualHTML.includes('onclick="GardenWorkshop.say'))}
+  if(kind==='sounds'){assert.equal(q.names[0][0],q.names[1][0]);assert.equal(q.answer,q.names[0].length===q.names[1].length?'おなじ':Array.from(q.names).sort((a,b)=>a.length-b.length)[0]);assert.equal(q.choices.includes('おなじ'),stage===2);assert.ok(!q.visualHTML.includes('onclick="GardenWorkshop.say'))}
   if(kind==='acorns'){assert.equal(q.answer==='おなじ',q.upper===q.lower);assert.equal(q.visualHTML.split('class="gw-link"').length-1,Math.min(q.upper,q.lower));assert.equal(q.choices.length,3);assert.ok(q.upper<=q.lower||q.answer==='うえが おおい')}
   if(kind==='pencil'){assert.equal(q.answer,q.length+' cm');assert.equal(q.start===0,stage===0);assert.equal(q.visualHTML.split('class="gw-unit"').length-1,q.length);if(stage){W.slide(button());assert.ok(q.aligned);W.slide(button());assert.equal(q.aligned,false);assert.equal(run('session.help'),true)}}
   if(kind==='memo'){assert.equal(q.visualHTML.split('class="gw-pot-card"').length-1,stage===2?3:2);if(stage===2){assert.ok(q.answer.endsWith('あかい はち'));for(const choice of q.choices)assert.equal(q.matches[choice].length,choice===q.answer?1:2)}}
@@ -51,7 +51,7 @@ for(const audible of [false,true]){
  const spoken=[];c.speechSynthesis={cancel(){},getVoices(){return[]},speak(u){spoken.push(u.text)}};c.SpeechSynthesisUtterance=function(text){this.text=text};
  run('data.sound='+audible+';data.noListening='+!audible);
  focus('letters',1,2);const names=run('q.names');assert.equal(app.innerHTML.includes('onclick="GardenWorkshop.say'),audible);
- if(audible){W.say(1,button());assert.equal(spoken.at(-1),names[1]);assert.equal(run('session.done'),false)}
+ if(audible){W.say(1,button());assert.equal(spoken.slice(-names[1].length).join(''),names[1]);assert.equal(run('session.done'),false)}
  focus('enWords',4,1);const e=run('englishSession');assert.equal(e.curriculumKind,'にわっちの おつかい');assert.ok(e.audioTarget.endsWith(', please!'));assert.equal(e.readingAlternative,!audible);
  if(audible)assert.equal(spoken.at(-1),e.audioTarget);
  run("practiceClock.start-=2000;englishAnswer(englishSession.choices.findIndex(x=>x[0]!==englishSession.word[0]),document.createElement('button'))");
@@ -68,4 +68,18 @@ for(const audible of [false,true]){
  assert.equal(run("EnglishSteps.entry(person(),'color').attempts"),steps+1);
 }
 console.log('PASS spoken and silent errands, picture-word replay, single-tap delivery, and separate color-step scoring');
+focus('letters',2,2);
+for(let i=0;i<12&&run('q.answer')!=='おなじ';i++)run('nextQuestion()');
+assert.equal(run('q.answer'),'おなじ');
+run("answer(q.choices.indexOf('おなじ'),document.createElement('button'))");assert.equal(run('session.done'),true);
+// Answer through the same five-question flow as the learner.
+const rational=P.defs.find(d=>d.id==='mathRational'),firstCourse=rational.courses[0];
+run('delete person().stats['+firstCourse+']');
+focus('mathRational',0,0);
+for(const expected of ['1/2 m','1/2 m','1/4 m','3/4 m','3/4 L']){
+ assert.equal(run('q.answer'),expected);
+ if(run('session.n')===0)run('showHint()');
+ run("practiceClock.start-=2000;answer(q.choices.indexOf(q.answer),document.createElement('button'));advance()");
+}
+assert.equal(run('view'),'result');
 `)(require);

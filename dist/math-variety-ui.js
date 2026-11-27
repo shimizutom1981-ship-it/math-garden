@@ -4,6 +4,8 @@ const beforeFractionVariety=makeCurriculumMath;
 makeCurriculumMath=function(i){
  const m=curriculumMathCourses[i];
  if(!m||m.id!=='mathRational'||m.stage!==0)return beforeFractionVariety(i);
+ const intro=FractionVariety.introductory(stats(i).ok||0);
+ if(intro)return {...intro,i};
  // Alternate new representations and the original area-diagram generator.
  // Rotation lasts only for this set and never affects learner records.
  const state=session?(session.fractionVariety??={turn:0,seen:[]}):{turn:0,seen:[]};

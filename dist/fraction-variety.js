@@ -72,16 +72,26 @@
   items.push({id:`fraction-variety-${mode}-${f.n}-${f.d}`,type:'mathExtended',skill:'mathRational',stage:0,text,answer,choices,hint,visualHTML,variant:mode,meta});
  }
  for(const mode of ['lineToFraction','tapeToFraction','vesselToFraction','fractionToLine'])pairs.forEach((f,i)=>add(mode,f,i));
+ const firstSteps=[
+  'tapeToFraction-1-2','tapeToFraction-1-4','tapeToFraction-3-4','vesselToFraction-3-4'
+ ].map(key=>items.find(item=>item.id==='fraction-variety-'+key));
  function pick(seen=[],rng=Math.random){
   const random=()=>{const n=rng();return Number.isFinite(n)?Math.min(.999999999,Math.max(0,n)):0;};
   let pool=items.filter(q=>!seen.includes(q.id));
   if(!pool.length){seen.length=0;pool=items;}
   const q=pool[Math.floor(random()*pool.length)];seen.push(q.id);
+  return withShuffledChoices(q,random);
+ }
+ function withShuffledChoices(q,random){
   const choices=q.choices.slice();
   for(let i=choices.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[choices[i],choices[j]]=[choices[j],choices[i]];}
   return {...q,choices,meta:{...q.meta,options:q.meta.options.map(x=>({...x}))}};
  }
- const api={items,banks:{mathRational:[items]},pick,diagrams:{line,tape,vessel}};
+ function introductory(step){
+  const item=firstSteps[step];
+  return item?withShuffledChoices(item,Math.random):null;
+ }
+ const api={introductory,items,banks:{mathRational:[items]},pick,diagrams:{line,tape,vessel}};
  if(typeof module==='object'&&module.exports)module.exports=api;
  else root.FractionVariety=api;
 })(typeof globalThis==='object'?globalThis:this);

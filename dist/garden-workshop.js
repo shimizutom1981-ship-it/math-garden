@@ -9,6 +9,10 @@ const GardenWorkshop = (() => {
     [['🍑','もも'],['🍁','もみじ']], [['🪑','いす'],['🐬','いるか']],
     [['🪁','たこ'],['🥚','たまご']], [['🐜','あり'],['🦆','あひる']]
   ];
+  const extendedSoundPairs=soundPairs.concat([
+    [['🚗','くるま'],['🐳','くじら']], [['🍅','とまと'],['🐦','とり']],
+    [['🐢','かめ'],['☂️','かさ']], [['🐼','ぱんだ'],['🍞','ぱん']]
+  ]);
   const appleColors = [['red','あかい','🍎'],['green','みどりの','🍏']];
   const appleRequests = appleColors.map(([color,ja],i) => ({
     id:'errand-'+color+'-apple', text:'a '+color+' apple', meaning:ja+' りんご',
@@ -36,10 +40,14 @@ const GardenWorkshop = (() => {
     }
   };
 
-  function sounds(){
-    const pair=lowerGradePick('gw-sounds',soundPairs);
+  function sounds(stage){
+    const advanced=stage===2;
+    const pair=lowerGradePick('gw-sounds-'+stage,advanced?extendedSoundPairs:soundPairs);
     const options=shuffle(pair);
     const names=options.map(row=>row[1]);
+    const [left,right]=names;
+    const answer=left.length===right.length?'おなじ':left.length<right.length?left:right;
+    const choices=advanced?[...names,'おなじ']:names;
     const hear=data.sound && !data.noListening && 'speechSynthesis' in window;
     const lookup=Object.fromEntries(options.map(([icon,name])=>[name,'<span class="gw-icon">'+icon+'</span>'+name]));
     const samples=options.map(([icon,name],i)=>{
@@ -47,9 +55,9 @@ const GardenWorkshop = (() => {
       const body='<span class="gw-icon">'+icon+'</span>'+name+'<span class="gw-beats">'+dots+'</span>';
       return hear?'<button class="sub gw-sample" aria-label="'+name+'を きく" onclick="GardenWorkshop.say('+i+',this)">🔊 '+body+'</button>':'<div class="gw-sample">'+body+'</div>';
     });
-    return {type:'jp',id:'gw-sounds-'+pair[0][1],names,answer:pair[0][1],choices:names,choicePictures:lookup,
-      text:'「'+pair[0][1][0]+'」で はじまるよ。なまえが みじかいのは どっち？',
-      hint:'おとを ひとつずつ ゆびで おってみよう。まるが すくないのは どっち？',
+    return {type:'jp',id:'gw-sounds-'+pair.map(row=>row[1]).join('-'),names,answer,choices,choicePictures:lookup,
+      text:advanced?'みじかいのは どっち？　それとも おなじ？':'「'+pair[0][1][0]+'」で はじまるよ。なまえが みじかいのは どっち？',
+      hint:advanced?'ふたつの なまえを きいて、まるの かずを くらべよう。':'おとを ひとつずつ ゆびで おってみよう。まるが すくないのは どっち？',
       visualHTML:'<div class="gw-samples">'+samples.join('')+'</div>'};
   }
   function acorns(){
@@ -146,8 +154,16 @@ const GardenWorkshop = (() => {
   function active(kind){return view==='quiz' && session && !session.done && q?.workshop===kind}
   function say(i,button){
     if(!active('sounds') || !q.names[i])return;
-    speak(q.names[i]);
-    button.classList.remove('gw-sounding');void button.offsetWidth;button.classList.add('gw-sounding');
+    if(!data.sound || data.noListening || !('speechSynthesis' in window))return;
+    speechSynthesis.cancel();
+    document.querySelectorAll('.gw-sounding,.gw-heard').forEach(el=>el.classList.remove('gw-sounding','gw-heard'));
+    button.classList.add('gw-sounding');
+    const beats=button.querySelectorAll('.gw-beat');
+    Array.from(q.names[i]).forEach((kana,k)=>{
+      const utterance=japaneseUtterance(kana);
+      utterance.onstart=()=>beats[k]?.classList.add('gw-heard');
+      speechSynthesis.speak(utterance);
+    });
   }
   function pair(button){
     if(!active('acorns'))return;
