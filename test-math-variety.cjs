@@ -29,6 +29,7 @@ test('new banks exhaust once without repetition at both RNG boundaries',()=>{
 });
 test('fraction integration retains original generator and rotates all 72 new questions',()=>{
  const course=P.defs.find(d=>d.id==='mathRational').courses[0],old=Math.random;
+ run('person().stats['+course+']={ok:4,total:4}');
  try{for(const rng of [()=>0,()=>.999999999]){Math.random=rng;run('session={auto:false,seen:{}}');const seen=new Set();for(let n=0;n<144;n++){const q=run('makeQuestion('+course+')');if(n%2===0){assert.equal(q.meta.op,'fractionVariety');assert.ok(!seen.has(q.id));seen.add(q.id)}else assert.equal(q.meta.op,'fractionDiagram')}assert.equal(seen.size,72)}}finally{Math.random=old}
 });
 test('all targeted questions are reachable silently and preserve learner state and grade ranges',()=>{
